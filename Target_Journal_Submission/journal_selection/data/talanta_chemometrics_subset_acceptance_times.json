@@ -1,0 +1,9 @@
+{
+ "subset": "Talanta chemometrics/ML/PLS/multivariate-calibration research papers, entered PubMed 2025-07-01..2026-10-31",
+ "n": 168,
+ "median": 68.5,
+ "q1": 48.0,
+ "q3": 91.75,
+ "pct_le_60": 38.1,
+ "pct_le_100": 79.8
+}

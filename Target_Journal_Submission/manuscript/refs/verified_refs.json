@@ -1,0 +1,783 @@
+{
+ "ali2018": {
+  "doi": "10.1021/acs.analchem.8b02167",
+  "verified": true,
+  "title": "Sample-Size Planning for Multivariate Data: A Raman-Spectroscopy-Based Example",
+  "authors": [
+   "Ali, Nairveen",
+   "Girnus, Sophie",
+   "R\u00f6sch, Petra",
+   "Popp, J\u00fcrgen",
+   "Bocklitz, Thomas"
+  ],
+  "year": 2018,
+  "journal": "Analytical Chemistry",
+  "volume": "90",
+  "issue": "21",
+  "pages": "12485-12492",
+  "type": "journal-article",
+  "publisher": "American Chemical Society (ACS)"
+ },
+ "mukherjee2003": {
+  "doi": "10.1089/106652703321825928",
+  "verified": true,
+  "title": "Estimating Dataset Size Requirements for Classifying DNA Microarray Data",
+  "authors": [
+   "Mukherjee, Sayan",
+   "Tamayo, Pablo",
+   "Rogers, Simon",
+   "Rifkin, Ryan",
+   "Engle, Anna",
+   "Campbell, Colin",
+   "Golub, Todd R.",
+   "Mesirov, Jill P."
+  ],
+  "year": 2003,
+  "journal": "Journal of Computational Biology",
+  "volume": "10",
+  "issue": "2",
+  "pages": "119-142",
+  "type": "journal-article",
+  "publisher": "SAGE Publications"
+ },
+ "figueroa2012": {
+  "doi": "10.1186/1472-6947-12-8",
+  "verified": true,
+  "title": "Predicting sample size required for classification performance",
+  "authors": [
+   "Figueroa, Rosa L",
+   "Zeng-Treitler, Qing",
+   "Kandula, Sasikiran",
+   "Ngo, Long H"
+  ],
+  "year": 2012,
+  "journal": "BMC Medical Informatics and Decision Making",
+  "volume": "12",
+  "issue": "1",
+  "pages": "8",
+  "type": "journal-article",
+  "publisher": "Springer Science and Business Media LLC"
+ },
+ "viering2023": {
+  "doi": "10.1109/TPAMI.2022.3220744",
+  "verified": true,
+  "title": "The Shape of Learning Curves: A Review",
+  "authors": [
+   "Viering, Tom",
+   "Loog, Marco"
+  ],
+  "year": 2023,
+  "journal": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+  "volume": "45",
+  "issue": "6",
+  "pages": "7799-7819",
+  "type": "journal-article",
+  "publisher": "Institute of Electrical and Electronics Engineers (IEEE)"
+ },
+ "riley2020": {
+  "doi": "10.1136/bmj.m441",
+  "verified": true,
+  "title": "Calculating the sample size required for developing a clinical prediction model",
+  "authors": [
+   "Riley, Richard D",
+   "Ensor, Joie",
+   "Snell, Kym I E",
+   "Harrell, Frank E",
+   "Martin, Glen P",
+   "Reitsma, Johannes B",
+   "Moons, Karel G M",
+   "Collins, Gary",
+   "van Smeden, Maarten"
+  ],
+  "year": 2020,
+  "journal": "BMJ",
+  "volume": null,
+  "issue": null,
+  "pages": "m441",
+  "type": "journal-article",
+  "publisher": "BMJ"
+ },
+ "ng2020": {
+  "doi": "10.5194/soil-6-565-2020",
+  "verified": true,
+  "title": "The influence of training sample size on the accuracy of deep learning models for the prediction of soil properties with near-infrared spectroscopy data",
+  "authors": [
+   "Ng, Wartini",
+   "Minasny, Budiman",
+   "Mendes, Wanderson de Sousa",
+   "Dematt\u00ea, Jos\u00e9 Alexandre Melo"
+  ],
+  "year": 2020,
+  "journal": "SOIL",
+  "volume": "6",
+  "issue": "2",
+  "pages": "565-578",
+  "type": "journal-article",
+  "publisher": "Copernicus GmbH"
+ },
+ "kuang2014": {
+  "doi": "10.1016/j.geoderma.2013.09.022",
+  "verified": true,
+  "title": "Effect of the number of calibration samples on the prediction of several soil properties at the farm-scale",
+  "authors": [
+   "Debaene, Guillaume",
+   "Nied\u017awiecki, Jacek",
+   "Pecio, Alicja",
+   "\u017burek, Anna"
+  ],
+  "year": 2014,
+  "journal": "Geoderma",
+  "volume": "214-215",
+  "issue": null,
+  "pages": "114-125",
+  "type": "journal-article",
+  "publisher": "Elsevier BV"
+ },
+ "dobriban2018": {
+  "doi": "10.1214/17-AOS1549",
+  "verified": true,
+  "title": "High-dimensional asymptotics of prediction: Ridge regression and classification",
+  "authors": [
+   "Dobriban, Edgar",
+   "Wager, Stefan"
+  ],
+  "year": 2018,
+  "journal": "The Annals of Statistics",
+  "volume": "46",
+  "issue": "1",
+  "pages": "247-279",
+  "type": "journal-article",
+  "publisher": "Institute of Mathematical Statistics"
+ },
+ "hastie2022": {
+  "doi": "10.1214/21-AOS2133",
+  "verified": true,
+  "title": "Surprises in high-dimensional ridgeless least squares interpolation",
+  "authors": [
+   "Hastie, Trevor",
+   "Montanari, Andrea",
+   "Rosset, Saharon",
+   "Tibshirani, Ryan J."
+  ],
+  "year": 2022,
+  "journal": "The Annals of Statistics",
+  "volume": "50",
+  "issue": "2",
+  "pages": "949-986",
+  "type": "journal-article",
+  "publisher": "Institute of Mathematical Statistics"
+ },
+ "canatar2021": {
+  "doi": "10.1038/s41467-021-23103-1",
+  "verified": true,
+  "title": "Spectral bias and task-model alignment explain generalization in kernel regression and infinitely wide neural networks",
+  "authors": [
+   "Canatar, Abdulkadir",
+   "Bordelon, Blake",
+   "Pehlevan, Cengiz"
+  ],
+  "year": 2021,
+  "journal": "Nature Communications",
+  "volume": "12",
+  "issue": "1",
+  "pages": "2914",
+  "type": "journal-article",
+  "publisher": "Springer Science and Business Media LLC"
+ },
+ "spigler2020": {
+  "doi": "10.1088/1742-5468/abc61d",
+  "verified": true,
+  "title": "Asymptotic learning curves of kernel methods: empirical data versus teacher\u2013student paradigm",
+  "authors": [
+   "Spigler, Stefano",
+   "Geiger, Mario",
+   "Wyart, Matthieu"
+  ],
+  "year": 2020,
+  "journal": "Journal of Statistical Mechanics: Theory and Experiment",
+  "volume": "2020",
+  "issue": "12",
+  "pages": "124001",
+  "type": "journal-article",
+  "publisher": "IOP Publishing"
+ },
+ "loureiro2022": {
+  "doi": "10.1088/1742-5468/ac9825",
+  "verified": true,
+  "title": "Learning curves of generic features maps for realistic datasets with a teacher-student model*",
+  "authors": [
+   "Loureiro, Bruno",
+   "Gerbelot, C\u00e9dric",
+   "Cui, Hugo",
+   "Goldt, Sebastian",
+   "Krzakala, Florent",
+   "M\u00e9zard, Marc",
+   "Zdeborov\u00e1, Lenka"
+  ],
+  "year": 2022,
+  "journal": "Journal of Statistical Mechanics: Theory and Experiment",
+  "volume": "2022",
+  "issue": "11",
+  "pages": "114001",
+  "type": "journal-article",
+  "publisher": "IOP Publishing"
+ },
+ "craven1979": {
+  "doi": "10.1007/BF01404567",
+  "verified": true,
+  "title": "Smoothing noisy data with spline functions",
+  "authors": [
+   "Craven, Peter",
+   "Wahba, Grace"
+  ],
+  "year": 1978,
+  "journal": "Numerische Mathematik",
+  "volume": "31",
+  "issue": "4",
+  "pages": "377-403",
+  "type": "journal-article",
+  "publisher": "Springer Science and Business Media LLC"
+ },
+ "marchenko1967": {
+  "doi": "10.1070/SM1967v001n04ABEH001994",
+  "verified": true,
+  "title": "DISTRIBUTION OF EIGENVALUES FOR SOME SETS OF RANDOM MATRICES",
+  "authors": [
+   "Mar\u010denko, V A",
+   "Pastur, L A"
+  ],
+  "year": 1967,
+  "journal": "Mathematics of the USSR-Sbornik",
+  "volume": "1",
+  "issue": "4",
+  "pages": "457-483",
+  "type": "journal-article",
+  "publisher": "Steklov Mathematical Institute"
+ },
+ "rubin1981": {
+  "doi": "10.1214/aos/1176345338",
+  "verified": true,
+  "title": "The Bayesian Bootstrap",
+  "authors": [
+   "Rubin, Donald B."
+  ],
+  "year": 1981,
+  "journal": "The Annals of Statistics",
+  "volume": "9",
+  "issue": "1",
+  "pages": "130-134",
+  "type": "journal-article",
+  "publisher": "Institute of Mathematical Statistics"
+ },
+ "bach2024": {
+  "doi": "10.1137/23M1558781",
+  "verified": true,
+  "title": "High-Dimensional Analysis of Double Descent for Linear Regression with Random Projections",
+  "authors": [
+   "Bach, Francis"
+  ],
+  "year": 2024,
+  "journal": "SIAM Journal on Mathematics of Data Science",
+  "volume": "6",
+  "issue": "1",
+  "pages": "26-50",
+  "type": "journal-article",
+  "publisher": "Society for Industrial & Applied Mathematics (SIAM)"
+ },
+ "frank1993": {
+  "doi": "10.1080/00401706.1993.10485033",
+  "verified": true,
+  "title": "A Statistical View of Some Chemometrics Regression Tools",
+  "authors": [
+   "Frank, lldiko E.",
+   "Friedman, Jerome H."
+  ],
+  "year": 1993,
+  "journal": "Technometrics",
+  "volume": "35",
+  "issue": "2",
+  "pages": "109-135",
+  "type": "journal-article",
+  "publisher": "Informa UK Limited"
+ },
+ "wold2001": {
+  "doi": "10.1016/S0169-7439(01)00155-1",
+  "verified": true,
+  "title": "PLS-regression: a basic tool of chemometrics",
+  "authors": [
+   "Wold, Svante",
+   "Sj\u00f6str\u00f6m, Michael",
+   "Eriksson, Lennart"
+  ],
+  "year": 2001,
+  "journal": "Chemometrics and Intelligent Laboratory Systems",
+  "volume": "58",
+  "issue": "2",
+  "pages": "109-130",
+  "type": "journal-article",
+  "publisher": "Elsevier BV"
+ },
+ "dayal1997": {
+  "doi": "10.1002/(SICI)1099-128X(199701)11:1<73::AID-CEM435>3.0.CO;2-#",
+  "verified": true,
+  "title": "Improved PLS algorithms",
+  "authors": [
+   "Dayal, Bhupinder. S.",
+   "MacGregor, John F."
+  ],
+  "year": 1997,
+  "journal": "Journal of Chemometrics",
+  "volume": "11",
+  "issue": "1",
+  "pages": "73-85",
+  "type": "journal-article",
+  "publisher": "Wiley"
+ },
+ "barnes1989": {
+  "doi": "10.1366/0003702894202201",
+  "verified": true,
+  "title": "Standard Normal Variate Transformation and De-Trending of Near-Infrared Diffuse Reflectance Spectra",
+  "authors": [
+   "Barnes, R. J.",
+   "Dhanoa, M. S.",
+   "Lister, Susan J."
+  ],
+  "year": 1989,
+  "journal": "Applied Spectroscopy",
+  "volume": "43",
+  "issue": "5",
+  "pages": "772-777",
+  "type": "journal-article",
+  "publisher": "SAGE Publications"
+ },
+ "savitzky1964": {
+  "doi": "10.1021/ac60214a047",
+  "verified": true,
+  "title": "Smoothing and Differentiation of Data by Simplified Least Squares Procedures.",
+  "authors": [
+   "Savitzky, Abraham.",
+   "Golay, M. J. E."
+  ],
+  "year": 1964,
+  "journal": "Analytical Chemistry",
+  "volume": "36",
+  "issue": "8",
+  "pages": "1627-1639",
+  "type": "journal-article",
+  "publisher": "American Chemical Society (ACS)"
+ },
+ "kennard1969": {
+  "doi": "10.1080/00401706.1969.10490666",
+  "verified": true,
+  "title": "Computer Aided Design of Experiments",
+  "authors": [
+   "Kennard, R. W.",
+   "Stone, L. A."
+  ],
+  "year": 1969,
+  "journal": "Technometrics",
+  "volume": "11",
+  "issue": "1",
+  "pages": "137-148",
+  "type": "journal-article",
+  "publisher": "Informa UK Limited"
+ },
+ "faber1997": {
+  "doi": "10.1002/(SICI)1099-128X(199705)11:3<181::AID-CEM459>3.0.CO;2-7",
+  "verified": true,
+  "title": "Propagation of measurement errors for the validation of predictions obtained by principal component regression and partial least squares",
+  "authors": [
+   "Faber, Klaas",
+   "Kowalski, Bruce R."
+  ],
+  "year": 1997,
+  "journal": "Journal of Chemometrics",
+  "volume": "11",
+  "issue": "3",
+  "pages": "181-238",
+  "type": "journal-article",
+  "publisher": "Wiley"
+ },
+ "bouckaert2011": {
+  "doi": "10.1016/j.chemolab.2011.08.008",
+  "verified": true,
+  "title": "A comparison of methods for estimating prediction intervals in NIR spectroscopy: Size matters",
+  "authors": [
+   "Bouckaert, Remco R.",
+   "Frank, Eibe",
+   "Holmes, Geoffrey",
+   "Fletcher, Dale"
+  ],
+  "year": 2011,
+  "journal": "Chemometrics and Intelligent Laboratory Systems",
+  "volume": "109",
+  "issue": "2",
+  "pages": "139-145",
+  "type": "journal-article",
+  "publisher": "Elsevier BV"
+ },
+ "kramer2011": {
+  "doi": "10.1198/jasa.2011.tm10107",
+  "verified": true,
+  "title": "The Degrees of Freedom of Partial Least Squares Regression",
+  "authors": [
+   "Kr\u00e4mer, Nicole",
+   "Sugiyama, Masashi"
+  ],
+  "year": 2011,
+  "journal": "Journal of the American Statistical Association",
+  "volume": "106",
+  "issue": "494",
+  "pages": "697-705",
+  "type": "journal-article",
+  "publisher": "Informa UK Limited"
+ },
+ "westad2015": {
+  "doi": "10.1016/j.aca.2015.06.056",
+  "verified": true,
+  "title": "Validation of chemometric models \u2013 A tutorial",
+  "authors": [
+   "Westad, Frank",
+   "Marini, Federico"
+  ],
+  "year": 2015,
+  "journal": "Analytica Chimica Acta",
+  "volume": "893",
+  "issue": null,
+  "pages": "14-24",
+  "type": "journal-article",
+  "publisher": "Elsevier BV"
+ },
+ "mishra2022": {
+  "doi": "10.1016/j.trac.2022.116804",
+  "verified": true,
+  "title": "Deep learning for near-infrared spectral data modelling: Hypes and benefits",
+  "authors": [
+   "Mishra, Puneet",
+   "Passos, D\u00e1rio",
+   "Marini, Federico",
+   "Xu, Junli",
+   "Amigo, Jose M.",
+   "Gowen, Aoife A.",
+   "Jansen, Jeroen J.",
+   "Biancolillo, Alessandra",
+   "Roger, Jean Michel",
+   "Rutledge, Douglas N.",
+   "Nordon, Alison"
+  ],
+  "year": 2022,
+  "journal": "TrAC Trends in Analytical Chemistry",
+  "volume": "157",
+  "issue": null,
+  "pages": "116804",
+  "type": "journal-article",
+  "publisher": "Elsevier BV"
+ },
+ "rinnan2009": {
+  "doi": "10.1016/j.trac.2009.07.007",
+  "verified": true,
+  "title": "Review of the most common pre-processing techniques for near-infrared spectra",
+  "authors": [
+   "Rinnan, \u212bsmund",
+   "Berg, Frans van den",
+   "Engelsen, S\u00f8ren Balling"
+  ],
+  "year": 2009,
+  "journal": "TrAC Trends in Analytical Chemistry",
+  "volume": "28",
+  "issue": "10",
+  "pages": "1201-1222",
+  "type": "journal-article",
+  "publisher": "Elsevier BV"
+ },
+ "safanelli2025": {
+  "doi": "10.1371/journal.pone.0296545",
+  "verified": true,
+  "title": "Open Soil Spectral Library (OSSL): Building reproducible soil calibration models through open development and community engagement",
+  "authors": [
+   "Safanelli, Jos\u00e9 L.",
+   "Hengl, Tomislav",
+   "Parente, Leandro L.",
+   "Minarik, Robert",
+   "Bloom, Dellena E.",
+   "Todd-Brown, Katherine",
+   "Gholizadeh, Asa",
+   "Mendes, Wanderson de Sousa",
+   "Sanderman, Jonathan"
+  ],
+  "year": 2025,
+  "journal": "PLOS ONE",
+  "volume": "20",
+  "issue": "1",
+  "pages": "e0296545",
+  "type": "journal-article",
+  "publisher": "Public Library of Science (PLoS)"
+ },
+ "anderson2020": {
+  "doi": "10.1016/j.postharvbio.2020.111202",
+  "verified": true,
+  "title": "Achieving robustness across season, location and cultivar for a NIRS model for intact mango fruit dry matter content",
+  "authors": [
+   "Anderson, N.T.",
+   "Walsh, K.B.",
+   "Subedi, P.P.",
+   "Hayes, C.H."
+  ],
+  "year": 2020,
+  "journal": "Postharvest Biology and Technology",
+  "volume": "168",
+  "issue": null,
+  "pages": "111202",
+  "type": "journal-article",
+  "publisher": "Elsevier BV"
+ },
+ "mango_data": {
+  "doi": "10.17632/46htwnp833.6",
+  "verified": true,
+  "title": "Mango DMC and NIR spectra",
+  "authors": [
+   "Anderson, Nicholas",
+   "Walsh, Kerry",
+   "Subedi, Phul",
+   "Walsh, Jeremy"
+  ],
+  "year": 2026,
+  "journal": "Mendeley Data",
+  "publisher": "Mendeley Data",
+  "type": "dataset",
+  "verified_via": "DataCite"
+ },
+ "borggaard1992": {
+  "doi": "10.1021/ac00029a018",
+  "verified": true,
+  "title": "Optimal minimal neural interpretation of spectra",
+  "authors": [
+   "Borggaard, Claus.",
+   "Thodberg, Hans Henrik."
+  ],
+  "year": 1992,
+  "journal": "Analytical Chemistry",
+  "volume": "64",
+  "issue": "5",
+  "pages": "545-551",
+  "type": "journal-article",
+  "publisher": "American Chemical Society (ACS)"
+ },
+ "sanderman2020": {
+  "doi": "10.1002/saj2.20009",
+  "verified": true,
+  "title": "Mid\u2010infrared spectroscopy for prediction of soil health indicators in the United States",
+  "authors": [
+   "Sanderman, Jonathan",
+   "Savage, Kathleen",
+   "Dangal, Shree R.S."
+  ],
+  "year": 2020,
+  "journal": "Soil Science Society of America Journal",
+  "volume": "84",
+  "issue": "1",
+  "pages": "251-261",
+  "type": "journal-article",
+  "publisher": "Wiley"
+ },
+ "kapoor2023": {
+  "doi": "10.1016/j.patter.2023.100804",
+  "verified": true,
+  "title": "Leakage and the reproducibility crisis in machine-learning-based science",
+  "authors": [
+   "Kapoor, Sayash",
+   "Narayanan, Arvind"
+  ],
+  "year": 2023,
+  "journal": "Patterns",
+  "volume": "4",
+  "issue": "9",
+  "pages": "100804",
+  "type": "journal-article",
+  "publisher": "Elsevier BV"
+ },
+ "hoerl1970": {
+  "doi": "10.1080/00401706.1970.10488634",
+  "verified": true,
+  "title": "Ridge Regression: Biased Estimation for Nonorthogonal Problems",
+  "authors": [
+   "Hoerl, Arthur E.",
+   "Kennard, Robert W."
+  ],
+  "year": 1970,
+  "journal": "Technometrics",
+  "volume": "12",
+  "issue": "1",
+  "pages": "55-67",
+  "type": "journal-article",
+  "publisher": "Informa UK Limited"
+ },
+ "wilcoxon1945": {
+  "doi": "10.2307/3001968",
+  "verified": true,
+  "title": "Individual Comparisons by Ranking Methods",
+  "authors": [
+   "Wilcoxon, Frank"
+  ],
+  "year": 1945,
+  "journal": "Biometrics Bulletin",
+  "volume": "1",
+  "issue": "6",
+  "pages": "80",
+  "type": "journal-article",
+  "publisher": "JSTOR"
+ },
+ "kerby2014": {
+  "doi": "10.2466/11.IT.3.1",
+  "verified": true,
+  "title": "The Simple Difference Formula: An Approach to Teaching Nonparametric Correlation",
+  "authors": [
+   "Kerby, Dave S."
+  ],
+  "year": 2014,
+  "journal": "Comprehensive Psychology",
+  "volume": "3",
+  "issue": null,
+  "pages": "11.IT.3.1",
+  "type": "journal-article",
+  "publisher": "Ammons Scientific"
+ },
+ "talanta2026": {
+  "doi": "10.1016/j.talanta.2026.130941",
+  "verified": true,
+  "title": "Group-conformal calibration of near-infrared prediction intervals for new seasons, instruments and regions using PLS diagnostics",
+  "authors": [
+   "Bhargav Teja, P.N.",
+   "Divya Meena, S."
+  ],
+  "year": 2026,
+  "journal": "Talanta",
+  "volume": null,
+  "issue": null,
+  "pages": "130941",
+  "type": "journal-article",
+  "publisher": "Elsevier BV"
+ },
+ "walsh2024": {
+  "doi": "10.1016/j.saa.2024.124003",
+  "verified": true,
+  "title": "Evaluation of 1D convolutional neural network in estimation of mango dry matter content",
+  "authors": [
+   "Walsh, Jeremy",
+   "Neupane, Arjun",
+   "Li, Michael"
+  ],
+  "year": 2024,
+  "journal": "Spectrochimica Acta Part A: Molecular and Biomolecular Spectroscopy",
+  "volume": "311",
+  "issue": null,
+  "pages": "124003",
+  "type": "journal-article",
+  "publisher": "Elsevier BV"
+ },
+ "bordelon2020": {
+  "arxiv": "2002.02561",
+  "verified": true,
+  "title": "Spectrum Dependent Learning Curves in Kernel Regression and Wide Neural Networks",
+  "authors": [
+   "Blake Bordelon",
+   "Abdulkadir Canatar",
+   "Cengiz Pehlevan"
+  ],
+  "year": 2020
+ },
+ "simon2023": {
+  "arxiv": "2110.03922",
+  "verified": true,
+  "title": "The Eigenlearning Framework: A Conservation Law Perspective on Kernel Regression and Wide Neural Networks",
+  "authors": [
+   "James B. Simon",
+   "Madeline Dickens",
+   "Dhruva Karkada",
+   "Michael R. DeWeese"
+  ],
+  "year": 2021
+ },
+ "jacot2020": {
+  "arxiv": "2006.09796",
+  "verified": true,
+  "title": "Kernel Alignment Risk Estimator: Risk Prediction from Training Data",
+  "authors": [
+   "Arthur Jacot",
+   "Berfin \u015eim\u015fek",
+   "Francesco Spadaro",
+   "Cl\u00e9ment Hongler",
+   "Franck Gabriel"
+  ],
+  "year": 2020
+ },
+ "wei2022": {
+  "arxiv": "2203.06176",
+  "verified": true,
+  "title": "More Than a Toy: Random Matrix Models Predict How Real-World Neural Representations Generalize",
+  "authors": [
+   "Alexander Wei",
+   "Wei Hu",
+   "Jacob Steinhardt"
+  ],
+  "year": 2022
+ },
+ "atanasov2024": {
+  "arxiv": "2405.00592",
+  "verified": true,
+  "title": "Scaling and renormalization in high-dimensional regression",
+  "authors": [
+   "Alexander Atanasov",
+   "Jacob A. Zavatone-Veth",
+   "Cengiz Pehlevan"
+  ],
+  "year": 2024
+ },
+ "adriaensen2023": {
+  "arxiv": "2310.20447",
+  "verified": true,
+  "title": "Efficient Bayesian Learning Curve Extrapolation using Prior-Data Fitted Networks",
+  "authors": [
+   "Steven Adriaensen",
+   "Herilalaina Rakotoarison",
+   "Samuel M\u00fcller",
+   "Frank Hutter"
+  ],
+  "year": 2023
+ },
+ "hestness2017": {
+  "arxiv": "1712.00409",
+  "verified": true,
+  "title": "Deep Learning Scaling is Predictable, Empirically",
+  "authors": [
+   "Joel Hestness",
+   "Sharan Narang",
+   "Newsha Ardalani",
+   "Gregory Diamos",
+   "Heewoo Jun",
+   "Hassan Kianinejad",
+   "Md. Mostofa Ali Patwary",
+   "Yang Yang",
+   "Yanqi Zhou"
+  ],
+  "year": 2017
+ },
+ "kaplan2020": {
+  "arxiv": "2001.08361",
+  "verified": true,
+  "title": "Scaling Laws for Neural Language Models",
+  "authors": [
+   "Jared Kaplan",
+   "Sam McCandlish",
+   "Tom Henighan",
+   "Tom B. Brown",
+   "Benjamin Chess",
+   "Rewon Child",
+   "Scott Gray",
+   "Alec Radford",
+   "Jeffrey Wu",
+   "Dario Amodei"
+  ],
+  "year": 2020
+ }
+}

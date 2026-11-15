@@ -1,0 +1,9 @@
+{
+ "subset": "ACA chemometrics/ML/PLS/multivariate-calibration research papers (title/abstract match), entered PubMed 2025-07-01..2026-10-31, reviews/tutorials excluded by title",
+ "n": 118,
+ "median": 73.0,
+ "q1": 51.0,
+ "q3": 96.5,
+ "pct_le_60": 35.6,
+ "pct_le_100": 77.1
+}

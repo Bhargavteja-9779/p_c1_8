@@ -1,0 +1,44 @@
+# Literature matrix, gap analysis and novelty map (Phases 3–4)
+
+All references were verified against Crossref / DataCite / arXiv (`manuscript/refs/verified_refs.json`).
+
+## 1. Literature matrix
+
+| Paper (year, venue) | Problem | Data | Method | Evaluation | What it does NOT address |
+|---|---|---|---|---|---|
+| Ali et al. (2018, *Anal. Chem.*) | Sample-size planning for multivariate (Raman) data | Raman spectra, classification tasks | Empirical learning curves (sub-sampling) + inverse-power-law fit; effect-size considerations | Extrapolated classifier performance on Raman data | Regression calibration; no theory linking curve shape to spectral covariance; no use of unlabelled spectra; no systematic multi-dataset validation of forecast accuracy/coverage |
+| Mukherjee et al. (2003, *J. Comput. Biol.*) | Data-set size for microarray classifiers | Microarray data | Inverse power law (IPL) fit to sub-sampled error rates, significance by permutation | Few data sets | Regression; spectroscopy; extrapolation accuracy far beyond the pilot |
+| Figueroa et al. (2012, *BMC Med. Inform. Decis. Mak.*) | Predicting sample size for classification | Clinical text/NLP | Weighted non-linear IPL fit with confidence intervals | Annotated corpora | Same as above; intervals derived from curve-fit covariance only |
+| Viering & Loog (2023, *IEEE TPAMI*) | Review of learning-curve shapes | — | Survey: power laws, exponentials, non-monotone curves | — | Notes that well-behaved parametric shapes are not guaranteed; no domain method |
+| Adriaensen et al. (2023, NeurIPS; arXiv:2310.20447) | Bayesian learning-curve extrapolation (epochs) | AutoML benchmarks | Prior-data fitted network (LC-PFN) | Hyper-parameter optimisation curves | Sample-size curves; spectroscopy |
+| Riley et al. (2020, *BMJ*) | Minimum sample size for clinical prediction models | Clinical regressions | Closed-form criteria (shrinkage, R², optimism) for low-dimensional models | Simulation/worked examples | p ≫ n spectral calibration; data-dependent curve forecasting |
+| Ng et al. (2020, *SOIL*); Kuang & Mouazen (2014, *Geoderma*) | Effect of calibration-set size in soil spectroscopy | Soil VisNIR/NIR libraries | Empirical accuracy vs sample size for PLSR, Cubist, CNN | Single libraries | No forecasting method; curves only observed after the fact |
+| Bouckaert et al. (2011, *Chemom. Intell. Lab. Syst.*); Faber & Kowalski (1997, *J. Chemom.*) | Prediction uncertainty in multivariate calibration | NIR data | Interval methods; error propagation | Coverage and width | Uncertainty at a fixed calibration size, not as a function of n |
+| Dobriban & Wager (2018, *Ann. Stat.*); Hastie et al. (2022, *Ann. Stat.*) | Asymptotic risk of ridge regression | Theory + simulations | Random-matrix (Marchenko–Pastur) deterministic equivalents | Theory, synthetic data | Practical estimation of the target-power spectrum from small labelled pilots; chemometrics |
+| Bordelon et al. (2020, ICML); Canatar et al. (2021, *Nat. Commun.*); Simon et al. (2021, arXiv) | Spectrum-dependent learning curves; task–model alignment | Kernel regression on images | Learning curves from kernel eigenvalues and target coefficients (omniscient: full data used) | Synthetic + MNIST/CIFAR | Forecasting from a small pilot; analytical chemistry |
+| Spigler et al. (2020, *J. Stat. Mech.*) | Exponent of learning curves on real data | MNIST, CIFAR | Relates curve exponent to decay of target coefficients (kernel PCA on full data) | Image data | Practical pilot-based forecasting |
+| Jacot et al. (2020, NeurIPS, KARE); Wei, Hu & Steinhardt (2022, ICML); Craven & Wahba (1978, GCV) | Risk estimation from training data | Images, Higgs | KARE/GCV estimators of risk *at the current n and penalty* | Image data | Extrapolation of risk to larger n |
+| Atanasov et al. (2024, arXiv) | Unified deterministic-equivalence view | Theory | S-transform renormalisation of the ridge | Theory | Applications to calibration planning |
+| Talanta (2026) group-conformal NIR intervals (doi:10.1016/j.talanta.2026.130941) | Prediction intervals under new seasons/instruments/regions | NIR | Group-conformal calibration using PLS diagnostics | Coverage under shift | Sample-size planning / learning-curve forecasting |
+
+## 2. Gap analysis
+- **What exists:** (i) empirical learning-curve extrapolation with parametric shapes (IPL), introduced to chemometrics for Raman classification (Ali et al. 2018); (ii) observations that calibration accuracy saturates with sample size in soil spectroscopy; (iii) random-matrix theory that predicts ridge learning curves *if the population covariance and the target's coefficients are known*.
+- **What fails / is missing:** parametric curve shapes fitted to a small pilot are unconstrained in the extrapolation region and, as our experiments show, tend to be optimistic; the theory has not been turned into a *practical* forecaster that uses only a small labelled pilot plus cheap unlabelled spectra; no study has quantified forecast accuracy, uncertainty calibration and decision quality across many spectroscopic calibration problems.
+- **Why it matters:** reference analyses (wet chemistry, oven drying, chromatographic assays) dominate the cost of building NIR/MIR calibrations; analysts must decide how many samples to send for reference analysis and whether a target RMSEP is achievable at all.
+- **What this work adds:** regularisation-path matching (RPM) — a forecaster that maps the pilot's exact leave-one-group-out errors along the ridge path onto the theory's effective-regularisation axis (identifying the observable part of the bias function N(κ)), fits a two-parameter model with the eigen-spectrum taken from unlabelled spectra, and extrapolates to any n with bootstrap uncertainty; plus a leakage-controlled, multi-domain benchmark (38 tasks) and an identifiability analysis.
+- **How verified:** E0 simulation with Monte-Carlo truth; E1 theory validity; E2–E5 forecast accuracy, coverage and decisions vs six baselines with task-level paired tests; E6 ablations; E7 robustness (pre-processing, PLS truth, Kennard–Stone pilots, season and population shift, reference noise).
+
+## 3. Novelty map
+| Existing work | Contribution | Proposed work — genuinely different element |
+|---|---|---|
+| Ali et al. 2018 | IPL extrapolation of empirical learning curves for Raman classification | Theory-constrained forecast for regression calibration; extrapolation governed by the measured eigen-spectrum, not by an assumed curve shape |
+| Mukherjee 2003 / Figueroa 2012 | Parametric curve fitting, curve-fit confidence intervals | Uses the whole regularisation path at fixed n0 instead of sub-samples of the pilot; Bayesian-bootstrap bands |
+| Dobriban & Wager 2018; Hastie et al. 2022 | Asymptotic ridge risk given Σ and β | Practical estimation from a small pilot; regularisation-path ↔ κ mapping; identifiability analysis; validation on 38 real calibration tasks |
+| Canatar et al. 2021; Bordelon et al. 2020 | Omniscient spectrum-dependent learning curves | Non-omniscient forecaster; unlabelled spectra for the spectrum; chemical interpretation (alignment, noise floor) |
+| KARE / GCV (Jacot 2020; Wei 2022) | Risk at the current n | Risk at future n (extrapolation) |
+| Soil sample-size studies (Ng 2020; Kuang 2014) | Observed size effects | Predictive, pre-hoc planning tool |
+
+**Closest prior art and residual risk.** No published work was found that forecasts calibration learning curves from a pilot by fitting deterministic-equivalent ridge risk to the cross-validation regularisation path. The individual ingredients (ridge risk theory, LOO/GCV, learning-curve extrapolation) are known; a reviewer may therefore judge the contribution as a principled combination. The paper addresses this by (a) demonstrating where the combination adds predictive value and where it does not (negative results reported), (b) analysing identifiability, and (c) providing a decision-oriented evaluation.
+
+## 4. Topic-selection record
+≥ 15 candidate directions were screened (conformal NIR intervals under shift — abandoned, prior art incl. Talanta 2026; standard-free calibration transfer — crowded in ACA 2026; local/library modelling — crowded; validation/splitting protocols — crowded; label noise — ACA 2026; small-sample deep learning — crowded; Raman bacterial ID — generic-DL risk; retention-time transfer — strong competing groups; CCS prediction — incremental; LIBS matrix effects — domain data limits; censored reference values — data scarcity; multi-fidelity calibration — no public data; EEM-PARAFAC model selection — prior ARD work; spectral XAI faithfulness — evaluation-only; sample-size planning by empirical IPL — prior art Ali 2018; **theory-based learning-curve forecasting — selected**). Toxicology/hazard-prediction topics were excluded by design.

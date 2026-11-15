@@ -19,10 +19,24 @@ Method: *regularization-path matching (RPM)* — fit a deterministic-equivalent 
 ## 3. Feasibility evidence (scratch, not manuscript results)
 ICRAF-ISRIC VisNIR soils, 6 properties: omniscient theory within ~±10% MSE of empirical ridge curves up to n≈800. Pilot forecasting MAE|log RMSE ratio| (n=200–1600): RPM(r=1) 0.161 / 0.125 vs IPL 0.376 / 0.222 vs flat 0.175 / 0.135 (n0=50 / 100). To be re-run properly in the pipeline.
 
+## 3b. Implementation status (session 1)
+- Code: Target_Journal_Submission/code (src/, experiments/, tests/ [16 tests pass], run_all.py quick/full, config/*.yaml).
+- Data: data_raw/ (gitignored; `code/scripts/download_data.py` re-downloads with SHA256SUMS). 38 tasks load.
+- Pre-registration frozen: supplementary/EXPERIMENT_DESIGN_preregistration.md; leakage audit: supplementary/DATA_LEAKAGE_AUDIT.md;
+  literature matrix/novelty map: supplementary/LITERATURE_MATRIX_AND_NOVELTY_MAP.md; references verified: manuscript/refs/verified_refs.json (48/48).
+- RUNNING: `python run_all.py --mode full --stage main --jobs 4` (started 19:13 UTC 2026-11-15); outputs results/raw/truth_*.npz, forecasts_main_*.csv (resumable: finished tasks are skipped on restart).
+- Scheduled self-resume check-ins: trig_01UadKHaQ7fhw2Mq5R6Usdou (2026-11-16 00:12Z), trig_01DBuXvLvVmt7GeYNbbDyGEA (05:22Z).
+- Simulation finding (pre-main-analysis): at n0=60, p=80 synthetic, unweighted RPM is optimistic (pilot LOO skew near interpolation). Implemented inverse-variance-weighted path fit (RPMForecaster(weighted=True)); default unchanged. To evaluate in E0 simulation + as documented refinement on all tasks (forecast-only rerun).
+
 ## 4. Next steps
 1. Write journal_selection/*.md (selected, comparison, verification).
 2. Literature matrix + novelty map + hypothesis/RQs + pre-registered experimental design (EXPERIMENT_DESIGN.md).
 3. Data download scripts (OSSL libraries, mango DMC, Tecator, …), leakage audit, implementation, run_all.py quick/full.
 
 ## 5. Exact next execution step
-See bottom of this file (updated continuously).
+1. Wait for main stage to finish (check results/raw: 38 forecasts_main_*.csv).
+2. Run E0 simulation: `python -c "from experiments.simulation import run_simulation; ..."` (see run_all stage 'simulation' once added).
+3. Run robustness: `python run_all.py --mode full --stage robustness`.
+4. Run weighted-RPM refinement over all tasks (forecast-only).
+5. Run analysis: `python run_all.py --mode full --stage analysis` -> tables/, figures/, results/numbers.json.
+6. Write manuscript from numbers.json; reviews; DOCX.

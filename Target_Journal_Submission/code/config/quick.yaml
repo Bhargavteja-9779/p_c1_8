@@ -1,0 +1,19 @@
+# Quick pipeline-verification configuration (reduced computation; NOT for scientific conclusions)
+raw_data_dir: ../../data_raw
+output_subdir: results_quick
+tables_subdir: results_quick/tables
+figures_subdir: results_quick/figures
+prep: snv
+n0_list: [50, 100]
+n_pilots: 3
+n_boot: 10
+ablation_n0: [50]
+ablation_pilots: 2
+robustness:
+  tasks: [["mango", null, "DM"], ["tecator", null, "fat"]]
+  preps: [sg1]
+  n0_list: [50]
+  n_pilots: 2
+  n_boot: 5
+  noise_frac: 0.25
+seed_note: all seeds are derived deterministically from task names (SHA-256) and pilot indices

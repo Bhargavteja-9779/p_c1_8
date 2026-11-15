@@ -1,0 +1,47 @@
+[
+ {
+  "n": 999,
+  "median": 62,
+  "mean": 68.9,
+  "q1": 46.0,
+  "q3": 84.0,
+  "pct_le_60": 48.9,
+  "pct_le_100": 87.2,
+  "journal": "Analytica Chimica Acta (Elsevier)",
+  "issn": "1873-4324",
+  "pubmed_hits_in_window": 1512,
+  "sampled": 1000,
+  "with_dates": 999,
+  "window": "2025/07/01-2026/10/31"
+ },
+ {
+  "n": 998,
+  "median": 69.0,
+  "mean": 78.4,
+  "q1": 49.0,
+  "q3": 98.0,
+  "pct_le_60": 38.9,
+  "pct_le_100": 76.6,
+  "journal": "Talanta (Elsevier)",
+  "issn": "1873-3573",
+  "pubmed_hits_in_window": 1903,
+  "sampled": 1000,
+  "with_dates": 998,
+  "window": "2025/07/01-2026/10/31"
+ },
+ {
+  "n": 765,
+  "median": 95,
+  "mean": 103.8,
+  "q1": 73.0,
+  "q3": 126.0,
+  "pct_le_60": 15.6,
+  "pct_le_100": 56.1,
+  "journal": "Analytical Chemistry (ACS)",
+  "issn": "1520-6882",
+  "pubmed_hits_in_window": 4031,
+  "sampled": 1000,
+  "with_dates": 765,
+  "window": "2025/07/01-2026/10/31"
+ }
+]

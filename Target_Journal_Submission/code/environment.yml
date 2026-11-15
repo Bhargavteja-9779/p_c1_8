@@ -1,0 +1,16 @@
+name: rpm-learning-curves
+channels:
+  - conda-forge
+dependencies:
+  - python=3.13
+  - numpy
+  - scipy
+  - pandas
+  - scikit-learn
+  - matplotlib
+  - joblib
+  - pyyaml
+  - pytest
+  - pip
+  - pip:
+      - python-docx==1.2.0

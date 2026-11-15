@@ -1,0 +1,7 @@
+# Large downloaded raw data (re-downloadable via code/scripts/download_data.py)
+data_raw/
+*.pyc
+__pycache__/
+.pytest_cache/
+Target_Journal_Submission/code/data/cache/
+*.npz.tmp

@@ -16,10 +16,10 @@ from src.statistics.tests import paired_comparison, bootstrap_ci_mean
 from src.data.datasets import TASKS_FULL
 from src.models.theory import DEFAULT_MU_REL, solve_kappa, df2_of, risk, power_signal
 
-MAIN_METHODS = ["RPM", "IPL3", "IPL2", "EXP3", "LOG2", "FLAT", "DFOLS"]
+MAIN_METHODS = ["RPM", "RPM-w", "RPM-T", "RPM-wT", "IPL3", "IPL2", "EXP3", "LOG2", "FLAT", "DFOLS"]
 ABL_METHODS = ["RPM", "RPM-rfree", "RPM-ML2", "RPM-pilotcov", "RPM-pilotcov+tail", "RPM-U250", "RPM-Uextra",
                "RPM-kfold10", "RPM-cut0.5", "RPM-cut0.95"]
-LABELS = {"RPM": "RPM (proposed)", "IPL3": "Inverse power law (IPL3)", "IPL2": "Power law (IPL2)",
+LABELS = {"RPM": "RPM (pre-registered, r = 1)", "RPM-w": "RPM-w (weighted path fit)", "RPM-T": "RPM-T (transferred alignment)", "RPM-wT": "RPM-wT (weighted + transferred)", "IPL3": "Inverse power law (IPL3)", "IPL2": "Power law (IPL2)",
           "EXP3": "Exponential (EXP3)", "LOG2": "Logarithmic (LOG2)", "FLAT": "No improvement (FLAT)",
           "DFOLS": "Fixed-complexity formula (DF-OLS)"}
 
@@ -27,6 +27,7 @@ LABELS = {"RPM": "RPM (proposed)", "IPL3": "Inverse power law (IPL3)", "IPL2": "
 # ------------------------------------------------------------------------------------------
 def load_main(raw_dir, tag="main"):
     files = sorted(glob.glob(os.path.join(raw_dir, f"forecasts_{tag}_*.csv")))
+    files += sorted(glob.glob(os.path.join(raw_dir, "forecasts_refine_*.csv")))   # RPM-w (Phase-19 refinement)
     df = pd.concat([pd.read_csv(f) for f in files], ignore_index=True) if files else pd.DataFrame()
     timing = df[df.method == "_timing"].copy() if len(df) else df
     df = df[df.method != "_timing"].copy() if len(df) else df
@@ -70,7 +71,7 @@ def stats_vs_rpm(df, methods=MAIN_METHODS, col="abs_err", ref="RPM"):
     return pd.DataFrame(paired_comparison(pt[ref].values, others, seed=3))
 
 
-def coverage_table(df, methods=("RPM", "IPL3", "IPL2", "EXP3", "LOG2")):
+def coverage_table(df, methods=("RPM", "RPM-w", "RPM-T", "RPM-wT", "IPL3", "IPL2", "EXP3", "LOG2")):
     rows = []
     for m in methods:
         d = df[(df.method == m) & df["lo80"].notna()]
@@ -276,6 +277,17 @@ def run_analysis(cfg, paths, mode, log):
                                                                            "mean_bias": g.err.mean(), "coverage80": cov80(g)})).reset_index()
         write_table(T8, paths, "T8_robustness")
         numbers["robustness"] = T8.to_dict(orient="records")
+    # ---------------- E0 simulation (T0)
+    sim_path = os.path.join(paths["results"], "simulation_raw.csv")
+    if os.path.exists(sim_path):
+        sm = pd.read_csv(sim_path); sm["abs_err"] = sm.err.abs()
+        T0 = sm.groupby(["r", "noise_frac", "n0", "method"]).agg(median_abs_err=("abs_err", "median"), mean_abs_err=("abs_err", "mean"),
+                                                                median_bias=("err", "median")).reset_index()
+        write_table(T0, paths, "T0_simulation")
+        T0b = sm.groupby(["method", "n0"]).agg(median_abs_err=("abs_err", "median"), median_bias=("err", "median")).reset_index()
+        write_table(T0b, paths, "T0b_simulation_by_n0")
+        numbers["simulation"] = T0b.to_dict(orient="records")
+        numbers["simulation_full"] = T0.to_dict(orient="records")
     # ---------------- numbers.json
     def rec(t, key="method"):
         return {r[key]: {k: (float(v) if isinstance(v, (int, float, np.floating, np.integer)) else v) for k, v in r.items()} for r in t.to_dict(orient="records")}

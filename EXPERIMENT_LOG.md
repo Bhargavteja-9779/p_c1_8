@@ -1,3 +1,15 @@
 # EXPERIMENT_LOG
 
-_Created 2026-11-15._
+All times UTC, 2026-11-15. Every design decision is logged with its timing relative to inspection of results.
+
+| Time | Event | Effect on design |
+|---|---|---|
+| 18:52–18:58 | Exploratory feasibility on ICRAF-ISRIC VisNIR (OC, clay, pH, CEC, sand, Ca): (i) omniscient theory vs empirical ridge curves (within ~±10 % MSE up to n≈800); (ii) pilot forecasts with marginal likelihood (badly optimistic at n0=50); (iii) path matching with r free vs r = 1 | Chose path matching and r = 1 default. **Disclosed**; ICRAF-VisNIR excluded in sensitivity analysis S0 |
+| 19:10 | Pre-registration frozen (`supplementary/EXPERIMENT_DESIGN_preregistration.md`) | — |
+| 19:21 | Main run started (`run_all.py --mode full --stage main`), RPM = unweighted path fit | — |
+| 19:24–19:27 | Unit test on synthetic data (p=80 > n0=60) failed; diagnosis: theory, Monte-Carlo test error and mean LOO agree within 3 % (no bias in theory/LOO), but single-pilot LOO paths are right-skewed near interpolation, and the unweighted log-space fit is pulled to optimistic values (median bias −0.14 log-RMSE at n0=60) | Implemented inverse-variance-weighted path fit (RPM-w) **before inspecting any main-run result**; default (pre-registered) RPM unchanged; RPM-w to be evaluated on identical pilots and reported alongside RPM |
+| 19:28 | Unit test redefined as a consistency check with n0 = 240 (passes); small-pilot variability moved to experiment E0 (simulation with Monte-Carlo truth) | — |
+| 19:30 | Quick-mode end-to-end run (3 tasks): pipeline OK; one figure bug fixed (subplot orientation); figure layout fixes (legend placement, log y-axis) | No method change |
+| 19:41 | **Inspection of partial main results (20 soil tasks)**: RPM (r=1) mean task error 0.252 vs IPL3 0.428, IPL2 0.537, EXP3 2.67, LOG2 9.35, DF-OLS 0.943, but FLAT 0.213. Decomposition: RPM under-predicts the *improvement* relative to the pilot by ≈3× (e.g. 16× extrapolation: predicted −0.04 to −0.08 log-RMSE vs actual −0.22) | Diagnosis, not tuning: large-sample path fits (pool only, r free) give alignment exponents r = 0.46 median (IQR 0.36–0.58; all 24 tasks < 1) — the pre-registered r = 1 assumption is misspecified for real spectra |
+| 19:45 | Phase-19 refinement defined (before running it): **RPM-T** = RPM with r fixed at the median large-sample r of tasks from *other data sources* (leave-one-source-out; sources: ICRAF, KSSL, AfSIS1, Neospectra, Mango, Diesel, Tablets, Tecator, CGL). r̄ uses only calibration pools of other sources — no test data and no forecast errors. Also **RPM-wT** (weighted + transferred). Evaluated on identical pilots with B = 50 bootstrap. Pre-registered RPM (r = 1) remains reported as the registered primary specification | Code: `experiments/refinement.py`; fixed-r option in `fit_rpm` verified to reproduce r = 1 exactly |
+| 19:45 | Note: the free-r optimiser start value now scales with Σ(λ/λ1)^r0 (affects only the `RPM-rfree` ablation for tasks processed by re-spawned workers; negligible) | — |

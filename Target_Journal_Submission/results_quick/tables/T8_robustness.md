@@ -1,0 +1,20 @@
+| variant | method | n_tasks | mean_abs_logerr | mean_bias | coverage80 |
+|---|---|---|---|---|---|
+| iid_ref_seasons123 | FLAT | 1.000 | 0.133 | 0.130 | – |
+| iid_ref_seasons123 | IPL3 | 1.000 | 0.039 | -0.037 | 80.000 |
+| iid_ref_seasons123 | RPM | 1.000 | 0.311 | 0.311 | 0.000 |
+| ks_pilot | FLAT | 2.000 | 0.120 | 0.119 | – |
+| ks_pilot | IPL3 | 2.000 | 0.121 | -0.076 | 91.667 |
+| ks_pilot | RPM | 2.000 | 0.091 | 0.096 | 16.667 |
+| prep_sg1 | FLAT | 2.000 | 0.388 | 0.079 | – |
+| prep_sg1 | IPL3 | 2.000 | 0.276 | 0.038 | 100.000 |
+| prep_sg1 | RPM | 2.000 | 0.416 | 0.179 | 0.000 |
+| ref_noise | FLAT | 2.000 | 0.120 | 0.130 | – |
+| ref_noise | IPL3 | 2.000 | 0.406 | -0.609 | 75.000 |
+| ref_noise | RPM | 2.000 | 0.227 | 0.255 | 8.333 |
+| shift_population | FLAT | 1.000 | 0.457 | 0.457 | – |
+| shift_population | IPL3 | 1.000 | 0.267 | 0.267 | 100.000 |
+| shift_population | RPM | 1.000 | 0.555 | 0.555 | 0.000 |
+| shift_season | FLAT | 1.000 | 0.474 | -0.474 | – |
+| shift_season | IPL3 | 1.000 | 2.120 | -2.120 | 40.000 |
+| shift_season | RPM | 1.000 | 0.326 | -0.326 | 0.000 |

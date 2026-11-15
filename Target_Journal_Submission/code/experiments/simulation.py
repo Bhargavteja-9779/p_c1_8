@@ -60,6 +60,10 @@ def _scenario(p, r, noise_frac, n0_list, n_pilots, seed, reps=30):
             res = {}
             f = RPMForecaster(n_boot=0).fit_forecast(X0, y0, None, lam, hz); res["RPM"] = f["point"]
             fw = RPMForecaster(n_boot=0, weighted=True).fit_forecast(X0, y0, None, lam, hz); res["RPM-w"] = fw["point"]
+            # transferred alignment: r fixed at the median large-sample estimate from the real-data libraries (0.46);
+            # in this simulation it is correct for r = 0.5 and misspecified for r = 1 and r = 2
+            res["RPM-T"] = RPMForecaster(n_boot=0, r_mode="fixed", r_value=0.46).fit_forecast(X0, y0, None, lam, hz)["point"]
+            res["RPM-wT"] = RPMForecaster(n_boot=0, weighted=True, r_mode="fixed", r_value=0.46).fit_forecast(X0, y0, None, lam, hz)["point"]
             ms, es = pilot_subsample_curve(X0, y0, None, mus, n_splits=10, seed=s)
             res["IPL3"] = curve_forecast("IPL3", ms, es, hz)["point"]
             res["FLAT"] = np.full(2, np.min(f["path"]))

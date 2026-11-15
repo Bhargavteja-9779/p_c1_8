@@ -64,7 +64,7 @@ def _path_points(lam, e, n_eff, mu_rel, cutoff, w=None):
     return k[ok], pref[ok], e[ok], w[ok]
 
 
-def fit_rpm(lam, path_mse, n_eff, mu_rel=DEFAULT_MU_REL, r_mode="fixed1", cutoff=0.8, r_prior=None, path_var_log=None):
+def fit_rpm(lam, path_mse, n_eff, mu_rel=DEFAULT_MU_REL, r_mode="fixed1", cutoff=0.8, r_prior=None, path_var_log=None, r_value=1.0):
     """Fit (log tau2, r, log sigma2) to an observed CV path. Returns dict of parameters.
 
     If `path_var_log` (delta-method variance of log CV-MSE per path point) is given, the log-space
@@ -87,29 +87,31 @@ def fit_rpm(lam, path_mse, n_eff, mu_rel=DEFAULT_MU_REL, r_mode="fixed1", cutoff
     def model(lt, r, ls):
         return P * (np.exp(ls) + (B @ (ln ** r)) * np.exp(lt))
 
+    fixed = r_mode in ("fixed1", "fixed")
+    r_fix = 1.0 if r_mode == "fixed1" else float(r_value)
+
     def loss(th):
-        if r_mode == "fixed1":
-            lt, ls = th; r = 1.0
+        if fixed:
+            lt, ls = th; r = r_fix
         else:
             lt, r, ls = th
-        pen = 0.0 if (r_prior is None or r_mode == "fixed1") else ((r - r_prior[0]) / r_prior[1]) ** 2
+        pen = 0.0 if (r_prior is None or fixed) else ((r - r_prior[0]) / r_prior[1]) ** 2
         return float(np.sum(W * (np.log(model(lt, r, ls)) - loge) ** 2)) + pen
 
     best = None
-    tot = ln.sum()
     for frac_noise in (0.1, 0.4, 0.8):
         ls0 = np.log(max(frac_noise * np.min(e), 1e-12))
-        lt0 = np.log(max(v - frac_noise * np.min(e), 1e-12) / tot)
-        for r0 in ((1.0,) if r_mode == "fixed1" else (0.3, 1.0, 1.8)):
-            if r_mode == "fixed1":
+        for r0 in ((r_fix,) if fixed else (0.3, 1.0, 1.8)):
+            lt0 = np.log(max(v - frac_noise * np.min(e), 1e-12) / np.sum(ln ** r0))
+            if fixed:
                 x0 = [lt0, ls0]; bnds = [(lt0 - 25, lt0 + 25), (np.log(v) - 25, np.log(v) + 2)]
             else:
                 x0 = [lt0, r0, ls0]; bnds = [(lt0 - 40, lt0 + 40), (-0.5, 3.0), (np.log(v) - 25, np.log(v) + 2)]
             res = minimize(loss, x0, method="L-BFGS-B", bounds=bnds)
             if best is None or res.fun < best.fun:
                 best = res
-    if r_mode == "fixed1":
-        lt, ls = best.x; r = 1.0
+    if fixed:
+        lt, ls = best.x; r = r_fix
     else:
         lt, r, ls = best.x
     return {"log_tau2": float(lt), "r": float(r), "log_sigma2": float(ls), "loss": float(best.fun),
@@ -126,9 +128,10 @@ class RPMForecaster:
     name = "RPM"
 
     def __init__(self, mu_rel=DEFAULT_MU_REL, r_mode="fixed1", cutoff=0.8, n_boot=50, seed=0,
-                 r_prior=None, cv="logo", weighted=False):
+                 r_prior=None, cv="logo", weighted=False, r_value=1.0):
         self.mu_rel = mu_rel; self.r_mode = r_mode; self.cutoff = cutoff
         self.n_boot = n_boot; self.seed = seed; self.r_prior = r_prior; self.cv = cv; self.weighted = weighted
+        self.r_value = r_value
 
     def _path(self, X0, y0, g0, lam, w=None):
         """Returns (CV MSE path, variance of log CV MSE or None)."""
@@ -144,7 +147,7 @@ class RPMForecaster:
         gsz = 1.0 if g0 is None else float(np.mean(np.unique(g0, return_counts=True)[1]))
         n_eff = n0 - gsz
         e, ev = self._path(X0, y0, g0, lam)
-        self.params_ = fit_rpm(lam, e, n_eff, self.mu_rel, self.r_mode, self.cutoff, self.r_prior, ev)
+        self.params_ = fit_rpm(lam, e, n_eff, self.mu_rel, self.r_mode, self.cutoff, self.r_prior, ev, self.r_value)
         point = forecast_theory(lam, self.params_, ns, self.mu_rel)
         out = {"point": point, "params": self.params_, "path": e}
         if self.n_boot and self.n_boot > 0:
@@ -153,7 +156,7 @@ class RPMForecaster:
             for _ in range(self.n_boot):
                 w = rng.dirichlet(np.ones(n0)) * n0
                 eb, evb = self._path(X0, y0, g0, lam, w)
-                pb = fit_rpm(lam, eb, n_eff, self.mu_rel, self.r_mode, self.cutoff, self.r_prior, evb)
+                pb = fit_rpm(lam, eb, n_eff, self.mu_rel, self.r_mode, self.cutoff, self.r_prior, evb, self.r_value)
                 sims.append(forecast_theory(lam, pb, ns, self.mu_rel))
             sims = np.log(np.sqrt(np.array(sims)))
             out["boot_logrmse"] = sims

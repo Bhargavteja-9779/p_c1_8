@@ -53,7 +53,7 @@ def run_truth(task, out_dir, with_pls=True, grid=TRUTH_GRID, force=False):
 
 
 def run_pilots(task, truth, out_dir, n0_list=(25, 50, 100, 200), n_pilots=20, n_boot=50,
-               ablation_n0=(50, 100), ablation_pilots=10, force=False, tag="main"):
+               ablation_n0=(50, 100), ablation_pilots=10, force=False, tag="main", extra_rpm=None):
     path = os.path.join(out_dir, f"forecasts_{tag}_{task.name.replace(':', '__')}.csv")
     if os.path.exists(path) and not force:
         return pd.read_csv(path)
@@ -80,6 +80,9 @@ def run_pilots(task, truth, out_dir, n0_list=(25, 50, 100, 200), n_pilots=20, n_
             f = RPMForecaster(n_boot=n_boot, seed=base_seed + s).fit_forecast(X0, y0, g0, lam_pool, horizons)
             res["RPM"] = (f["point"], _bands_from_boot(f["boot_logrmse"]), f["params"])
             t_rpm = time.time() - t_start
+            for nm, kw in (extra_rpm or []):
+                fx = RPMForecaster(n_boot=n_boot, seed=base_seed + s, **kw).fit_forecast(X0, y0, g0, lam_pool, horizons)
+                res[nm] = (fx["point"], _bands_from_boot(fx["boot_logrmse"]), fx["params"])
             pilot_cv = float(np.min(f["path"]))
             # ---- empirical learning-curve extrapolation family
             t1 = time.time()

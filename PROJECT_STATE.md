@@ -33,10 +33,11 @@ ICRAF-ISRIC VisNIR soils, 6 properties: omniscient theory within ~±10% MSE of e
 2. Literature matrix + novelty map + hypothesis/RQs + pre-registered experimental design (EXPERIMENT_DESIGN.md).
 3. Data download scripts (OSSL libraries, mango DMC, Tecator, …), leakage audit, implementation, run_all.py quick/full.
 
-## 5. Exact next execution step
-1. Wait for main stage to finish (check results/raw: 38 forecasts_main_*.csv).
-2. Run E0 simulation: `python -c "from experiments.simulation import run_simulation; ..."` (see run_all stage 'simulation' once added).
-3. Run robustness: `python run_all.py --mode full --stage robustness`.
-4. Run weighted-RPM refinement over all tasks (forecast-only).
-5. Run analysis: `python run_all.py --mode full --stage analysis` -> tables/, figures/, results/numbers.json.
-6. Write manuscript from numbers.json; reviews; DOCX.
+## 5. Exact next execution step (updated 19:47 UTC)
+Main stage running (24/38 tasks done). Partial finding: RPM (r=1, pre-registered) beats all curve-extrapolation baselines
+but is pessimistic vs FLAT because real spectra have alignment exponent r≈0.46<1. Refinements defined & logged BEFORE running:
+RPM-w (weighted), RPM-T (leave-one-source-out transferred r), RPM-wT. Then:
+1. After main completes: `python run_all.py --mode full --stage refinement --jobs 4` (needs all truth files for LOSO r).
+2. `--stage simulation`, then `--stage robustness` (needs results/alignment_exponents.csv), then `--stage analysis`.
+3. Write results text (manuscript/build/content.py) from numbers.json; build DOCX/PDF (manuscript/build/build_manuscript.py).
+4. Review cycles (REVIEW/), fixes, final package.

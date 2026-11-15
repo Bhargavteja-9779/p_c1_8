@@ -15,9 +15,9 @@ import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
 INK, INK2, MUTED, GRID = "#0b0b0b", "#52514e", "#8a8984", "#e6e5e0"
-C = {"RPM": "#2a78d6", "IPL3": "#eb6834", "FLAT": "#1baf7a"}
-STYLE = {"RPM": dict(marker="o", ls="-"), "IPL3": dict(marker="s", ls="--"), "FLAT": dict(marker="^", ls=":")}
-LBL = {"RPM": "RPM (proposed)", "IPL3": "IPL3 extrapolation", "FLAT": "No improvement",
+C = {"RPM": "#2a78d6", "RPM-w": "#2a78d6", "IPL3": "#eb6834", "FLAT": "#1baf7a"}
+STYLE = {"RPM": dict(marker="o", ls="-"), "RPM-w": dict(marker="o", ls="-"), "IPL3": dict(marker="s", ls="--"), "FLAT": dict(marker="^", ls=":")}
+LBL = {"RPM": "RPM", "RPM-w": "RPM-w", "IPL3": "IPL3 extrapolation", "FLAT": "No improvement",
        "IPL2": "IPL2", "EXP3": "EXP3", "LOG2": "LOG2", "DFOLS": "DF-OLS"}
 
 plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 8, "axes.edgecolor": MUTED, "axes.labelcolor": INK,
@@ -35,7 +35,7 @@ def _save(fig, paths, name):
 
 
 def fig_workflow(paths):
-    fig, ax = plt.subplots(figsize=(7.2, 2.5)); ax.axis("off"); ax.set_xlim(0, 10); ax.set_ylim(0, 3.2)
+    fig, ax = plt.subplots(figsize=(7.6, 2.5)); ax.axis("off"); ax.set_xlim(0, 11.2); ax.set_ylim(0, 3.2)
     boxes = [(0.1, 1.9, "Unlabelled spectra\n(cheap, many)", "eigen-spectrum $\\lambda_k$"),
              (0.1, 0.3, "Labelled pilot\n($n_0$ reference values)", "exact LOGO error\nalong ridge path $e(\\mu)$"),
              (3.5, 1.1, "Regularisation-path\nmatching", "$\\mu\\mapsto\\kappa(n_0,\\mu)$;\nfit $\\tau^2,\\sigma^2$ of $N(\\kappa)$"),
@@ -46,14 +46,14 @@ def fig_workflow(paths):
         ax.text(x + 1.45, y + 0.24, s, ha="center", va="center", fontsize=6.8, color=INK2)
     for (x0, y0, x1, y1) in [(3.0, 2.4, 3.5, 1.75), (3.0, 0.8, 3.5, 1.45), (6.4, 1.6, 6.7, 1.6)]:
         ax.annotate("", xy=(x1, y1), xytext=(x0, y0), arrowprops=dict(arrowstyle="-|>", color=INK2, lw=1.0))
-    ax.text(9.65, 1.6, "forecast\nRMSE($n$)\n→ sample-size\ndecision", ha="center", va="center", fontsize=7, color=INK)
+    ax.annotate("", xy=(10.15, 1.6), xytext=(9.65, 1.6), arrowprops=dict(arrowstyle="-|>", color=INK2, lw=1.0))
+    ax.text(10.7, 1.6, "forecast\nRMSE($n$)\n→ sample-size\ndecision", ha="center", va="center", fontsize=7, color=INK)
     _save(fig, paths, "Fig1_workflow")
 
 
 def fig_theory_validity(tv, collapse, paths, tasks=("KSSL-MIR:OC", "ICRAF-MIR:clay", "Mango:DM", "Neospectra-NIR:pH")):
     tasks = [t for t in tasks if t in set(tv.task)]
-    fig, axes = plt.subplots(2, len(tasks), figsize=(1.85 * len(tasks) + 0.4, 3.9))
-    axes = np.atleast_2d(axes)
+    fig, axes = plt.subplots(2, len(tasks), figsize=(1.85 * len(tasks) + 0.4, 3.9), squeeze=False)
     for j, t in enumerate(tasks):
         g = tv[(tv.task == t) & (tv["mode"] == "free")].sort_values("n")
         ax = axes[0, j]
@@ -95,13 +95,16 @@ def fig_examples(df, paths, tasks=("KSSL-VisNIR:clay", "Mango:DM", "Diesel:bp50"
             if m == "RPM" and h.lo80.notna().any():
                 ax.fill_between(h.n, np.exp(h.lo95), np.exp(h.hi95), color=C[m], alpha=0.12, lw=0)
                 ax.fill_between(h.n, np.exp(h.lo80), np.exp(h.hi80), color=C[m], alpha=0.22, lw=0)
-        ax.axvline(n0, color=MUTED, lw=0.8, ls="--"); ax.text(n0 * 1.05, ax.get_ylim()[1], f"pilot $n_0$={n0}", fontsize=6, color=INK2, va="top")
-        ax.set_xscale("log"); ax.set_title(t, fontsize=7.5); ax.set_xlabel("calibration size $n$")
-    axes[0].set_ylabel("RMSEP"); axes[-1].legend(fontsize=6.3, loc="upper right")
-    fig.tight_layout(); _save(fig, paths, "Fig3_example_forecasts")
+        ax.axvline(n0, color=MUTED, lw=0.8, ls="--")
+        ax.set_xscale("log"); ax.set_yscale("log"); ax.set_title(t, fontsize=7.5); ax.set_xlabel("calibration size $n$")
+        ax.text(0.02, 0.03, f"pilot $n_0$ = {n0}", transform=ax.transAxes, fontsize=6, color=INK2)
+    axes[0].set_ylabel("RMSEP (log scale)")
+    h, l = axes[0].get_legend_handles_labels()
+    fig.legend(h, l, loc="lower center", ncol=4, fontsize=6.6, bbox_to_anchor=(0.5, -0.02))
+    fig.tight_layout(rect=(0, 0.08, 1, 1)); _save(fig, paths, "Fig3_example_forecasts")
 
 
-def fig_main_accuracy(df, paths, methods=("RPM", "IPL3", "IPL2", "EXP3", "LOG2", "FLAT", "DFOLS")):
+def fig_main_accuracy(df, paths, methods=("RPM", "RPM-w", "IPL3", "IPL2", "EXP3", "LOG2", "FLAT", "DFOLS")):
     n0s = sorted(df.n0.unique())
     fig, axes = plt.subplots(1, len(n0s), figsize=(1.9 * len(n0s) + 0.6, 2.8), sharey=True)
     axes = np.atleast_1d(axes)
@@ -111,7 +114,7 @@ def fig_main_accuracy(df, paths, methods=("RPM", "IPL3", "IPL2", "EXP3", "LOG2",
             if m not in pt:
                 continue
             v = np.clip(pt[m].dropna().values, 1e-3, None)
-            col = C["RPM"] if m == "RPM" else "#9a9993"
+            col = C["RPM"] if m.startswith("RPM") else "#9a9993"
             ax.scatter(np.full(len(v), i) + np.random.default_rng(i).uniform(-0.18, 0.18, len(v)), v, s=6, color=col, alpha=0.6, lw=0)
             ax.plot([i - 0.3, i + 0.3], [np.median(v)] * 2, color=INK, lw=1.6)
         ax.set_yscale("log"); ax.set_xticks(range(len(methods))); ax.set_xticklabels(methods, rotation=60, fontsize=6.5)
@@ -182,7 +185,7 @@ def fig_error_analysis(ea, paths):
     fig.tight_layout(); _save(fig, paths, "Fig9_error_analysis")
 
 
-def fig_decisions(dec_rows, paths, methods=("RPM", "IPL3", "IPL2", "EXP3", "LOG2", "FLAT", "DFOLS")):
+def fig_decisions(dec_rows, paths, methods=("RPM", "RPM-w", "IPL3", "IPL2", "EXP3", "LOG2", "FLAT", "DFOLS")):
     fig, ax = plt.subplots(figsize=(3.6, 2.5))
     s = dec_rows.groupby("method").success_factor2.mean().reindex(methods) * 100
     f = dec_rows.groupby("method").failure.mean().reindex(methods) * 100

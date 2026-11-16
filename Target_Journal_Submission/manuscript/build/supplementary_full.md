@@ -379,7 +379,72 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | DFOLS | 34 | 13.000 | 1.02e-08 | 0.645 | 0.364 | 1.324 | 0.956 | 30 | 4 | 7.17e-08 |
 | SLOPE-T | 34 | 181.000 | 0.046 | -0.021 | -0.036 | 0.005 | -0.392 | 12 | 22 | 0.107 |
 
-**Table S16.** Eigen-spectrum source ablation for RPM-T (defined before RPM-T results were inspected).
+**Table S16.** POST HOC: noise fraction σ²/var(y) fitted on pilots (RPM, RPM-T) against the large-sample fit, by task and pilot size; share of pilots below one tenth of the large-sample value.
+
+| task | method | n0 | noise frac full pool rfree | noise frac full pool r1 | median pilot noise frac | pct pilots below tenth of full |
+|---|---|---|---|---|---|---|
+| AfSIS1-MIR:OC | RPM | 25 | 0.046 | 0.050 | 0.056 | 5.000 |
+| AfSIS1-MIR:OC | RPM | 50 | 0.046 | 0.050 | 0.054 | 0.000 |
+| AfSIS1-MIR:OC | RPM | 100 | 0.046 | 0.050 | 0.057 | 0.000 |
+| AfSIS1-MIR:OC | RPM | 200 | 0.046 | 0.050 | 0.069 | 0.000 |
+| AfSIS1-MIR:OC | RPM-T | 25 | 0.046 | 0.050 | 0.003 | 50.000 |
+| AfSIS1-MIR:OC | RPM-T | 50 | 0.046 | 0.050 | 0.037 | 15.000 |
+| AfSIS1-MIR:OC | RPM-T | 100 | 0.046 | 0.050 | 0.042 | 0.000 |
+| AfSIS1-MIR:OC | RPM-T | 200 | 0.046 | 0.050 | 0.057 | 0.000 |
+| AfSIS1-MIR:clay | RPM | 25 | 0.155 | 0.173 | 0.192 | 0.000 |
+| AfSIS1-MIR:clay | RPM | 50 | 0.155 | 0.173 | 0.173 | 0.000 |
+| AfSIS1-MIR:clay | RPM | 100 | 0.155 | 0.173 | 0.191 | 0.000 |
+| AfSIS1-MIR:clay | RPM | 200 | 0.155 | 0.173 | 0.205 | 0.000 |
+| AfSIS1-MIR:clay | RPM-T | 25 | 0.155 | 0.173 | 0.136 | 10.000 |
+| AfSIS1-MIR:clay | RPM-T | 50 | 0.155 | 0.173 | 0.152 | 0.000 |
+| AfSIS1-MIR:clay | RPM-T | 100 | 0.155 | 0.173 | 0.158 | 0.000 |
+| AfSIS1-MIR:clay | RPM-T | 200 | 0.155 | 0.173 | 0.188 | 0.000 |
+| AfSIS1-MIR:pH | RPM | 25 | 0.139 | 0.160 | 0.208 | 0.000 |
+| AfSIS1-MIR:pH | RPM | 50 | 0.139 | 0.160 | 0.258 | 0.000 |
+| AfSIS1-MIR:pH | RPM | 100 | 0.139 | 0.160 | 0.220 | 0.000 |
+| AfSIS1-MIR:pH | RPM | 200 | 0.139 | 0.160 | 0.197 | 0.000 |
+| AfSIS1-MIR:pH | RPM-T | 25 | 0.139 | 0.160 | 0.153 | 10.000 |
+| AfSIS1-MIR:pH | RPM-T | 50 | 0.139 | 0.160 | 0.226 | 0.000 |
+| AfSIS1-MIR:pH | RPM-T | 100 | 0.139 | 0.160 | 0.187 | 0.000 |
+| AfSIS1-MIR:pH | RPM-T | 200 | 0.139 | 0.160 | 0.172 | 0.000 |
+| CGL:casein | RPM | 25 | 0.000219 | 0.000425 | 0.001 | 0.000 |
+| CGL:casein | RPM | 50 | 0.000219 | 0.000425 | 0.000466 | 0.000 |
+| CGL:casein | RPM-T | 25 | 0.000219 | 0.000425 | 3.18e-11 | 75.000 |
+| CGL:casein | RPM-T | 50 | 0.000219 | 0.000425 | 6.32e-11 | 65.000 |
+| CGL:glucose | RPM | 25 | 0.000181 | 0.000368 | 0.00074 | 0.000 |
+| CGL:glucose | RPM | 50 | 0.000181 | 0.000368 | 0.000447 | 0.000 |
+| CGL:glucose | RPM-T | 25 | 0.000181 | 0.000368 | 1.41e-11 | 70.000 |
+| CGL:glucose | RPM-T | 50 | 0.000181 | 0.000368 | 1.38e-05 | 50.000 |
+| CGL:lactate | RPM | 25 | 0.000142 | 0.000256 | 0.000743 | 0.000 |
+| CGL:lactate | RPM | 50 | 0.000142 | 0.000256 | 0.000421 | 0.000 |
+| CGL:lactate | RPM-T | 25 | 0.000142 | 0.000256 | 2.14e-11 | 60.000 |
+| CGL:lactate | RPM-T | 50 | 0.000142 | 0.000256 | 4.15e-05 | 45.000 |
+| CGL:moisture | RPM | 25 | 0.000153 | 0.000257 | 0.000878 | 0.000 |
+| CGL:moisture | RPM | 50 | 0.000153 | 0.000257 | 0.000319 | 0.000 |
+| CGL:moisture | RPM-T | 25 | 0.000153 | 0.000257 | 1.7e-11 | 60.000 |
+| CGL:moisture | RPM-T | 50 | 0.000153 | 0.000257 | 2e-11 | 65.000 |
+| Diesel:bp50 | RPM | 25 | 0.043 | 0.058 | 0.103 | 0.000 |
+| Diesel:bp50 | RPM | 50 | 0.043 | 0.058 | 0.052 | 0.000 |
+| Diesel:bp50 | RPM | 100 | 0.043 | 0.058 | 0.048 | 0.000 |
+| Diesel:bp50 | RPM-T | 25 | 0.043 | 0.058 | 0.022 | 30.000 |
+| Diesel:bp50 | RPM-T | 50 | 0.043 | 0.058 | 0.010 | 35.000 |
+| Diesel:bp50 | RPM-T | 100 | 0.043 | 0.058 | 0.023 | 0.000 |
+| Diesel:cn | RPM | 25 | 0.599 | 0.613 | 0.670 | 0.000 |
+| Diesel:cn | RPM | 50 | 0.599 | 0.613 | 0.793 | 0.000 |
+| Diesel:cn | RPM | 100 | 0.599 | 0.613 | 0.773 | 0.000 |
+| Diesel:cn | RPM-T | 25 | 0.599 | 0.613 | 0.617 | 5.000 |
+| Diesel:cn | RPM-T | 50 | 0.599 | 0.613 | 0.783 | 0.000 |
+| Diesel:cn | RPM-T | 100 | 0.599 | 0.613 | 0.765 | 0.000 |
+| Diesel:d4052 | RPM | 25 | 0.004 | 0.006 | 0.030 | 0.000 |
+| Diesel:d4052 | RPM | 50 | 0.004 | 0.006 | 0.007 | 0.000 |
+| Diesel:d4052 | RPM | 100 | 0.004 | 0.006 | 0.005 | 0.000 |
+| Diesel:d4052 | RPM-T | 25 | 0.004 | 0.006 | 1.87e-09 | 60.000 |
+| Diesel:d4052 | RPM-T | 50 | 0.004 | 0.006 | 2.15e-10 | 95.000 |
+| Diesel:d4052 | RPM-T | 100 | 0.004 | 0.006 | 5.24e-10 | 65.000 |
+| Diesel:freeze | RPM | 25 | 0.187 | 0.221 | 0.298 | 0.000 |
+| Diesel:freeze | RPM | 50 | 0.187 | 0.221 | 0.302 | 0.000 |
+
+**Table S17.** Eigen-spectrum source ablation for RPM-T (defined before RPM-T results were inspected).
 
 | variant | n tasks | mean abs logerr | median task abs logerr | mean bias | median diff | ci95 lo | ci95 hi | p holm | ref wins | ref losses |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -388,7 +453,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | RPM-T-pilotcov+tail | 38 | 0.469 | 0.307 | 0.022 | 0.050 | 0.023 | 0.090 | 0.034 | 27.000 | 11.000 |
 | RPM-T-U250 | 38 | 0.366 | 0.229 | -0.032 | -0.002 | -0.010 | -5.74e-07 | 0.002 | 12.000 | 26.000 |
 
-**Table S17.** POST HOC: coverage and width of forecast brackets.
+**Table S18.** POST HOC: coverage and width of forecast brackets.
 
 | bracket | n forecasts | coverage pct | coverage task mean pct | median width log | median width factor | coverage n0 25 | median width factor n0 25 | coverage n0 50 | median width factor n0 50 | coverage n0 100 | median width factor n0 100 | coverage n0 200 | median width factor n0 200 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -396,7 +461,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | [IPL3, FLAT] | 10700 | 46.234 | 42.326 | 0.283 | 1.327 | 46.270 | 1.629 | 46.258 | 1.358 | 49.071 | 1.264 | 42.195 | 1.154 |
 | [RPM, FLAT] | 10700 | 21.234 | 20.491 | 0.129 | 1.138 | 26.005 | 1.256 | 21.887 | 1.137 | 18.717 | 1.101 | 12.500 | 1.059 |
 
-**Table S18.** Empirical coverage, median width factor (multiplicative, on RMSE) and share of bands wider than a factor of ten, for 80% and 95% forecast bands.
+**Table S19.** Empirical coverage, median width factor (multiplicative, on RMSE) and share of bands wider than a factor of ten, for 80% and 95% forecast bands.
 
 | method | nominal | coverage rows | coverage task mean | coverage task median | mean width log | mean width factor | median width factor | pct width factor gt10 |
 |---|---|---|---|---|---|---|---|---|
@@ -417,7 +482,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | LOG2 | 80 | 12.907 | 12.035 | 11.154 | 1.768 | 5.860 | 1.000 | 12.869 |
 | LOG2 | 95 | 16.551 | 15.222 | 14.861 | 2.292 | 9.894 | 1.000 | 16.729 |
 
-**Table S19.** POST HOC: leave-one-source-out split-conformal bands (coverage and median width factor).
+**Table S20.** POST HOC: leave-one-source-out split-conformal bands (coverage and median width factor).
 
 | method | nominal | coverage pct | median width factor |
 |---|---|---|---|
@@ -432,7 +497,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | IPL3 | 80 | 78.140 | 2.884 |
 | IPL3 | 95 | 93.318 | 6.253 |
 
-**Table S20.** Pre-registered sample-size decision metric: share of pilots whose forecast calibration size n̂ for the RMSE truly achieved at n* = 4n0 or 16n0 lies within a factor of two of n*, and share whose forecast never reaches the target.
+**Table S21.** Pre-registered sample-size decision metric: share of pilots whose forecast calibration size n̂ for the RMSE truly achieved at n* = 4n0 or 16n0 lies within a factor of two of n*, and share whose forecast never reaches the target.
 
 | method | target | pct within factor2 | pct within factor2 task mean | pct never reaches target | median abs log2 err finite |
 |---|---|---|---|---|---|
@@ -459,7 +524,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | SLOPE-T | 4n0 | 29.534 | 25.044 | 13.390 | 1.525 |
 | SLOPE-T | 16n0 | 21.149 | 20.883 | 6.824 | 2.089 |
 
-**Table S21.** POST HOC: error of the forecast gain RMSE(n)/RMSE(n0) and balanced accuracy of the decision 'an 8× larger calibration set reduces RMSEP by ≥ 10%'.
+**Table S22.** POST HOC: error of the forecast gain RMSE(n)/RMSE(n0) and balanced accuracy of the decision 'an 8× larger calibration set reduces RMSEP by ≥ 10%'.
 
 | method | n tasks | mean task gain abs err | median task gain abs err | mean gain bias | decision 8x 10pct balanced acc | decision sensitivity | decision specificity | prevalence worthwhile |
 |---|---|---|---|---|---|---|---|---|
@@ -475,7 +540,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | DFOLS | 38 | 0.471 | 0.190 | -0.155 | 0.634 | 0.793 | 0.475 | 0.970 |
 | SLOPE-T | 38 | 0.124 | 0.094 | -0.022 | 0.500 | 1.000 | 0.000 | 0.970 |
 
-**Table S22.** POST HOC: paired tests of gain error (reference: pre-registered RPM).
+**Table S23.** POST HOC: paired tests of gain error (reference: pre-registered RPM).
 
 | reference | comparison | n tasks | wilcoxon W | p raw | median diff | ci95 lo | ci95 hi | rank biserial | ref wins | ref losses | p holm |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -490,7 +555,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | RPM | DFOLS | 38 | 260.000 | 0.111 | -0.021 | -0.069 | 0.271 | 0.298 | 17 | 21 | 0.557 |
 | RPM | SLOPE-T | 38 | 44.000 | 1.08e-07 | -0.097 | -0.135 | -0.071 | -0.881 | 5 | 33 | 8.6e-07 |
 
-**Table S23.** Pre-registered ablation of RPM (n0 ∈ {50,100}, 10 pilots per task).
+**Table S24.** Pre-registered ablation of RPM (n0 ∈ {50,100}, 10 pilots per task).
 
 | variant | n tasks | mean abs logerr | rpm same tasks | mean diff vs rpm | ci95 lo | ci95 hi | p raw | p holm | rank biserial |
 |---|---|---|---|---|---|---|---|---|---|
@@ -505,7 +570,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | RPM-cut0.5 | 38 | 0.275 | 0.242 | 0.033 | -0.019 | 0.090 | 0.438 | 1.000 | -0.147 |
 | RPM-cut0.95 | 38 | 0.259 | 0.242 | 0.017 | 0.010 | 0.024 | 0.000228 | 0.002 | 0.860 |
 
-**Table S24.** Robustness and distribution-shift experiments (six representative tasks and mango shift scenarios).
+**Table S25.** Robustness and distribution-shift experiments (six representative tasks and mango shift scenarios).
 
 | variant | method | n tasks | mean abs logerr | mean bias | coverage80 |
 |---|---|---|---|---|---|
@@ -545,7 +610,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | shift_season | RPM-T | 1.000 | 0.196 | -0.174 | 42.222 |
 | shift_season | RPM-wT | 1.000 | 0.162 | -0.098 | 60.000 |
 
-**Table S25.** E0 simulation with Monte-Carlo ground truth (median absolute and signed log error).
+**Table S26.** E0 simulation with Monte-Carlo ground truth (median absolute and signed log error).
 
 | r | noise frac | n0 | method | median abs err | mean abs err | median bias |
 |---|---|---|---|---|---|---|
@@ -610,7 +675,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | 1.000 | 0.300 | 30 | RPM-w | 0.105 | 0.135 | 0.005 |
 | 1.000 | 0.300 | 30 | RPM-wT | 0.584 | 2.530 | -0.584 |
 
-**Table S26.** E0 simulation summarised by pilot size.
+**Table S27.** E0 simulation summarised by pilot size.
 
 | method | n0 | median abs err | median bias |
 |---|---|---|---|
@@ -633,7 +698,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | RPM-wT | 60 | 0.330 | -0.247 |
 | RPM-wT | 120 | 0.136 | -0.063 |
 
-**Table S27.** Per-task error analysis (RPM vs IPL3) with spectral and fitted descriptors.
+**Table S28.** Per-task error analysis (RPM vs IPL3) with spectral and fitted descriptors.
 
 | task | family | eigen decay exponent | n pool | rpm mae | rpm bias | theory fit err | noise frac | r | ipl3 mae |
 |---|---|---|---|---|---|---|---|---|---|
@@ -676,7 +741,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | ICRAF-VisNIR:pH | soil | 3.659 | 2828 | 0.165 | 0.048 | 0.067 | 0.331 | 0.362 | 0.342 |
 | Tecator:moisture | meat | 5.613 | 180 | 0.148 | 0.057 | 0.111 | 0.040 | 0.757 | 0.223 |
 
-**Table S28.** Spearman correlations between per-task RPM error and task descriptors.
+**Table S29.** Spearman correlations between per-task RPM error and task descriptors.
 
 | descriptor | spearman rho | p | n |
 |---|---|---|---|
@@ -686,7 +751,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | r | 0.563 | 0.000237 | 38 |
 | n_pool | -0.203 | 0.222 | 38 |
 
-**Table S29.** Accuracy by data-set family.
+**Table S30.** Accuracy by data-set family.
 
 | family | method | label | n tasks | mean abs logerr | ci95 lo | ci95 hi | median task abs logerr | median abs logerr rows | mean bias | pct within 10 | pct within 20 |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -715,14 +780,14 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | soil | FLAT | No improvement (FLAT) | 23 | 0.211 | 0.190 | 0.232 | 0.203 | 0.177 | 0.134 | 28.222 | 51.433 |
 | soil | DFOLS | Fixed-complexity formula (DF-OLS) | 23 | 0.986 | 0.641 | 1.389 | 0.569 | 0.180 | -0.872 | 28.522 | 50.378 |
 
-**Table S30.** Measured run time per pilot.
+**Table S31.** Measured run time per pilot.
 
 | component | mean | median | max |
 |---|---|---|---|
 | RPM point forecast + 50 bootstrap refits (s per pilot) | 1.552 | 1.399 | 4.807 |
 | Within-pilot sub-sampling curve for IPL/EXP/LOG fits (s per pilot) | 0.524 | 0.321 | 3.354 |
 
-**Table S31.** Paired tests against RPM at pilot size n0 = 25.
+**Table S32.** Paired tests against RPM at pilot size n0 = 25.
 
 | n0 | comparison | n tasks | wilcoxon W | p raw | median diff | ci95 lo | ci95 hi | rank biserial | ref wins | ref losses | p holm |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -737,7 +802,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | 25 | DFOLS | 38 | 14.000 | 8e-10 | 0.964 | 0.796 | 1.854 | 0.962 | 35 | 3 | 6.4e-09 |
 | 25 | SLOPE-T | 38 | 186.000 | 0.007 | -0.033 | -0.065 | 0.005 | -0.498 | 15 | 23 | 0.020 |
 
-**Table S32.** Paired tests against RPM at pilot size n0 = 50.
+**Table S33.** Paired tests against RPM at pilot size n0 = 50.
 
 | n0 | comparison | n tasks | wilcoxon W | p raw | median diff | ci95 lo | ci95 hi | rank biserial | ref wins | ref losses | p holm |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -752,7 +817,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | 50 | DFOLS | 38 | 102.000 | 3.65e-05 | 0.106 | 0.035 | 0.633 | 0.725 | 29 | 9 | 0.000182 |
 | 50 | SLOPE-T | 38 | 262.000 | 0.118 | -0.019 | -0.042 | 0.010 | -0.293 | 17 | 21 | 0.236 |
 
-**Table S33.** Paired tests against RPM at pilot size n0 = 100.
+**Table S34.** Paired tests against RPM at pilot size n0 = 100.
 
 | n0 | comparison | n tasks | wilcoxon W | p raw | median diff | ci95 lo | ci95 hi | rank biserial | ref wins | ref losses | p holm |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -767,7 +832,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | 100 | DFOLS | 31 | 194.000 | 0.299 | 0.000884 | -0.059 | 0.083 | 0.218 | 16 | 15 | 0.327 |
 | 100 | SLOPE-T | 31 | 164.000 | 0.102 | -0.027 | -0.050 | 0.013 | -0.339 | 12 | 19 | 0.307 |
 
-**Table S34.** Paired tests against RPM at pilot size n0 = 200.
+**Table S35.** Paired tests against RPM at pilot size n0 = 200.
 
 | n0 | comparison | n tasks | wilcoxon W | p raw | median diff | ci95 lo | ci95 hi | rank biserial | ref wins | ref losses | p holm |
 |---|---|---|---|---|---|---|---|---|---|---|---|

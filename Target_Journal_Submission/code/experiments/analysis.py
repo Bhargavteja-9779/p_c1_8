@@ -444,6 +444,44 @@ def run_analysis(cfg, paths, mode, log):
             t18.append(row)
     T18 = pd.DataFrame(t18); write_table(T18, paths, "T18_posthoc_by_ratio_stratum", float_fmt="{:.4f}")
     numbers["posthoc_ratio_strata"] = T18.to_dict(orient="records")
+    # ---------------- POST HOC: noise-floor identifiability (T19): pilot-fitted noise fraction vs large-sample fit
+    vt, fullnf = {}, {}
+    for f in sorted(glob.glob(os.path.join(raw, "truth_*.npz"))):
+        z = np.load(f, allow_pickle=True); name = os.path.basename(f)[6:-4].replace("__", ":")
+        vt[name] = float(z["var_test"]); fits = json.loads(str(z["full_fits"]))
+        fullnf[name] = {k: float(np.exp(v["log_sigma2"]) / vt[name]) for k, v in fits.items()}
+    pp = df[df.method.isin(["RPM", "RPM-T"]) & df.log_sigma2.notna()].drop_duplicates(["task", "n0", "pilot", "method"])
+    pp = pp.assign(nf=np.exp(pp.log_sigma2) / pp.task.map(vt))
+    t19 = []
+    for (t, m, n0), g in pp.groupby(["task", "method", "n0"]):
+        ref = fullnf[t].get("free", np.nan)
+        t19.append({"task": t, "method": m, "n0": int(n0), "noise_frac_full_pool_rfree": ref,
+                    "noise_frac_full_pool_r1": fullnf[t].get("fixed1", np.nan), "median_pilot_noise_frac": float(g.nf.median()),
+                    "pct_pilots_below_tenth_of_full": float(100 * (g.nf < 0.1 * ref).mean())})
+    T19 = pd.DataFrame(t19)
+    if len(T19):
+        write_table(T19, paths, "T19_posthoc_noise_floor_identifiability", float_fmt="{:.4f}")
+        numbers["noise_floor"] = {f"{m}_n0_{n0}": {"median_pct_pilots_below_tenth": float(g.pct_pilots_below_tenth_of_full.median()),
+                                                   "median_ratio_pilot_to_full": float((g.median_pilot_noise_frac / g.noise_frac_full_pool_rfree).median())}
+                                  for (m, n0), g in T19.groupby(["method", "n0"])}
+        # per-pilot link between noise-floor underestimation and signed forecast error (RPM-T, n/n0 >= 8)
+        from scipy.stats import spearmanr
+        q = df[(df.method == "RPM-T") & df.log_sigma2.notna()].copy()
+        q["lr"] = np.log(np.exp(q.log_sigma2) / q.task.map(vt) / q.task.map({t: v.get("free", np.nan) for t, v in fullnf.items()}))
+        q["serr"] = q.fc_logrmse - q.truth_ridge_logrmse
+        q = q[q.ratio >= 8]
+        col = q.lr < np.log(0.1)
+        pil = q.drop_duplicates(["task", "n0", "pilot"])
+        numbers["noise_floor"]["collapse_RPM_T"] = {
+            "pct_pilots_noise_below_tenth": float(100 * (pil.lr < np.log(0.1)).mean()),
+            "pct_pilots_noise_below_tenth_by_n0": {int(k): float(100 * (g.lr < np.log(0.1)).mean()) for k, g in pil.groupby("n0")},
+            "mean_signed_err_collapsed": float(q[col].serr.mean()), "mean_signed_err_other": float(q[~col].serr.mean()),
+            "mean_abs_err_collapsed": float(q[col].serr.abs().mean()), "mean_abs_err_other": float(q[~col].serr.abs().mean()),
+            "spearman_lr_vs_signed_err": float(spearmanr(q.lr.clip(-30, 30), q.serr).statistic), "n_forecasts": int(len(q))}
+        k = T19[(T19.task == "KSSL-MIR:OC") & (T19.method == "RPM-T") & (T19.n0 == 25)]
+        if len(k):
+            numbers["noise_floor"]["example_KSSL_MIR_OC"] = {"pilot_median_n0_25": float(k.median_pilot_noise_frac.iloc[0]),
+                                                            "full_pool_rfree": float(k.noise_frac_full_pool_rfree.iloc[0])}
     # ---------------- RPM-T eigen-spectrum ablation (T7b)
     abt_files = sorted(glob.glob(os.path.join(raw, "forecasts_ablT_*.csv")))
     if abt_files:

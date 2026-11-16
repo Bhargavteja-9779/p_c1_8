@@ -188,4 +188,29 @@ def build_context(numbers, RES, TAB):
     S0 = pd.read_csv(os.path.join(TAB, "S0_stats_excluding_ICRAF_VisNIR.csv")).set_index("comparison")
     for m in S0.index:
         c[f"s0_{m.replace('-', '_')}_p"] = pfmt(S0.loc[m, "p_holm"])
+    nf = numbers.get("noise_floor", {})
+    if "collapse_RPM_T" in nf:
+        cl = nf["collapse_RPM_T"]
+        c["nf_collapse_pct"] = f"{cl['pct_pilots_noise_below_tenth']:.1f}"
+        c["nf_collapse_pct_25"] = f"{cl['pct_pilots_noise_below_tenth_by_n0']['25']:.0f}"
+        c["nf_collapse_pct_50"] = f"{cl['pct_pilots_noise_below_tenth_by_n0']['50']:.0f}"
+        big = max(cl['pct_pilots_noise_below_tenth_by_n0'][k] for k in ('100', '200'))
+        c["nf_collapse_large_phrase"] = "none at $n_0$ ≥ 100" if big == 0 else f"at most {big:.0f}% at $n_0$ ≥ 100"
+        c["nf_serr_collapsed"] = f"{cl['mean_signed_err_collapsed']:+.2f}"
+        c["nf_serr_other"] = f"{cl['mean_signed_err_other']:+.3f}"
+        c["nf_abserr_other"] = f"{cl['mean_abs_err_other']:.3f}"
+        c["nf_spearman"] = f"{cl['spearman_lr_vs_signed_err']:.2f}"
+    if "example_KSSL_MIR_OC" in nf:
+        ex = nf["example_KSSL_MIR_OC"]
+        c["nf_kssl_pilot"] = f"{ex['pilot_median_n0_25']:.1g}" if ex['pilot_median_n0_25'] >= 1e-4 else "< 10^−4^"
+        c["nf_kssl_full"] = f"{ex['full_pool_rfree']:.3f}"
+    # robustness ordering of mean errors (FLAT, RPM, IPL3) in the preprocessing / reference-noise scenarios
+    if os.path.exists(os.path.join(TAB, "T8_robustness.csv")):
+        T8 = pd.read_csv(os.path.join(TAB, "T8_robustness.csv"))
+        orders = []
+        for v in ("prep_raw", "prep_sg1", "ref_noise"):
+            g = T8[T8.variant == v].set_index("method").mean_abs_logerr
+            if all(m in g for m in ("FLAT", "RPM", "IPL3")):
+                orders.append(" < ".join(sorted(["FLAT", "RPM", "IPL3"], key=lambda m: g[m])))
+        c["rob_order_common"] = orders[0] if orders and all(o == orders[0] for o in orders) else "mixed"
     return c

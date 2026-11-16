@@ -22,6 +22,7 @@ TABLES = [
     ("T4b_stats_pls_truth", "Paired tests against the PLS ground truth."),
     ("S0_accuracy_excluding_ICRAF_VisNIR", "Sensitivity analysis excluding the four ICRAF-VisNIR tasks used in exploratory work."),
     ("S0_stats_excluding_ICRAF_VisNIR", "Paired tests excluding the ICRAF-VisNIR tasks."),
+    ("T19_posthoc_noise_floor_identifiability", "POST HOC: noise fraction σ²/var(y) fitted on pilots (RPM, RPM-T) against the large-sample fit, by task and pilot size; share of pilots below one tenth of the large-sample value."),
     ("T7b_ablation_eigenspectrum_rpmT", "Eigen-spectrum source ablation for RPM-T (defined before RPM-T results were inspected)."),
     ("T15_posthoc_bracket", "POST HOC: coverage and width of forecast brackets."),
     ("T5_interval_coverage", "Empirical coverage, median width factor (multiplicative, on RMSE) and share of bands wider than a factor of ten, for 80% and 95% forecast bands."),

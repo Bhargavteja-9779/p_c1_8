@@ -47,6 +47,16 @@
 | `n_r_below_1` | 38 | `results/alignment_exponents.csv` |
 | `n_soil` | 23 | `tables/T1_tasks.csv` |
 | `n_tasks` | 38 | `tables/T1_tasks.csv` |
+| `nf_abserr_other` | 0.271 | `results/numbers.json` |
+| `nf_collapse_large_phrase` | none at $n_0$ ≥ 100 | `results/numbers.json` |
+| `nf_collapse_pct` | 7.4 | `results/numbers.json` |
+| `nf_collapse_pct_25` | 21 | `results/numbers.json` |
+| `nf_collapse_pct_50` | 3 | `results/numbers.json` |
+| `nf_kssl_full` | 0.018 | `results/numbers.json` |
+| `nf_kssl_pilot` | < 10^−4^ | `results/numbers.json` |
+| `nf_serr_collapsed` | -6.71 | `results/numbers.json` |
+| `nf_serr_other` | +0.089 | `results/numbers.json` |
+| `nf_spearman` | 0.95 | `results/numbers.json` |
 | `pls_mae_FLAT` | 0.253 | `tables/T4_main_accuracy_pls_truth.csv` |
 | `pls_mae_IPL3` | 0.443 | `tables/T4_main_accuracy_pls_truth.csv` |
 | `pls_mae_RPM` | 0.279 | `tables/T4_main_accuracy_pls_truth.csv` |
@@ -62,6 +72,16 @@
 | `r_vis_median` | 0.36 | `results/alignment_exponents.csv` |
 | `rob_ks_pilot_IPL3` | 0.316 | `tables/T8_robustness.csv` |
 | `rob_ks_pilot_RPM` | 0.363 | `tables/T8_robustness.csv` |
+| `rob_order_common` | FLAT < RPM < IPL3 | `tables/T8_robustness.csv` |
+| `rob_prep_raw_FLAT` | 0.201 | `tables/T8_robustness.csv` |
+| `rob_prep_raw_IPL3` | 0.405 | `tables/T8_robustness.csv` |
+| `rob_prep_raw_RPM` | 0.274 | `tables/T8_robustness.csv` |
+| `rob_prep_sg1_FLAT` | 0.313 | `tables/T8_robustness.csv` |
+| `rob_prep_sg1_IPL3` | 0.505 | `tables/T8_robustness.csv` |
+| `rob_prep_sg1_RPM` | 0.368 | `tables/T8_robustness.csv` |
+| `rob_ref_noise_FLAT` | 0.129 | `tables/T8_robustness.csv` |
+| `rob_ref_noise_IPL3` | 0.313 | `tables/T8_robustness.csv` |
+| `rob_ref_noise_RPM` | 0.214 | `tables/T8_robustness.csv` |
 | `rob_shift_season_IPL3` | 1.034 | `tables/T8_robustness.csv` |
 | `rob_shift_season_RPM` | 0.115 | `tables/T8_robustness.csv` |
 | `robb_iid_ref_seasons123_RPM` | +0.328 | `tables/T8_robustness.csv` |

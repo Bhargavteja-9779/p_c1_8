@@ -33,11 +33,15 @@ ICRAF-ISRIC VisNIR soils, 6 properties: omniscient theory within ~±10% MSE of e
 2. Literature matrix + novelty map + hypothesis/RQs + pre-registered experimental design (EXPERIMENT_DESIGN.md).
 3. Data download scripts (OSSL libraries, mango DMC, Tecator, …), leakage audit, implementation, run_all.py quick/full.
 
-## 5. Exact next execution step (updated 19:47 UTC)
-Main stage running (24/38 tasks done). Partial finding: RPM (r=1, pre-registered) beats all curve-extrapolation baselines
-but is pessimistic vs FLAT because real spectra have alignment exponent r≈0.46<1. Refinements defined & logged BEFORE running:
-RPM-w (weighted), RPM-T (leave-one-source-out transferred r), RPM-wT. Then:
-1. After main completes: `python run_all.py --mode full --stage refinement --jobs 4` (needs all truth files for LOSO r).
-2. `--stage simulation`, then `--stage robustness` (needs results/alignment_exponents.csv), then `--stage analysis`.
-3. Write results text (manuscript/build/content.py) from numbers.json; build DOCX/PDF (manuscript/build/build_manuscript.py).
-4. Review cycles (REVIEW/), fixes, final package.
+## 5. Exact next execution step (updated 2026-11-16 14:57 UTC)
+Status: main stage DONE (38 tasks). Pre-registered result: RPM (r=1) >> IPL3/IPL2/EXP3/LOG2/DF-OLS (Holm p<1e-4), ≈ FLAT (n.s.).
+Key findings: theory reproduces curves (mean |log err| 0.10), kappa-collapse SD 0.041 vs 0.52; alignment exponent r<1 in 38/38 tasks
+(median ~0.55; Vis/NIR ~0.37, MIR ~0.62). RPM-T (transferred r) FAILS (noise-floor collapse) -> negative result, reported.
+RUNNING: /tmp/claude-0/chain.sh (refinement -> simulation -> robustness -> analysis), then /tmp/claude-0/chain2.sh (ablation_t -> analysis).
+If interrupted: cd Target_Journal_Submission/code && for st in refinement simulation ablation_t robustness analysis; do python3 run_all.py --mode full --stage $st --jobs 4; done
+(all stages resumable; finished tasks skipped).
+THEN:
+1. Check pending claims in manuscript/build/results_text.py against tables (robustness, simulation, error analysis wording).
+2. Write abstract results/significance, highlights, conclusion, cover letter (results_text.py), build: python3 manuscript/build/build_manuscript.py; build_letters.py; build_supplementary.py.
+3. Review cycle 1: 10 background Agent reviewers using scratchpad/reviewer_brief.md -> REVIEW/raw/cycle_01/*.json; verify serious issues; fix; REVIEW/review_01.md.
+4. Repeat cycles 2-10; final audits; package; decision.

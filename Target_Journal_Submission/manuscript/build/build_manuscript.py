@@ -26,13 +26,47 @@ def load_numbers():
     return json.load(open(os.path.join(RES, "numbers.json")))
 
 
+USED = {}
+
+SOURCES = [("tv_", "tables/T9_theory_validity_full_pool_fit.csv"), ("collapse_", "tables/T9b_kappa_collapse_dispersion.csv"),
+           ("r_", "results/alignment_exponents.csv"), ("n_r_below", "results/alignment_exponents.csv"),
+           ("mae_", "tables/T2_main_accuracy_ridge_truth.csv"), ("medae_", "tables/T2_main_accuracy_ridge_truth.csv"),
+           ("bias_", "tables/T2_main_accuracy_ridge_truth.csv"), ("w20_", "tables/T2_main_accuracy_ridge_truth.csv"),
+           ("w10_", "tables/T2_main_accuracy_ridge_truth.csv"), ("st_", "tables/T3_stats_rpm_vs_baselines.csv"),
+           ("pls_", "tables/T4_main_accuracy_pls_truth.csv"), ("covw", "tables/T5_interval_coverage.csv"),
+           ("cov", "tables/T5_interval_coverage.csv"), ("decfail_", "tables/T6_sample_size_decisions.csv"),
+           ("dec_", "tables/T6_sample_size_decisions.csv"), ("ablT_", "tables/T7b_ablation_eigenspectrum_rpmT.csv"),
+           ("abl_", "tables/T7_ablation.csv"), ("gain", "tables/T14_posthoc_gain_and_decision.csv"),
+           ("gdec_", "tables/T14_posthoc_gain_and_decision.csv"), ("gst_", "tables/T14b_posthoc_gain_stats.csv"),
+           ("sim", "tables/T0b_simulation_by_n0.csv"), ("rob", "tables/T8_robustness.csv"),
+           ("s0_", "tables/S0_stats_excluding_ICRAF_VisNIR.csv"), ("t_", "tables/T10_runtime.csv"),
+           ("n_tasks", "tables/T1_tasks.csv"), ("n_soil", "tables/T1_tasks.csv"), ("n_pilots_total", "results/numbers.json"),
+           ("n_forecasts", "results/numbers.json"), ("abstract_", "composed from T2/T3/T5/alignment (see text)")]
+
+
+def source_of_key(key):
+    for pre, src in SOURCES:
+        if key.startswith(pre):
+            return src
+    return "results/numbers.json"
+
+
 def fill(text, ctx):
     def rep(m):
         key = m.group(1).strip()
         if key not in ctx:
             raise KeyError(f"placeholder {key} missing")
+        USED[key] = str(ctx[key])
         return str(ctx[key])
     return re.sub(r"\{\{([^}]+)\}\}", rep, text)
+
+
+def write_provenance(path):
+    lines = ["# Claim–evidence map (automatic part): every number placeholder used in the manuscript", "",
+             "| Placeholder | Value in manuscript | Machine-generated source |", "|---|---|---|"]
+    for k in sorted(USED):
+        lines.append(f"| `{k}` | {USED[k]} | `{source_of_key(k)}` |")
+    open(path, "w").write("\n".join(lines) + "\n")
 
 
 def format_reference(r):
@@ -124,6 +158,8 @@ def main():
                     "-o", docx_path, "--reference-doc", os.path.join(HERE, "reference_aca.docx"),
                     "--resource-path", ROOT], check=True)
     content.postprocess_docx(docx_path)
+    os.makedirs(os.path.join(ROOT, "REVIEW"), exist_ok=True)
+    write_provenance(os.path.join(ROOT, "REVIEW", "claim_evidence_map_numbers.md"))
     subprocess.run(["soffice", "--headless", "--convert-to", "pdf", "--outdir", OUT, docx_path], check=True,
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     print("built", docx_path, "and PDF;", len(order), "references")

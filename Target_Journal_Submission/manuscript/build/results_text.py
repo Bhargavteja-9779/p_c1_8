@@ -361,3 +361,13 @@ def results_markdown(ctx, TAB_, FIG, table_md):
         "(iv) Pilot sets of at least 100 samples, drawn at random from the target population, roughly halve the forecast error compared with "
         "25-sample pilots (Supplementary Table S3).")
     return "\n\n".join(x for x in s if x)
+
+
+LIMITATIONS = """# 5. Limitations
+
+1. **Linear calibrations only.** The theory describes ridge regression; PLS learning curves were tracked closely (Section 4.1), but the forecasts do not apply to non-linear or local calibration methods (kernel, Cubist, memory-based or deep models), which may continue to improve after linear models saturate.
+2. **What a pilot can reveal.** The alignment between analyte signal and weak spectral modes cannot be identified from a small pilot (Sections 2.4 and 4.4). RPM resolves this with the conservative assumption $r=1$, which under-predicts improvement where the true exponent is low (Vis/NIR spectra). Transferring a realistic exponent from other data sets made the forecasts unstable. Better external information, for example from replicate reference analyses that bound the noise floor, is needed to narrow the forecasts.
+3. **Shallow curves and noisy pilots.** Over 2- to 16-fold extrapolations, the sampling error of a 25–200-sample pilot is comparable to the improvement to be forecast. The no-improvement rule is then as accurate as any extrapolation, and forecasts of the *sample size* required for a target error are ill-conditioned for every method.
+4. **Random sampling from a stable population.** The theory assumes that pilot, future calibration samples and future test samples come from the same population. Designed experiments, Kennard–Stone selection and genuine shifts (new seasons, new populations) violate this assumption; Table 4 quantifies the consequences.
+5. **Data sets.** {{n_soil}} of the {{n_tasks}} tasks are soil calibrations from the Open Soil Spectral Library; the fruit, fuel, pharmaceutical, meat and mixture sets are smaller and allow only short extrapolations. Group definitions for soil profiles rely on site identifiers or coordinates. Each task used one fixed group-disjoint test split.
+6. **Post-hoc elements.** RPM-w, RPM-T, RPM-wT, the SLOPE-T competitor and the gain and bracket analyses were added after the design was frozen, and the ICRAF-VisNIR tasks informed exploratory design choices. All such decisions are time-stamped in the experiment log, evaluated on the same pilots as the registered method, and reported regardless of outcome."""

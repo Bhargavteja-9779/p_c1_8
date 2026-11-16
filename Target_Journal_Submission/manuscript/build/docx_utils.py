@@ -119,10 +119,15 @@ def postprocess(docx_path, max_img_cm=16.0):
         if t._tbl.find(".//{http://schemas.openxmlformats.org/officeDocument/2006/math}oMathPara") is not None:
             continue          # equation tables stay borderless
         _three_rule_table(t)
-        for row in t.rows:
+        nrow = len(t.rows)
+        for ri, row in enumerate(t.rows):
             for cell in row.cells:
                 for p in cell.paragraphs:
                     _suppress_ln(p)
+        for row in t.rows:                                   # rows never break across pages
+            trPr = row._tr.get_or_add_trPr()
+            if trPr.find(qn("w:cantSplit")) is None:
+                trPr.append(OxmlElement("w:cantSplit"))
     for shape in d.inline_shapes:
         if shape.width > Cm(max_img_cm):
             ratio = Cm(max_img_cm) / shape.width

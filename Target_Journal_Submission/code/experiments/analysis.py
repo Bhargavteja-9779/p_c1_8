@@ -113,9 +113,12 @@ def coverage_table(df, methods=("RPM", "RPM-w", "RPM-T", "RPM-wT", "IPL3", "IPL2
             cov = ((d[f"lo{lev}"] <= d.truth_ridge_logrmse) & (d.truth_ridge_logrmse <= d[f"hi{lev}"])).astype(float)
             per_t = cov.groupby(d.task).mean()
             width = (d[f"hi{lev}"] - d[f"lo{lev}"]).groupby(d.task).mean()
+            w_rows = (d[f"hi{lev}"] - d[f"lo{lev}"])
             rows.append({"method": m, "nominal": lev, "coverage_rows": 100 * cov.mean(), "coverage_task_mean": 100 * per_t.mean(),
                          "coverage_task_median": 100 * per_t.median(), "mean_width_log": width.mean(),
-                         "mean_width_factor": float(np.exp(width.mean()))})
+                         "mean_width_factor": float(np.exp(width.mean())),
+                         "median_width_factor": float(np.exp(w_rows.median())),
+                         "pct_width_factor_gt10": float(100 * (w_rows > np.log(10)).mean())})
     return pd.DataFrame(rows)
 
 
@@ -426,6 +429,21 @@ def run_analysis(cfg, paths, mode, log):
         numbers["slope_q3"] = float(mm.slope_per_doubling.quantile(0.75)); numbers["slope_min"] = float(mm.slope_per_doubling.min())
         numbers["slope_max"] = float(mm.slope_per_doubling.max()); numbers["slope_ols_r2"] = float(fit.rsquared)
         numbers["slope_ols_p_noise"] = float(fit.pvalues[2]); numbers["slope_spearman"] = T17.to_dict(orient="records")
+    # ---------------- POST HOC: stratified by extrapolation ratio (T18), reference RPM-w
+    t18 = []
+    for lab, cond in (("ratio <= 8", df.ratio <= 8), ("ratio >= 16", df.ratio >= 16)):
+        dd = df[cond & df.method.isin(["RPM", "RPM-w", "SLOPE-T", "FLAT", "IPL3"])]
+        pm = dd.groupby(["task", "method"]).abs_err.mean().unstack(); pmed = dd.groupby(["task", "method"]).abs_err.median().unstack()
+        stt = pd.DataFrame(paired_comparison(pm["RPM-w"].values, {m: pm[m].values for m in ["RPM", "SLOPE-T", "FLAT", "IPL3"]}, seed=17))
+        for m in ["RPM-w", "RPM", "SLOPE-T", "FLAT", "IPL3"]:
+            row = {"stratum": lab, "method": m, "n_tasks": int(pm[m].notna().sum()), "mean_task_mean_abs": float(pm[m].mean()),
+                   "mean_task_median_abs": float(pmed[m].mean())}
+            if m != "RPM-w":
+                s_ = stt[stt.comparison == m].iloc[0]
+                row.update({"diff_vs_RPMw": float(s_.median_diff), "p_holm": float(s_.p_holm), "RPMw_wins": int(s_.ref_wins), "RPMw_losses": int(s_.ref_losses)})
+            t18.append(row)
+    T18 = pd.DataFrame(t18); write_table(T18, paths, "T18_posthoc_by_ratio_stratum", float_fmt="{:.4f}")
+    numbers["posthoc_ratio_strata"] = T18.to_dict(orient="records")
     # ---------------- RPM-T eigen-spectrum ablation (T7b)
     abt_files = sorted(glob.glob(os.path.join(raw, "forecasts_ablT_*.csv")))
     if abt_files:

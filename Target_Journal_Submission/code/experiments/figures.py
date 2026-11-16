@@ -15,9 +15,9 @@ import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
 INK, INK2, MUTED, GRID = "#0b0b0b", "#52514e", "#8a8984", "#e6e5e0"
-C = {"RPM": "#2a78d6", "RPM-w": "#2a78d6", "IPL3": "#eb6834", "FLAT": "#1baf7a"}
-STYLE = {"RPM": dict(marker="o", ls="-"), "RPM-w": dict(marker="o", ls="-"), "IPL3": dict(marker="s", ls="--"), "FLAT": dict(marker="^", ls=":")}
-LBL = {"RPM": "RPM", "RPM-w": "RPM-w", "IPL3": "IPL3 extrapolation", "FLAT": "No improvement",
+C = {"RPM": "#2a78d6", "RPM-w": "#2a78d6", "IPL3": "#eb6834", "FLAT": "#1baf7a", "SLOPE-T": "#eda100"}
+STYLE = {"RPM": dict(marker="o", ls="-"), "RPM-w": dict(marker="o", ls="-"), "SLOPE-T": dict(marker="D", ls="-."), "IPL3": dict(marker="s", ls="--"), "FLAT": dict(marker="^", ls=":")}
+LBL = {"RPM": "RPM", "RPM-w": "RPM-w", "SLOPE-T": "SLOPE-T (transferred slope)", "IPL3": "IPL3 extrapolation", "FLAT": "No improvement",
        "IPL2": "IPL2", "EXP3": "EXP3", "LOG2": "LOG2", "DFOLS": "DF-OLS"}
 
 plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 8, "axes.edgecolor": MUTED, "axes.labelcolor": INK,
@@ -51,6 +51,23 @@ def fig_workflow(paths):
     _save(fig, paths, "Fig1_workflow")
 
 
+def _tidy_log(ax, which="x"):
+    """Readable ticks on a log axis: decades when the range spans >= 1.5 decades, else 1-2-5 values; no minor labels."""
+    from matplotlib.ticker import FixedLocator, FuncFormatter, LogLocator, NullFormatter
+    axis = ax.xaxis if which == "x" else ax.yaxis
+    lo, hi = ax.get_xlim() if which == "x" else ax.get_ylim()
+    axis.set_minor_formatter(NullFormatter())
+    if np.log10(hi / lo) >= 1.5:
+        axis.set_major_locator(LogLocator(base=10))
+        return
+    e0, e1 = int(np.floor(np.log10(lo))) - 1, int(np.ceil(np.log10(hi))) + 1
+    ticks = [m * 10.0 ** e for e in range(e0, e1 + 1) for m in (1, 2, 5) if lo <= m * 10.0 ** e <= hi]
+    if len(ticks) > 4:
+        ticks = [t for t in ticks if str(t).lstrip("0.").startswith(("1", "5"))] or ticks
+    axis.set_major_locator(FixedLocator(ticks))
+    axis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:g}"))
+
+
 def fig_theory_validity(tv, collapse, paths, tasks=("KSSL-MIR:OC", "ICRAF-MIR:clay", "Mango:DM", "Neospectra-NIR:pH")):
     tasks = [t for t in tasks if t in set(tv.task)]
     fig, axes = plt.subplots(2, len(tasks), figsize=(1.85 * len(tasks) + 0.4, 3.9), squeeze=False)
@@ -71,11 +88,17 @@ def fig_theory_validity(tv, collapse, paths, tasks=("KSSL-MIR:OC", "ICRAF-MIR:cl
         ax2.set_xscale("log"); ax2.set_yscale("log"); ax2.set_xlabel("effective regularisation $\\kappa$")
         if j == 0:
             ax2.set_ylabel("rescaled test MSE  $N(\\kappa)$")
-        if j == len(tasks) - 1:
-            ax2.legend(fontsize=6, loc="upper left", ncol=1, handlelength=1.2)
-    axes[0, 0].legend(loc="upper right", fontsize=6.2)
-    fig.text(0.01, 0.98, "a", weight="bold", fontsize=10); fig.text(0.01, 0.49, "b", weight="bold", fontsize=10)
-    fig.tight_layout()
+    for ax in axes[0]:
+        _tidy_log(ax, "x")
+    for ax in axes[1]:
+        _tidy_log(ax, "x"); _tidy_log(ax, "y")
+    h, l = axes[0, 0].get_legend_handles_labels()
+    fig.legend(h, l, loc="upper center", ncol=3, fontsize=6.6, bbox_to_anchor=(0.5, 1.0), handlelength=2.2)
+    h2, l2 = axes[1, -1].get_legend_handles_labels()
+    fig.legend(h2, [s.replace("n=", "") for s in l2], loc="lower center", ncol=len(l2), fontsize=6.4,
+               bbox_to_anchor=(0.5, 0.0), title="calibration size $n$ (panel b)", title_fontsize=6.4, handlelength=1.6)
+    fig.text(0.01, 0.93, "a", weight="bold", fontsize=10); fig.text(0.01, 0.50, "b", weight="bold", fontsize=10)
+    fig.tight_layout(rect=(0, 0.08, 1, 0.94))
     _save(fig, paths, "Fig2_theory_validity_and_collapse")
 
 
@@ -98,6 +121,7 @@ def fig_examples(df, paths, tasks=("KSSL-VisNIR:clay", "Mango:DM", "Diesel:bp50"
         ax.axvline(n0, color=MUTED, lw=0.8, ls="--")
         ax.set_xscale("log"); ax.set_yscale("log"); ax.set_title(t, fontsize=7.5); ax.set_xlabel("calibration size $n$")
         ax.text(0.02, 0.03, f"pilot $n_0$ = {n0}", transform=ax.transAxes, fontsize=6, color=INK2)
+        _tidy_log(ax, "x"); _tidy_log(ax, "y")
     axes[0].set_ylabel("RMSEP (log scale)")
     h, l = axes[0].get_legend_handles_labels()
     fig.legend(h, l, loc="lower center", ncol=4, fontsize=6.6, bbox_to_anchor=(0.5, -0.02))
@@ -125,25 +149,53 @@ def fig_main_accuracy(df, paths, methods=("RPM", "RPM-w", "RPM-T", "RPM-wT", "SL
 
 
 def fig_ratio(df, paths):
-    fig, ax = plt.subplots(figsize=(3.4, 2.6))
-    d = df[df.method.isin(["RPM", "IPL3", "FLAT"])].copy()
+    fig, ax = plt.subplots(figsize=(3.6, 2.7))
+    ms = [m for m in ("RPM-w", "IPL3", "FLAT", "SLOPE-T") if m in set(df.method)]
+    d = df[df.method.isin(ms)].copy()
     d["rb"] = 2.0 ** np.round(np.log2(d.ratio))
-    for m in ("RPM", "IPL3", "FLAT"):
+    for m in ms:
         g = d[d.method == m].groupby("rb").abs_err.median()
         ax.plot(g.index, g.values, color=C[m], **STYLE[m], label=LBL[m])
-        ax.text(g.index[-1] * 1.08, g.values[-1], m, color=INK2, fontsize=6.5, va="center")
-    ax.set_xscale("log", base=2); ax.set_xlabel("extrapolation ratio $n/n_0$"); ax.set_ylabel("median |log error|")
-    ax.legend(fontsize=6.5); fig.tight_layout(); _save(fig, paths, "Fig5_error_vs_extrapolation_ratio")
+    ax.set_xscale("log", base=2); ax.set_yscale("log"); ax.set_xlabel("extrapolation ratio $n/n_0$"); ax.set_ylabel("median |log error| (log scale)")
+    _tidy_log(ax, "y")
+    ax.legend(fontsize=6.3); fig.tight_layout(); _save(fig, paths, "Fig5_error_vs_extrapolation_ratio")
 
 
 def fig_coverage(T5, paths):
-    fig, ax = plt.subplots(figsize=(3.0, 2.6))
-    ax.plot([70, 100], [70, 100], color=MUTED, lw=0.9, ls="--")
+    """Empirical vs nominal coverage: RPM bootstrap bands, IPL3 delta-method bands and (post hoc)
+    leave-one-source-out conformal bands for SLOPE-T."""
+    fig, ax = plt.subplots(figsize=(3.2, 2.7))
+    ax.plot([0, 100], [0, 100], color=MUTED, lw=0.9, ls="--")
     for m in ("RPM", "IPL3"):
         g = T5[T5.method == m]
-        ax.plot(g.nominal, g.coverage_rows, color=C[m], **STYLE[m], label=LBL[m])
-    ax.set_xlabel("nominal coverage (%)"); ax.set_ylabel("empirical coverage (%)"); ax.set_xlim(70, 100)
-    ax.legend(fontsize=6.5, loc="lower right"); fig.tight_layout(); _save(fig, paths, "Fig6_interval_coverage")
+        ax.plot(g.nominal, g.coverage_rows, color=C[m], **STYLE[m], label={"RPM": "RPM bootstrap bands", "IPL3": "IPL3 delta-method bands"}[m])
+    p16 = os.path.join(paths["tables"], "T16_posthoc_loso_conformal_bands.csv")
+    if os.path.exists(p16):
+        t = pd.read_csv(p16); g = t[t.method == "SLOPE-T"]
+        ax.plot(g.nominal, g.coverage_pct, color=C["SLOPE-T"], **STYLE["SLOPE-T"], label="SLOPE-T, LOSO-calibrated (post hoc)")
+    ax.set_xlabel("nominal coverage (%)"); ax.set_ylabel("empirical coverage (%)"); ax.set_xlim(70, 100); ax.set_ylim(30, 100)
+    ax.legend(fontsize=6.0, loc="upper left"); fig.tight_layout(); _save(fig, paths, "Fig6_interval_coverage")
+
+
+def fig_slopes(paths):
+    """Post hoc: learning-curve slope per doubling of n vs the large-sample noise fraction."""
+    ps = os.path.join(paths["results"], "slope_per_doubling.csv"); pa = os.path.join(paths["results"], "alignment_exponents.csv")
+    if not (os.path.exists(ps) and os.path.exists(pa)):
+        return
+    m = pd.read_csv(ps).merge(pd.read_csv(pa), on="task")
+    def grp(t):
+        lib = t.split(":")[0]
+        if "MIR" in lib: return "MIR soil"
+        if "VisNIR" in lib or "Neospectra" in lib: return "Vis/NIR soil"
+        return "other (fruit, fuel, tablets, meat, mixtures)"
+    m["g"] = m.task.map(grp)
+    fig, ax = plt.subplots(figsize=(3.8, 2.8))
+    for g, mk in (("Vis/NIR soil", "o"), ("MIR soil", "s"), ("other (fruit, fuel, tablets, meat, mixtures)", "^")):
+        h = m[m.g == g]
+        ax.scatter(h.noise_frac_full_pool, h.slope_per_doubling, marker=mk, s=20, color=C["RPM"], alpha=0.8, lw=0, label=g)
+    ax.set_xscale("log"); ax.set_xlabel("noise fraction $\\sigma^2/\\mathrm{var}(y)$ (large-sample fit)")
+    ax.set_ylabel("slope of log RMSE per doubling of $n$"); ax.axhline(0, color=MUTED, lw=0.8)
+    ax.legend(fontsize=6.0, loc="lower right"); fig.tight_layout(); _save(fig, paths, "Fig13_slope_vs_noise")
 
 
 def fig_ablation(T7, paths):
@@ -229,7 +281,6 @@ def fig_alignment(at_path, paths):
     ax.axhline(1.0, color=C["IPL3"], ls="--", lw=1.1)
     ax.text(len(order) - 0.5, 1.02, "r = 1 (isotropic prior)", ha="right", va="bottom", fontsize=6.5, color=INK2)
     ax.axhspan(at.r_loso_prior.min(), at.r_loso_prior.max(), color=GRID, zorder=0)
-    ax.text(-0.45, at.r_loso_prior.max() + 0.01, "range of transferred priors", fontsize=6.2, color=INK2, va="bottom")
     ax.set_xticks(range(len(order))); ax.set_xticklabels(order, rotation=35, ha="right", fontsize=6.6)
     ax.set_ylabel("alignment exponent $r$ (large-sample fit)"); ax.set_ylim(0, 1.15)
     fig.tight_layout(); _save(fig, paths, "Fig12_alignment_exponents")
@@ -250,3 +301,4 @@ def make_all(df, T1, tv, collapse, T5, dec_rows, T7, ea, paths, rob_path):
     fig_decisions(dec_rows, paths)
     fig_datasets(T1, paths)
     fig_alignment(os.path.join(paths["results"], "alignment_exponents.csv"), paths)
+    fig_slopes(paths)

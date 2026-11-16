@@ -146,6 +146,45 @@ def build_context(numbers, RES, TAB):
         for n0 in sorted(sm.n0.unique()):
             for m in ("RPM", "RPM-w", "RPM-T", "IPL3", "FLAT"):
                 c[f"simn0_{int(n0)}_{m.replace('-', '_')}"] = f3(med(f"n0 == {n0} and method == '{m}'"))
+    # post-hoc tables
+    p = os.path.join(TAB, "T3c_posthoc_stats_slopeT_reference.csv")
+    if os.path.exists(p):
+        t = pd.read_csv(p).set_index("comparison")
+        for m in t.index:
+            k = m.replace("-", "_")
+            c[f"stS_{k}_p"] = pfmt(t.loc[m, "p_holm"]); c[f"stS_{k}_diff"] = f"{t.loc[m, 'median_diff']:+.3f}"
+            c[f"stS_{k}_wins"] = str(int(t.loc[m, "ref_wins"])); c[f"stS_{k}_losses"] = str(int(t.loc[m, "ref_losses"]))
+    p = os.path.join(TAB, "T16_posthoc_loso_conformal_bands.csv")
+    if os.path.exists(p):
+        t = pd.read_csv(p)
+        for _, r in t.iterrows():
+            k = r.method.replace("-", "_")
+            c[f"conf{int(r.nominal)}_{k}"] = pct(r.coverage_pct, 1); c[f"confw{int(r.nominal)}_{k}"] = f2(r.median_width_factor)
+    for key in ("slope_median", "slope_q1", "slope_q3", "slope_min", "slope_max", "slope_ols_r2"):
+        if key in numbers:
+            c[key] = f3(numbers[key]) if "r2" not in key else f2(numbers[key])
+    if "slope_median" in numbers:
+        c["slope_pct_per_doubling"] = pct(100 * (1 - np.exp(numbers["slope_median"])), 1)
+        c["slope_ols_p_noise"] = pfmt(numbers["slope_ols_p_noise"])
+        sp = {d["descriptor"]: d for d in numbers.get("slope_spearman", [])}
+        if "noise_frac_full_pool" in sp:
+            c["slope_rho_noise"] = f"{sp['noise_frac_full_pool']['spearman_rho']:+.2f}"; c["slope_p_noise"] = pfmt(sp["noise_frac_full_pool"]["p"])
+    p = os.path.join(TAB, "T17b_slope_by_region.csv")
+    if os.path.exists(p):
+        t = pd.read_csv(p).set_index("region")
+        for reg, key in (("MIR (soil)", "mir"), ("Vis/NIR (soil)", "vis"), ("CGL", "cgl"), ("Tecator", "tecator"), ("Diesel", "diesel"), ("Mango", "mango"), ("Tablets", "tablets")):
+            if reg in t.index:
+                c[f"slope_reg_{key}"] = f3(t.loc[reg, "median"])
+    p = os.path.join(TAB, "T18_posthoc_by_ratio_stratum.csv")
+    if os.path.exists(p):
+        t = pd.read_csv(p)
+        for _, r in t.iterrows():
+            st_ = "short" if "<=" in r.stratum else "long"
+            k = r.method.replace("-", "_")
+            c[f"strat_{st_}_{k}"] = f3(r.mean_task_mean_abs); c[f"stratmed_{st_}_{k}"] = f3(r.mean_task_median_abs)
+            if not pd.isna(r.get("p_holm", np.nan)):
+                c[f"strat_{st_}_{k}_p"] = pfmt(r.p_holm); c[f"strat_{st_}_{k}_wins"] = str(int(r.RPMw_wins)); c[f"strat_{st_}_{k}_losses"] = str(int(r.RPMw_losses))
+            c[f"strat_{st_}_ntasks"] = str(int(r.n_tasks))
     S0 = pd.read_csv(os.path.join(TAB, "S0_stats_excluding_ICRAF_VisNIR.csv")).set_index("comparison")
     for m in S0.index:
         c[f"s0_{m.replace('-', '_')}_p"] = pfmt(S0.loc[m, "p_holm"])

@@ -39,59 +39,57 @@ ABSTRACT_BACKGROUND = (
     "Multivariate calibrations of NIR and MIR spectra need costly reference analyses, yet no principled method predicts from a small "
     "pilot set how the prediction error will fall as samples are added; current learning-curve extrapolation assumes a power-law shape.")
 ABSTRACT_RESULTS = (
-    "Across 38 public calibration tasks from six sources (soils, fruit, fuel, tablets, meat, mixtures), the deterministic-equivalent "
+    "Across 38 public calibration tasks from six sources, the deterministic-equivalent "
     "(random-matrix) risk of ridge regression reproduced ridge and PLS learning curves (mean absolute log error {{tv_ridge_mean}} and "
-    "{{tv_pls_mean}}), and test errors at calibration sizes of 50–6400 collapsed onto one curve. In every task the analyte signal extended "
-    "into weak spectral modes (alignment exponent {{r_min}}–{{r_max}}). Regularisation-path matching (RPM), which fits the theory to a pilot "
-    "set's exact leave-one-group-out errors, forecast the RMSE at larger calibration sizes from {{n_pilots_total}} pilots of 25–200 samples "
-    "with a mean absolute log error of {{mae_RPM}} ({{mae_RPM_w}} with a weighted fit), versus {{mae_IPL3}} for inverse-power-law "
-    "extrapolation (RPM better on {{st_IPL3_wins}} of {{n_tasks}} tasks; p < 0.0001), which, like other curve-shape fits, was strongly "
-    "optimistic. The pilot's own cross-validated error was as accurate ({{mae_FLAT}}). Transferring a realistic alignment exponent failed "
-    "because a pilot cannot separate noise from weak-mode signal, and no method reliably forecast the sample size needed for a target error.")
+    "{{tv_pls_mean}}), and test errors at calibration sizes of 50–6400 collapsed onto one curve. The analyte signal extended into weak spectral "
+    "modes in every task (alignment exponent {{r_min}}–{{r_max}}). Learning-curve slopes (median RMSE reduction {{slope_pct_per_doubling}} per "
+    "doubling) were governed mainly by the irreducible-noise fraction, which a pilot set cannot identify. Over {{n_pilots_total}} pilots of 25–200 "
+    "samples, inverse-power-law extrapolation was strongly optimistic (mean absolute log error {{mae_IPL3}}). Regularisation-path matching (RPM), "
+    "which fits the theory to a pilot's exact leave-one-group-out errors, reduced the error to {{mae_RPM}} (better on {{st_IPL3_wins}} of {{n_tasks}} "
+    "tasks; p < 0.0001). The pilot's own cross-validated error ({{mae_FLAT}}) and a slope transferred from other calibrations ({{mae_SLOPE_T}}) were "
+    "equally accurate. Bands calibrated across data sets reached nominal coverage, but no method reliably forecast the sample size needed for a target error.")
 ABSTRACT_SIGNIFICANCE = (
-    "Calibration learning curves are governed by the spectral eigen-structure and the analyte's alignment with it. Power-law extrapolation "
-    "from small pilots should be avoided. The theory-based forecast is nearly unbiased, but with 25–200-sample pilots the pilot's "
-    "cross-validated error is equally informative, and sample-size planning needs independent information on the noise floor.")
+    "Calibration learning curves are governed by the spectral eigen-structure and the noise floor. Power-law extrapolation from small pilot sets "
+    "should be abandoned. The pilot's cross-validated error, combined with a typical slope and calibrated bands, is a sound planning rule, whereas the "
+    "sample size needed for a target error cannot be forecast reliably from a small pilot.")
 
 HIGHLIGHTS = [
     "Random-matrix theory reproduces learning curves of 38 spectroscopic calibrations",
     "Analyte signal extends into weak spectral modes in every calibration task",
-    "Path matching forecasts calibration error better than power-law extrapolation",
-    "Power-law and log extrapolations of learning curves are strongly over-optimistic",
+    "Learning-curve slopes are set by the noise floor, which pilot sets cannot identify",
+    "Power-law extrapolation from small pilot sets is strongly over-optimistic",
     "Forecasting the sample size for a target error is ill-conditioned for all methods",
 ]
 
 CONCLUSION = (
     "Learning curves of multivariate calibrations are not arbitrary. Across 38 tasks they followed the deterministic-equivalent risk of ridge "
-    "regression, which is set by the eigen-structure of the spectra and by an alignment exponent that was below one in every task. It was lowest "
-    "for Vis/NIR spectra, whose analyte information resides in weak spectral modes. This structure allows a pilot's cross-validation path to be "
-    "extrapolated with far less bias than the power-law fits used today. It also exposes a hard limit: a small pilot cannot tell how much of its "
-    "residual error is learnable signal in weak modes and how much is irreducible noise. Consequently, for pilots of 25–200 samples, the pilot's own "
-    "cross-validated error forecast future performance as well as any extrapolation, and no method reliably forecast the sample size required for a "
-    "given error. Practical sample-size planning therefore needs independent information on the noise floor, for example from replicate reference "
-    "analyses; combining such information with the theory is the most promising direction for further work.")
+    "regression, which is set by the eigen-structure of the spectra, by an alignment exponent that was below one in every task, and above all by the "
+    "irreducible-noise fraction. That structure explains both what can be forecast from a pilot set and what cannot. The theory-based forecaster "
+    "removed most of the optimism of the power-law extrapolation used today. However, a pilot of 25–200 samples cannot reveal how much of its residual "
+    "error is learnable signal in weak spectral modes and how much is noise. Consequently, the pilot's own cross-validated error, with or without a "
+    "typical improvement of about {{slope_pct_per_doubling}} per doubling transferred from other calibrations, forecast future RMSE as well as any "
+    "extrapolation, and the sample size required for a given error could not be forecast reliably. Practical planning should therefore rest on the "
+    "pilot's cross-validated error, a typical slope and calibrated uncertainty bands. Better forecasts will require independent information on the noise "
+    "floor, for example replicate reference analyses, combined with the theory.")
 
 COVER_LETTER = [
-    "Building a multivariate calibration for NIR or MIR spectroscopy is dominated by the cost of reference analyses, and analysts routinely "
-    "have to decide, from a small pilot set, how many more reference samples are worth collecting. The learning-curve extrapolation currently used "
-    "for this purpose in analytical chemistry fits an assumed power-law shape. Our manuscript shows that calibration learning curves instead follow "
-    "the deterministic-equivalent (random-matrix) risk of ridge regression, determined by the eigen-structure of the spectra and by how the analyte "
-    "signal aligns with it, and turns this theory into a forecasting method, regularisation-path matching.",
+    "Building a multivariate calibration for NIR or MIR spectroscopy is dominated by the cost of reference analyses, and analysts routinely have "
+    "to decide, from a small pilot set, how many more reference samples are worth collecting. The learning-curve extrapolation currently used for this "
+    "purpose in analytical chemistry fits an assumed power-law shape. Our manuscript provides a theory of calibration learning curves, based on the "
+    "deterministic-equivalent (random-matrix) risk of ridge regression, and uses it to establish what a pilot set can and cannot predict.",
     "On 38 public calibration tasks from six sources (soil Vis/NIR, MIR and handheld NIR libraries, fruit, fuel, pharmaceutical tablets, meat and "
-    "designed mixtures), the theory reproduced ridge and PLS learning curves (mean absolute log error {{tv_ridge_mean}} and {{tv_pls_mean}}). "
-    "The analyte signal extended into weak spectral modes in every task. The proposed forecaster was more accurate than power-law extrapolation on "
-    "{{st_IPL3_wins}} of {{n_tasks}} tasks (p < 0.0001). We also report the method's limits transparently: the pilot's own cross-validated error was "
-    "equally accurate, transferring a realistic alignment exponent failed for an identifiability reason that we explain, and forecasting the sample size "
-    "for a target error was ill-conditioned for every method.",
-    "We believe the work fits Analytica Chimica Acta's emphasis on fundamental methodological developments in chemometrics and data treatment. "
-    "It concerns a question shared by all quantitative spectroscopic applications, it builds on and corrects current practice, and it is "
-    "fully reproducible: all data are public, the experimental design was pre-registered in a time-stamped log, and one script regenerates every number, "
-    "table and figure.",
-    "The manuscript is original, has not been published previously and is not under consideration for publication elsewhere. All authors "
-    "have approved the submission and declare no competing interests. No human or animal subjects were involved. The use of an AI assistant "
-    "in preparing the work is declared in the manuscript. Suggested reviewers: [to be provided by the authors].",
+    "designed mixtures), the theory reproduced ridge and PLS learning curves. It revealed that the analyte signal extends into weak spectral modes in every "
+    "task, and that learning-curve slopes are governed by the noise floor, which a pilot cannot identify. In a leakage-controlled benchmark of "
+    "{{n_pilots_total}} pilot sets, power-law extrapolation was strongly optimistic, and a theory-based forecaster removed most of this bias. We also "
+    "report transparently that simple rules (the pilot's own cross-validated error and a transferred typical slope) were equally accurate, and that the "
+    "sample size needed for a target error cannot be forecast reliably.",
+    "We believe the work fits Analytica Chimica Acta's emphasis on fundamental methodological developments in chemometrics and data treatment. It "
+    "addresses a question shared by all quantitative spectroscopic applications, it corrects current practice with evidence, and it is fully "
+    "reproducible: all data are public, every design decision is recorded in a time-stamped log, and one script regenerates every number, table and figure.",
+    "The manuscript is original, has not been published previously and is not under consideration for publication elsewhere. All authors have "
+    "approved the submission and declare no competing interests. No human or animal subjects were involved. The use of an AI assistant in preparing "
+    "the work is declared in the manuscript. Suggested reviewers: [to be provided by the authors].",
 ]
-
 
 def dynamic_context(ctx):
     """Sentences whose direction depends on the results; built from the tables."""
@@ -123,17 +121,19 @@ def dynamic_context(ctx):
     # coverage
     T5 = _t("T5_interval_coverage")
     if T5 is not None and len(T5):
-        def cov(m, lev):
+        def cov(m, lev, col="median_width_factor"):
             g = T5[(T5.method == m) & (T5.nominal == lev)]
-            return (float(g.coverage_rows.iloc[0]), float(g.mean_width_factor.iloc[0])) if len(g) else (np.nan, np.nan)
+            return (float(g.coverage_rows.iloc[0]), float(g[col].iloc[0])) if len(g) else (np.nan, np.nan)
         c80, w80 = cov("RPM", 80); c95, w95 = cov("RPM", 95); i80, iw80 = cov("IPL3", 80); i95, iw95 = cov("IPL3", 95)
+        _, gt10 = cov("IPL3", 80, "pct_width_factor_gt10")
         def qual(c, nom):
-            return "close to nominal" if abs(c - nom) <= 5 else ("conservative" if c > nom else "under-covering")
+            return "close to nominal" if abs(c - nom) <= 5 else ("over-covering" if c > nom else "under-covering")
         d["coverage_sentence"] = (
-            f"The Bayesian-bootstrap bands of RPM covered the true RMSE in {c80:.1f}% (nominal 80%) and {c95:.1f}% "
-            f"(nominal 95%) of forecasts ({qual(c80, 80)} and {qual(c95, 95)}, respectively; mean width factors "
-            f"{w80:.2f} and {w95:.2f}). The delta-method bands of IPL3 covered {i80:.1f}% and {i95:.1f}% "
-            f"({qual(i80, 80)}, {qual(i95, 95)}; width factors {iw80:.2f} and {iw95:.2f}).")
+            f"The Bayesian-bootstrap bands of RPM covered the true RMSE in {c80:.1f}% and {c95:.1f}% of forecasts at "
+            f"nominal 80% and 95% ({qual(c80, 80)} at both levels; median width factors {w80:.2f} and {w95:.2f}). "
+            f"The delta-method bands of IPL3 covered {i80:.1f}% and {i95:.1f}% ({qual(i80, 80)} at 80%, {qual(i95, 95)} at 95%), "
+            f"but only by being very wide: median width factors {_fx(iw80)} and {_fx(iw95)}, and {gt10:.0f}% of its 80% bands "
+            f"spanned more than a factor of ten in RMSE.")
         if "RPM-w" in set(T5.method):
             w = T5[(T5.method == "RPM-w")].set_index("nominal")
             d["coverage_sentence"] += (f" RPM-w bands covered {w.loc[80,'coverage_rows']:.1f}% and {w.loc[95,'coverage_rows']:.1f}%.")
@@ -195,17 +195,17 @@ def dynamic_context(ctx):
 
 
 LIB_META = {
-    "ICRAF-VisNIR": ("Soil (global)", "ASD FieldSpec, 400–2480 nm (10 nm)", "OC, clay, pH, CEC"),
-    "ICRAF-MIR": ("Soil (global)", "Bruker Tensor 27 HTS-XT, 4000–600 cm⁻¹ (16 cm⁻¹)", "OC, clay, pH, CEC"),
-    "KSSL-MIR": ("Soil (USA)", "Bruker Vertex 70 HTS-XT, 4000–600 cm⁻¹", "OC, clay, pH, CEC"),
-    "KSSL-VisNIR": ("Soil (USA)", "ASD LabSpec, 400–2480 nm", "OC, clay, pH, CEC"),
-    "AfSIS1-MIR": ("Soil (Africa)", "Bruker Tensor 27 HTS-XT, 4000–600 cm⁻¹", "OC, clay, pH"),
-    "Neospectra-NIR": ("Soil (USA)", "Si-Ware NeoSpectra handheld FT-NIR, 1350–2550 nm", "OC, clay, pH, CEC"),
-    "Mango": ("Fruit", "Felix F750 handheld Vis–SWNIR, 684–990 nm", "dry matter"),
-    "Diesel": ("Fuel", "NIR 750–1550 nm (SWRI)", "bp50, cetane no., density, freezing pt., aromatics, viscosity"),
-    "Tablets": ("Pharmaceutical", "NIR 600–1898 nm (IDRC 2002, instrument 1)", "assay"),
-    "Tecator": ("Meat", "Tecator Infratec 850–1050 nm", "fat, moisture, protein"),
-    "CGL": ("Designed mixture", "NIR 1104–2495 nm", "casein, glucose, lactate, moisture"),
+    "ICRAF-VisNIR": ("Soil", "VisNIR 400–2480 nm", "OC, clay, pH, CEC"),
+    "ICRAF-MIR": ("Soil", "MIR 4000–600 cm⁻¹", "OC, clay, pH, CEC"),
+    "KSSL-MIR": ("Soil", "MIR 4000–600 cm⁻¹", "OC, clay, pH, CEC"),
+    "KSSL-VisNIR": ("Soil", "VisNIR 400–2480 nm", "OC, clay, pH, CEC"),
+    "AfSIS1-MIR": ("Soil", "MIR 4000–600 cm⁻¹", "OC, clay, pH"),
+    "Neospectra-NIR": ("Soil", "NIR 1350–2550 nm, handheld", "OC, clay, pH, CEC"),
+    "Mango": ("Fruit", "SWNIR 684–990 nm, handheld", "dry matter"),
+    "Diesel": ("Fuel", "NIR 750–1550 nm", "6 fuel properties"),
+    "Tablets": ("Pharma", "NIR 600–1898 nm", "assay"),
+    "Tecator": ("Meat", "NIR 850–1050 nm", "fat, moisture, protein"),
+    "CGL": ("Mixture", "NIR 1104–2495 nm", "4 constituents"),
 }
 
 
@@ -216,29 +216,45 @@ def table1_md(table_md):
     for lib, g in T1.groupby("lib", sort=False):
         fam, inst, props = LIB_META.get(lib, ("", "", ""))
         n = g.n_pool + g.n_test
-        rows.append({"Library": lib, "Domain": fam, "Instrument / range": inst, "Properties": props,
+        rows.append({"Library": lib, "Spectral range": inst, "Properties": props,
                      "Tasks": len(g), "N per task": f"{n.min():,}–{n.max():,}" if n.min() != n.max() else f"{n.min():,}",
                      "p": int(g.p.iloc[0]), "Max. n (truth)": f"{g.max_n_truth.max():,}"})
     order = ["ICRAF-VisNIR", "ICRAF-MIR", "KSSL-MIR", "KSSL-VisNIR", "AfSIS1-MIR", "Neospectra-NIR", "Mango", "Diesel", "Tablets", "Tecator", "CGL"]
     df = pd.DataFrame(rows).set_index("Library").reindex([o for o in order if o in {r['Library'] for r in rows}]).reset_index()
-    return table_md(df, "Calibration tasks. N = samples after replicate averaging (pool + group-disjoint test set); p = spectral variables after sub-sampling; max. n = largest calibration size in the ground-truth curve.", "Table 1")
+    return table_md(df, "Calibration tasks. ICRAF, KSSL, AfSIS1 and Neospectra are soil spectral libraries; Mango: fruit dry matter; Diesel: fuel properties; Tablets: pharmaceutical assay; Tecator: meat; CGL: designed casein–glucose–lactate–moisture mixtures. N = samples after replicate averaging (pool + group-disjoint test set); p = spectral variables after sub-sampling; max. n = largest calibration size in the ground-truth curve.", "Table 1")
+
+
+def _fx(v):
+    """Format a multiplicative factor; very large factors in powers of ten (pandoc superscript)."""
+    if not np.isfinite(v):
+        return "–"
+    if v >= 1000:
+        e = int(np.floor(np.log10(v)))
+        return f"{v / 10 ** e:.1f} × 10^{e}^"
+    return f"{v:.2f}"
 
 
 def table2_md(table_md):
     T2 = _t("T2_main_accuracy_ridge_truth")
     T3 = _t("T3_stats_rpm_vs_baselines").set_index("comparison")
-    order = ["RPM", "RPM-w", "RPM-T", "RPM-wT", "SLOPE-T", "IPL3", "IPL2", "EXP3", "LOG2", "FLAT", "DFOLS"]
+    order = ["RPM", "RPM-w", "RPM-T", "RPM-wT", "SLOPE-T", "FLAT", "IPL3", "IPL2", "EXP3", "LOG2", "DFOLS"]
+    short = {"RPM": "RPM", "RPM-w": "RPM-w", "RPM-T": "RPM-T", "RPM-wT": "RPM-wT", "SLOPE-T": "SLOPE-T",
+             "FLAT": "FLAT", "IPL3": "IPL3", "IPL2": "IPL2", "EXP3": "EXP3", "LOG2": "LOG2", "DFOLS": "DF-OLS"}
     T2 = T2.set_index("method").reindex([m for m in order if m in set(T2.method)]).reset_index()
+    def pp(p):
+        return "< 0.0001" if p < 1e-4 else f"{p:.4f}"
     out = pd.DataFrame({
-        "Method": T2.label,
-        "Mean |log err| [95% CI]": [f"{a:.3f} [{l:.3f}, {h:.3f}]" for a, l, h in zip(T2.mean_abs_logerr, T2.ci95_lo, T2.ci95_hi)],
-        "Median task |log err|": T2.median_task_abs_logerr.map(lambda v: f"{v:.3f}"),
+        "Method": [short[m] for m in T2.method],
+        "Mean error": T2.mean_abs_logerr.map(lambda v: f"{v:.3f}"),
+        "95% CI": [f"{l:.3f}–{h:.3f}" for l, h in zip(T2.ci95_lo, T2.ci95_hi)],
+        "Median": T2.median_task_abs_logerr.map(lambda v: f"{v:.3f}"),
         "Bias": T2.mean_bias.map(lambda v: f"{v:+.3f}"),
-        "Within ±20%": T2.pct_within_20.map(lambda v: f"{v:.1f}%"),
-        "Δ vs RPM [95% CI]; Holm p": [("—" if m == "RPM" else f"{T3.loc[m,'median_diff']:+.3f} [{T3.loc[m,'ci95_lo']:+.3f}, {T3.loc[m,'ci95_hi']:+.3f}]; {('< 0.0001' if T3.loc[m,'p_holm'] < 1e-4 else f'{T3.loc[m,'p_holm']:.4f}')}") for m in T2.method],
-        "RPM better / worse": [("—" if m == "RPM" else f"{int(T3.loc[m,'ref_wins'])} / {int(T3.loc[m,'ref_losses'])}") for m in T2.method],
+        "Within ±20%": T2.pct_within_20.map(lambda v: f"{v:.0f}%"),
+        "Δ vs RPM": [("—" if m == "RPM" else f"{T3.loc[m,'median_diff']:+.3f}") for m in T2.method],
+        "Holm p": [("—" if m == "RPM" else pp(T3.loc[m, 'p_holm'])) for m in T2.method],
+        "RPM better/worse": [("—" if m == "RPM" else f"{int(T3.loc[m,'ref_wins'])}/{int(T3.loc[m,'ref_losses'])}") for m in T2.method],
     })
-    return table_md(out, "Forecast accuracy against the ridge ground truth over all tasks, pilot sizes, pilots and horizons. |log err| = |log(RMSE_forecast/RMSE_true)|, averaged within each task; CI = bootstrap over tasks. Δ = median paired difference of per-task errors (method − RPM; positive favours RPM) with bootstrap CI and Holm-adjusted two-sided Wilcoxon p. RPM is the pre-registered method; RPM-w, RPM-T, RPM-wT and SLOPE-T were added after the pre-registration (Section 3.6, EXPERIMENT_LOG).", "Table 2")
+    return table_md(out, "Forecast accuracy against the ridge ground truth over all tasks, pilot sizes, pilots and horizons. Error = |log(RMSE_forecast/RMSE_true)|, averaged within each task; mean and median over tasks; CI = bootstrap over tasks; bias = mean signed log error (negative = optimistic). Δ = median paired difference of per-task errors (method − RPM; positive favours RPM); Holm-adjusted two-sided Wilcoxon p; number of tasks on which RPM was better/worse. RPM is the pre-registered method; RPM-w, RPM-T, RPM-wT and SLOPE-T were added after the pre-registration (Section 3.6).", "Table 2")
 
 
 def table3_md(table_md):
@@ -250,7 +266,8 @@ def table3_md(table_md):
            "RPM-cut0.5": "validity cut-off df2/n0 ≤ 0.5", "RPM-cut0.95": "validity cut-off df2/n0 ≤ 0.95"}
     out = pd.DataFrame({"Variant": [lab.get(v, v) for v in T7.variant], "Tasks": T7.n_tasks.astype(int),
                         "Mean |log err|": T7.mean_abs_logerr.map(lambda v: f"{v:.3f}"),
-                        "Δ vs RPM [95% CI]": [("—" if v == "RPM" else f"{d:+.3f} [{l:+.3f}, {h:+.3f}]") for v, d, l, h in zip(T7.variant, T7.mean_diff_vs_rpm, T7.ci95_lo, T7.ci95_hi)],
+                        "Δ vs RPM": [("—" if v == "RPM" else f"{d:+.3f}") for v, d in zip(T7.variant, T7.mean_diff_vs_rpm)],
+                        "95% CI": [("—" if v == "RPM" else f"{l:+.3f} to {h:+.3f}") for v, l, h in zip(T7.variant, T7.ci95_lo, T7.ci95_hi)],
                         "Holm p": [("—" if pd.isna(p) else ("< 0.0001" if p < 1e-4 else f"{p:.3f}")) for p in T7.p_holm]})
     return table_md(out, "Pre-registered ablation of RPM (n0 ∈ {50, 100}, 10 pilots per task, same pilots for all variants). Δ = mean paired difference of per-task errors (variant − RPM; positive = variant worse) with bootstrap CI; Holm-adjusted Wilcoxon p.", "Table 3")
 
@@ -262,9 +279,9 @@ def table4_md(table_md):
     piv = T8.pivot(index="variant", columns="method", values="mean_abs_logerr")
     bia = T8.pivot(index="variant", columns="method", values="mean_bias")
     cov = T8.pivot(index="variant", columns="method", values="coverage80")
-    lab = {"prep_raw": "Raw absorbance (no SNV)", "prep_sg1": "Savitzky–Golay 1st derivative", "ks_pilot": "Kennard–Stone pilot",
-           "ref_noise": "Reference noise added (25% of var y)", "shift_season": "Mango: new season (train 1–3, test 4)",
-           "iid_ref_seasons123": "Mango: i.i.d. reference (seasons 1–3)", "shift_population": "Mango: orchard-population groups"}
+    lab = {"prep_raw": "Raw absorbance", "prep_sg1": "SG 1st derivative", "ks_pilot": "Kennard–Stone pilot",
+           "ref_noise": "Reference noise +25%", "shift_season": "Mango: new season",
+           "iid_ref_seasons123": "Mango: i.i.d. reference", "shift_population": "Mango: new populations"}
     order = ["prep_raw", "prep_sg1", "ks_pilot", "ref_noise", "iid_ref_seasons123", "shift_season", "shift_population"]
     rows = []
     for v in [o for o in order if o in piv.index]:
@@ -272,7 +289,7 @@ def table4_md(table_md):
         for m in ("RPM", "RPM-T", "IPL3", "FLAT"):
             if m in piv.columns and not pd.isna(piv.loc[v, m]):
                 row[m] = f"{piv.loc[v, m]:.3f} ({bia.loc[v, m]:+.2f})"
-        row["RPM 80% cov."] = f"{cov.loc[v, 'RPM']:.0f}%" if "RPM" in cov.columns and not pd.isna(cov.loc[v, "RPM"]) else "–"
+        row["RPM cov. (80%)"] = f"{cov.loc[v, 'RPM']:.0f}%" if "RPM" in cov.columns and not pd.isna(cov.loc[v, "RPM"]) else "–"
         rows.append(row)
     return table_md(pd.DataFrame(rows), "Robustness and distribution shift (n0 ∈ {50, 100}, 10 pilots). Entries: mean task |log err| (bias). Pre-processing, Kennard–Stone and noise scenarios use six representative tasks (ICRAF-MIR OC, KSSL-VisNIR clay, Neospectra-NIR pH, mango DM, diesel bp50, tablet assay).", "Table 4")
 
@@ -283,101 +300,123 @@ def results_markdown(ctx, TAB_, FIG, table_md):
     s = []
     s.append("# 4. Results and discussion")
     s.append(table1_md(table_md))
-    # 4.1
+    # 4.1 -------------------------------------------------------------------------------------------
     s.append("## 4.1. Calibration learning curves follow the deterministic-equivalent theory")
     s.append(
-        "Fig. 2a compares, for four representative tasks, the expected test RMSE of cross-validated ridge and PLS calibrations "
-        "with the deterministic-equivalent curve of Eq. (3), fitted once to the cross-validation path of the full calibration pool "
-        "(three parameters, $r$ free) and then evaluated at every calibration size. Across all {{n_tasks}} tasks, this single fit "
-        "reproduced the empirical ridge learning curves with a mean absolute log error of {{tv_ridge_mean}} (median task {{tv_ridge_median}}) "
-        "and the PLS curves with {{tv_pls_mean}} (median {{tv_pls_median}}); with $r$ fixed at 1 the errors were {{tv_ridge_mean_r1}} and {{tv_pls_mean_r1}}. "
-        "The largest deviations occurred for {{tv_worst}}: small fuel and designed-mixture sets in which samples are not a random draw "
-        "from a population, a premise of the theory. The structural assumption on which RPM rests — that the calibration size $n$ and the "
-        "penalty $\\mu$ act on the error only through the effective regularisation $\\kappa$ and the prefactor of Eq. (3) — was tested directly. "
-        "Empirical test errors measured at fixed penalties for calibration sizes from 50 to 6400 collapse onto a single curve once plotted against "
-        "$\\kappa(n,\\mu)$ and rescaled (Fig. 2b): the across-$n$ standard deviation of the rescaled log-errors was {{collapse_sd}} (median over "
-        "{{collapse_n}} tasks with at least three calibration sizes), compared with {{collapse_ref}} for the same errors plotted against the raw penalty.")
+        "Fig. 2a compares, for four representative tasks, the expected test RMSE of cross-validated ridge and PLS calibrations with the "
+        "deterministic-equivalent curve of Eq. (3). The curve was fitted once to the cross-validation path of the full calibration pool (three "
+        "parameters, $r$ free) and then evaluated at every calibration size. Across all {{n_tasks}} tasks, this single fit reproduced the empirical ridge "
+        "learning curves with a mean absolute log error of {{tv_ridge_mean}} (median task {{tv_ridge_median}}) and the PLS curves with {{tv_pls_mean}} "
+        "(median {{tv_pls_median}}); with $r$ fixed at 1 the errors rose to {{tv_ridge_mean_r1}} and {{tv_pls_mean_r1}} (Supplementary Table [[ST:T9_theory_validity_full_pool_fit]]). The "
+        "largest deviations occurred for {{tv_worst}}: small fuel and designed-mixture sets, whose samples are not a random draw from a population, "
+        "which is a premise of the theory. "
+        "The structural assumption on which RPM rests — that the calibration size $n$ and the penalty $\\mu$ act on the error only through the effective "
+        "regularisation $\\kappa$ and the prefactor of Eq. (3) — was tested directly. Empirical test errors measured at fixed penalties for calibration sizes "
+        "from 50 to 6400 collapse onto a single curve once plotted against $\\kappa(n,\\mu)$ and rescaled (Fig. 2b). The across-$n$ standard deviation of the "
+        "rescaled log-errors was {{collapse_sd}} (median over {{collapse_n}} tasks with at least three calibration sizes), compared with {{collapse_ref}} for "
+        "the same errors plotted against the raw penalty.")
     s.append(f"![**Fig. 2.** Validity of the deterministic-equivalent theory. (a) Expected test RMSE of LOGO-tuned ridge and CV-tuned PLS calibrations (markers) and the theory fitted to the full-pool cross-validation path (dotted). (b) κ-collapse: empirical test MSE at fixed penalty for different calibration sizes $n$ (shades), rescaled by the theory prefactor and plotted against the effective regularisation κ.]({fig('Fig2_theory_validity_and_collapse')}){{width=16cm}}")
-    # 4.2
-    s.append("## 4.2. Analyte signal extends into weak spectral modes")
+    # 4.2 -------------------------------------------------------------------------------------------
+    s.append("## 4.2. Analyte signal extends into weak spectral modes, and the noise floor sets the slope")
     s.append(
-        "The large-sample fits also estimate the alignment exponent $r$, which describes how the analyte signal is distributed over the "
-        "eigenvalues of the spectral covariance ($s_k\\propto\\lambda_k^{r}$). In all {{n_r_below_1}} tasks, $r$ was below 1 (median {{r_median}}, "
-        "interquartile range {{r_q1}}–{{r_q3}}, range {{r_min}}–{{r_max}}; Fig. 3). The signal therefore carries more power in low-variance "
-        "spectral directions than the isotropic coefficient prior ($r=1$) implies. The exponent differed systematically between spectral regions. "
-        "It was lowest for Vis/NIR soil and SWNIR fruit spectra (median {{r_vis_median}}), whose broad, overlapping overtone and combination bands and strong scattering "
-        "leave the chemical information in subtle shape differences, and higher for MIR soil spectra (median {{r_mir_median}}), whose fundamental "
-        "vibrations concentrate the information in better-resolved, high-variance features. Two consequences follow. First, learning curves keep improving over "
-        "a wide range of $n$ because weak modes become learnable only gradually. Second, a forecaster that assumes $r=1$ "
-        "will tend to under-predict future improvement — which is what we observe below.")
-    s.append(f"![**Fig. 3.** Alignment exponent $r$ estimated from the full calibration pool of each task (dots; bars = medians), grouped by spectral region and sample type. Dashed line: the isotropic prior $r=1$ used by the pre-registered RPM. Grey band: range of the leave-one-source-out priors used by RPM-T.]({fig('Fig12_alignment_exponents')}){{width=11cm}}")
-    # 4.3
+        "The large-sample fits also estimate the alignment exponent $r$, which describes how the analyte signal is distributed over the eigenvalues "
+        "of the spectral covariance ($s_k\\propto\\lambda_k^{r}$). In all {{n_r_below_1}} tasks, $r$ was below 1 (median {{r_median}}, interquartile range "
+        "{{r_q1}}–{{r_q3}}, range {{r_min}}–{{r_max}}; Fig. 3). The analyte signal therefore carries more power in low-variance spectral directions than "
+        "an isotropic coefficient prior ($r=1$) implies. The exponent was lowest for Vis/NIR soil and SWNIR fruit spectra (median {{r_vis_median}}), "
+        "whose broad, overlapping overtone and combination bands and strong scattering leave the chemical information in subtle shape differences. It "
+        "was higher for MIR soil spectra (median {{r_mir_median}}), whose fundamental vibrations concentrate the information in better-resolved, "
+        "high-variance features. Because weak modes become learnable only gradually, learning curves keep improving over a wide range of $n$.")
+    s.append(f"![**Fig. 3.** Alignment exponent $r$ estimated from the full calibration pool of each task (dots; bars = medians), grouped by spectral region and sample type. Dashed line: the isotropic prior $r=1$ assumed by RPM. Grey band: range of the leave-one-source-out priors used by RPM-T.]({fig('Fig12_alignment_exponents')}){{width=11cm}}")
+    s.append(
+        "How steeply a curve falls was remarkably similar across tasks. Fitting $\\log\\mathrm{RMSE}$ against $\\log_2 n$ over each ground-truth curve gave a "
+        "median slope of {{slope_median}} per doubling of $n$ (interquartile range {{slope_q1}} to {{slope_q3}}), i.e. a typical RMSE reduction of about "
+        "{{slope_pct_per_doubling}} for every doubling of the calibration set. The medians for the MIR ({{slope_reg_mir}}) and Vis/NIR ({{slope_reg_vis}}) "
+        "soil libraries were nearly identical despite their different alignment exponents. The steepest curves belonged to the designed CGL mixtures "
+        "({{slope_reg_cgl}}) and the meat data ({{slope_reg_tecator}}), whose reference noise is small. In a post-hoc regression, the large-sample theory "
+        "parameters explained most of the between-task variation of the slope ($R^2$ = {{slope_ols_r2}}; Supplementary Table [[ST:T17_posthoc_slope_explanation]]). The irreducible-noise "
+        "fraction $\\sigma^2/\\mathrm{var}(y)$ was the dominant term (Spearman $\\rho$ = {{slope_rho_noise}}, p {{slope_p_noise}}; Fig. 4): the closer a "
+        "calibration is to its noise floor, the less it gains from more samples. This explains why a learning curve cannot be read from its first points. "
+        "Its slope is set mainly by the noise floor, and the noise floor is precisely what a small pilot cannot identify (Section 4.4).")
+    s.append(f"![**Fig. 4.** Slope of the ground-truth learning curve (log RMSE per doubling of $n$) against the irreducible-noise fraction of the large-sample fit (post hoc).]({fig('Fig13_slope_vs_noise')}){{width=9cm}}")
+    # 4.3 -------------------------------------------------------------------------------------------
     s.append("## 4.3. Forecasting from small pilot sets")
     s.append(
-        "Table 2 summarises {{n_forecasts}} forecasts from {{n_pilots_total}} pilot sets. The pre-registered RPM reached a mean task error of "
-        "{{mae_RPM}} (95% CI {{mae_RPM_lo}}–{{mae_RPM_hi}}) with a small positive bias ({{bias_RPM}}). The inverse-power-law extrapolation currently "
-        "used in analytical chemistry (IPL3) had a mean error of {{mae_IPL3}} and was optimistic (bias {{bias_IPL3}}). RPM was more accurate on "
-        "{{st_IPL3_wins}} of {{n_tasks}} tasks (median paired difference {{st_IPL3_diff}}, 95% CI {{st_IPL3_lo}}–{{st_IPL3_hi}}; Holm p {{st_IPL3_p}}; "
-        "rank-biserial correlation {{st_IPL3_rb}}). It was also significantly more accurate than the pure power law (IPL2, {{mae_IPL2}}), exponential "
-        "({{mae_EXP3}}) and logarithmic ({{mae_LOG2}}) extrapolations and the fixed-complexity formula (DF-OLS, {{mae_DFOLS}}), all of which "
-        "were strongly optimistic. The curve-shape extrapolations can drive the forecast error towards zero (Fig. 4), because a pilot constrains the "
-        "curve only near the pilot size.")
+        "Table 2 summarises {{n_forecasts}} forecasts from {{n_pilots_total}} pilot sets. The inverse-power-law extrapolation currently used in "
+        "analytical chemistry (IPL3) had a mean task error of {{mae_IPL3}} and was optimistic (bias {{bias_IPL3}}). The pure-power-law ({{mae_IPL2}}), "
+        "exponential ({{mae_EXP3}}) and logarithmic ({{mae_LOG2}}) extrapolations and the fixed-complexity formula (DF-OLS, {{mae_DFOLS}}) were worse and "
+        "even more optimistic. These curve-shape extrapolations can drive the forecast towards zero error (Fig. 5), because a pilot constrains the curve "
+        "only near the pilot size. The pre-registered RPM reduced the mean error to {{mae_RPM}} (95% CI {{mae_RPM_lo}}–{{mae_RPM_hi}}) and was nearly unbiased "
+        "({{bias_RPM}}). It was more accurate than IPL3 on {{st_IPL3_wins}} of {{n_tasks}} tasks (median paired difference {{st_IPL3_diff}}, 95% CI "
+        "{{st_IPL3_lo}}–{{st_IPL3_hi}}; Holm p {{st_IPL3_p}}; rank-biserial correlation {{st_IPL3_rb}}) and significantly more accurate than every other "
+        "curve-shape extrapolation. " + d.get("rpmw_sentence", ""))
     s.append(table2_md(table_md))
-    s.append(f"![**Fig. 4.** Example forecasts from one pilot of $n_0$ = 50 samples: ground-truth learning curve (black), RPM forecast with 80% and 95% bootstrap bands (blue), IPL3 extrapolation (orange) and the no-improvement rule (green). Logarithmic axes.]({fig('Fig3_example_forecasts')}){{width=16cm}}")
+    s.append(f"![**Fig. 5.** Example forecasts from one pilot of $n_0$ = 50 samples: ground-truth learning curve (black), RPM forecast with 80% and 95% bootstrap bands (blue), IPL3 extrapolation (orange) and the no-improvement rule (green). Logarithmic axes.]({fig('Fig3_example_forecasts')}){{width=16cm}}")
     s.append(
-        "The no-improvement rule (FLAT), which simply reports the pilot's cross-validated error, was the hardest baseline: its mean error was "
-        "{{mae_FLAT}}, and the difference to RPM was not significant (median paired difference {{st_FLAT_diff}}, 95% CI {{st_FLAT_lo}}–{{st_FLAT_hi}}; "
-        "Holm p {{st_FLAT_p}}; RPM better on {{st_FLAT_wins}} and worse on {{st_FLAT_losses}} tasks). FLAT is pessimistic by construction (bias "
-        "{{bias_FLAT}}), and its error equals the true improvement between $n_0$ and $n$. It is therefore accurate whenever learning curves are shallow "
-        "relative to the sampling noise of a small pilot's cross-validation error, which was the case for most tasks over 2- to 16-fold extrapolations. "
-        "RPM's error is less dependent on the size of the improvement but carries the extra variance of an extrapolation. "
-        + d.get("slope_sentence", "") + " " + d.get("rpmw_sentence", ""))
-    s.append(f"![**Fig. 5.** Per-task mean absolute log error of each method by pilot size (dots = tasks; bars = medians; logarithmic scale). Identity is encoded by position; RPM variants are shown in blue.]({fig('Fig4_main_accuracy')}){{width=16cm}}")
-    s.append(
-        "Errors grew with the extrapolation ratio $n/n_0$ for all methods but much more slowly for RPM than for the curve-shape extrapolations (Fig. 6; "
-        "Supplementary Table S12). Against the PLS ground truth, the ordering of methods was unchanged (RPM {{pls_mae_RPM}}, IPL3 {{pls_mae_IPL3}}, "
-        "FLAT {{pls_mae_FLAT}}; Supplementary Table S4). RPM forecasts of a ridge calibration thus also serve for PLS, whose learning curves "
-        "differed from ridge by only a few percent (Section 4.1). Excluding the four ICRAF-VisNIR tasks used in exploratory work did not change any "
-        "conclusion (RPM vs IPL3 Holm p {{s0_IPL3_p}}; vs FLAT {{s0_FLAT_p}}; Supplementary Table S24).")
-    s.append(f"![**Fig. 6.** Median absolute log error as a function of the extrapolation ratio $n/n_0$ for RPM, IPL3 and the no-improvement rule.]({fig('Fig5_error_vs_extrapolation_ratio')}){{width=8.5cm}}")
-    # 4.4
-    s.append("## 4.4. Why the measured alignment cannot simply be plugged in")
+        "Two simple rules were at least as accurate as the theory-based forecasts. The no-improvement rule (FLAT), which reports the pilot's own "
+        "cross-validated error, reached {{mae_FLAT}}; its difference to RPM was not significant (median paired difference {{st_FLAT_diff}}; Holm p "
+        "{{st_FLAT_p}}; RPM better on {{st_FLAT_wins}} and worse on {{st_FLAT_losses}} tasks). FLAT is pessimistic by construction (bias {{bias_FLAT}}), and "
+        "its error equals the true improvement between $n_0$ and $n$. It is therefore accurate whenever learning curves are shallow relative to the sampling "
+        "error of a small pilot, which Section 4.2 shows to be the typical case. "
+        "SLOPE-T, which extrapolates the pilot's cross-validated error with the median slope of the learning curves of the *other* data sources "
+        "(leave-one-source-out; added after pre-registration as a hostile-reviewer check), was the most accurate method overall ({{mae_SLOPE_T}}, bias "
+        "{{bias_SLOPE_T}}). It was significantly better than the pre-registered RPM (Holm p {{st_SLOPE_T_p}}; better on {{st_SLOPE_T_losses}} of {{n_tasks}} "
+        "tasks) but not significantly different from RPM-w (Holm p {{stS_RPM_w_p}}) or FLAT (Holm p {{stS_FLAT_p}}; Supplementary Table [[ST:T3c_posthoc_stats_slopeT_reference]]). "
+        "The same three methods led at short and long extrapolations alike. For 16-fold or larger extrapolations ({{strat_long_ntasks}} tasks), the mean task "
+        "errors were {{strat_long_SLOPE_T}} (SLOPE-T), {{strat_long_FLAT}} (FLAT), {{strat_long_RPM_w}} (RPM-w) and {{strat_long_IPL3}} (IPL3), with no significant "
+        "difference among the first three (Supplementary Table [[ST:T18_posthoc_by_ratio_stratum]]; Fig. 6). Against the PLS ground truth the ordering was unchanged (RPM {{pls_mae_RPM}}, "
+        "SLOPE-T {{pls_mae_SLOPE_T}}, FLAT {{pls_mae_FLAT}}, IPL3 {{pls_mae_IPL3}}; Supplementary Table [[ST:T4_main_accuracy_pls_truth]]), and excluding the four ICRAF-VisNIR tasks used in "
+        "exploratory work changed no conclusion (RPM vs IPL3 Holm p {{s0_IPL3_p}}; vs FLAT {{s0_FLAT_p}}; Supplementary Table [[ST:S0_stats_excluding_ICRAF_VisNIR]]).")
+    s.append(f"![**Fig. 6.** Median absolute log error as a function of the extrapolation ratio $n/n_0$ for RPM-w, IPL3, the no-improvement rule and SLOPE-T (logarithmic axes).]({fig('Fig5_error_vs_extrapolation_ratio')}){{width=8.5cm}}")
+    s.append(f"![**Fig. 7.** Per-task mean absolute log error of every method by pilot size (dots = tasks; bars = medians; logarithmic scale). Identity is encoded by position; RPM variants in blue.]({fig('Fig4_main_accuracy')}){{width=16cm}}")
+    # 4.4 -------------------------------------------------------------------------------------------
+    s.append("## 4.4. What a pilot cannot identify")
     s.append(
         "Section 4.2 suggests replacing $r=1$ by a realistic exponent. RPM-T does this with an exponent transferred from the other data sources "
-        "(leave-one-source-out median; Section 3.6). " + d.get("RPM_T_sentence", "") + "; RPM-wT, which combines the transferred exponent with the "
-        "weighted fit, behaved similarly (" + d.get("RPM_wT_sentence", "") + "). "
-        "The failure mode is informative. With $r<1$, part of the error that remains along the pilot's regularisation path can be attributed either to target power in weak "
-        "modes or to irreducible noise. The fit often chose the former and drove the estimated noise floor towards zero: for KSSL-MIR organic "
-        "carbon, the median fitted noise fraction from 25-sample pilots was 0 compared with 0.018 in the large-sample fit. The forecasts then predicted "
-        "improvements that never materialised. This is the identifiability limit of Section 2.4 in practice. A pilot cannot separate target "
-        "power hidden in weak modes from noise, so any extrapolation must import that information. The isotropic assumption $r=1$ is "
-        "misspecified, but it errs on the conservative side, because it assigns the ambiguous variance to noise. As a post-hoc illustration, the two "
-        "assumptions bracket the truth: " + d.get("bracket_sentence", "") + ".")
-    # 4.5
+        "(leave-one-source-out median, {{r_loso_min}}–{{r_loso_max}}). " + d.get("RPM_T_sentence", "") + "; RPM-wT, which adds the weighted fit, behaved "
+        "similarly (" + d.get("RPM_wT_sentence", "") + "). The failure mode is informative. With $r<1$, the residual error along the pilot's "
+        "regularisation path can be attributed either to target power in weak modes or to irreducible noise. The fit often chose the former and drove "
+        "the estimated noise floor towards zero: for KSSL-MIR organic carbon, the median fitted noise fraction from 25-sample pilots was 0, compared with 0.018 "
+        "in the large-sample fit. The forecasts then predicted improvements that never materialised. The simulation reproduced the same failure under "
+        "controlled conditions (Section 4.7). This is the identifiability limit of Section 2.4: a pilot cannot separate target power hidden in weak modes "
+        "from noise, so every extrapolation must import that information. The isotropic assumption $r=1$ errs on the conservative side, because it assigns "
+        "the ambiguous variance to noise. SLOPE-T imports it empirically, as a typical slope learnt from other calibrations, which works because slopes are "
+        "similar across calibrations (Section 4.2). A post-hoc bracket between the RPM-T and RPM forecasts did not contain the truth in most cases "
+        "(" + d.get("bracket_sentence", "").split(";")[0] + "), because the two forecasts usually coincide and differ only when RPM-T fails.")
+    # 4.5 -------------------------------------------------------------------------------------------
     s.append("## 4.5. Uncertainty bands and sample-size decisions")
-    s.append(d.get("coverage_sentence", ""))
-    s.append(f"![**Fig. 7.** Empirical vs nominal coverage of the 80% and 95% forecast bands of RPM (Bayesian bootstrap) and IPL3 (delta method).]({fig('Fig6_interval_coverage')}){{width=8cm}}")
+    s.append(
+        d.get("coverage_sentence", "") + " The bootstrap captures the sampling variability of the pilot but not the systematic error of the "
+        "extrapolation, so RPM's bands are too narrow; IPL3 reaches nominal-looking coverage only through bands of absurd width. In a post-hoc "
+        "remedy, bands were calibrated on the error distribution of the same method in the other data sources (leave-one-source-out split-conformal "
+        "calibration by extrapolation ratio). This gave close to nominal coverage for every method, for example {{conf80_SLOPE_T}} and "
+        "{{conf95_SLOPE_T}} for SLOPE-T (80% and 95% bands; width factors {{confw80_SLOPE_T}} and {{confw95_SLOPE_T}}), {{conf80_RPM_w}} and "
+        "{{conf95_RPM_w}} for RPM-w ({{confw80_RPM_w}}, {{confw95_RPM_w}}) and {{conf80_IPL3}} and {{conf95_IPL3}} for IPL3 ({{confw80_IPL3}}, "
+        "{{confw95_IPL3}}; Supplementary Table [[ST:T16_posthoc_loso_conformal_bands]]). Honest 80% bands for the RMSE at a larger calibration size therefore span roughly a factor of "
+        "{{confw80_SLOPE_T}}–{{confw80_RPM_w}} when only a small pilot is available.")
+    s.append(f"![**Fig. 8.** Empirical vs nominal coverage of the forecast bands: RPM Bayesian-bootstrap bands, IPL3 delta-method bands and (post hoc) SLOPE-T bands calibrated leave-one-source-out.]({fig('Fig6_interval_coverage')}){{width=8cm}}")
     s.append(
         "The pre-registered decision metric asked each method for the calibration size at which the RMSE actually achieved at $n^{*}=4n_0$ or $16n_0$ "
-        "would be reached. No method was useful: RPM placed $\\hat n$ within a factor of two of $n^{*}$ in {{dec_4n0_RPM}} and {{dec_16n0_RPM}} of the "
-        "pilots, IPL3 in {{dec_4n0_IPL3}} and {{dec_16n0_IPL3}}, and FLAT, which never forecasts improvement, in none "
-        "(Supplementary Table S7, Fig. S1). The reason is structural. Learning curves are shallow (often a few per cent in RMSE per doubling of $n$), "
-        "so a factor-two error in $n$ corresponds to a smaller change in RMSE than the sampling error of a small pilot's own cross-validated RMSE. "
-        "Forecasting the *sample size* needed for a given RMSE is therefore ill-conditioned, whereas forecasting the *RMSE* expected at a "
-        "given sample size is not. The IPL successes partly reflect their optimism: a steep forecast crosses the target early. In a post-hoc analysis that "
-        "removes the pilot-level error shared by all methods, we scored the predicted *gain* $\\mathrm{RMSE}(n)/\\mathrm{RMSE}(n_0)$ instead. "
-        + d.get("gain_sentence", ""))
-    # 4.6 ablation
+        "would be reached. RPM placed $\\hat n$ within a factor of two of $n^{*}$ in {{dec_4n0_RPM}} and {{dec_16n0_RPM}} of the pilots, IPL3 in "
+        "{{dec_4n0_IPL3}} and {{dec_16n0_IPL3}}, SLOPE-T in {{dec_4n0_SLOPE_T}} and {{dec_16n0_SLOPE_T}}; FLAT, which never forecasts improvement, "
+        "succeeded in none (Supplementary Table [[ST:T6_sample_size_decisions]], Fig. [[SF:Fig10_sample_size_decisions]]). No method is reliable here, for a structural reason. With slopes of about "
+        "{{slope_pct_per_doubling}} per doubling, a factor-two error in $n$ corresponds to a smaller change in RMSE than the sampling error of a small "
+        "pilot's own cross-validated RMSE. Forecasting the *sample size* needed for a given RMSE is therefore ill-conditioned, whereas forecasting the "
+        "*RMSE* expected at a given sample size is not. In a post-hoc analysis that removes the pilot-level error shared by all methods, we scored the "
+        "predicted *gain* $\\mathrm{RMSE}(n)/\\mathrm{RMSE}(n_0)$ (pilots of 50–200 samples): " + d.get("gain_sentence", "").split(". For the decision")[0] +
+        ". SLOPE-T forecast the gain best ({{gain_SLOPE_T}}), whereas RPM under-predicted it (bias {{gainbias_RPM}}), consistent with its conservative "
+        "$r=1$ assumption.")
+    # 4.6 -------------------------------------------------------------------------------------------
     s.append("## 4.6. Ablation")
     s.append(table3_md(table_md))
     s.append(
         "Freeing the alignment exponent was the most damaging change (mean error {{abl_RPM_rfree}} vs {{abl_rpm_subset}} for RPM on the same pilots), "
-        "consistent with the identifiability analysis. Type-II maximum likelihood instead of path matching, the exact LOGO path instead of 10-fold "
-        "cross-validation, and the validity cut-off had small effects (Table 3). The eigen-spectrum taken from unlabelled spectra did not "
-        "improve on the pilot's own spectra under $r=1$ (pilot-only covariance {{abl_RPM_pilotcov}}), because with $r=1$ the forecast depends "
-        "little on the spectral tail. A follow-up ablation for RPM-T, defined before its results were seen, gave " + d.get("ablT_sentence", "") + ".")
-    s.append(f"![**Fig. 8.** Pre-registered ablation: change in mean absolute log error relative to RPM (positive = variant worse), with bootstrap 95% CI.]({fig('Fig7_ablation')}){{width=9cm}}")
-    # 4.7 simulation
+        "consistent with the identifiability analysis. Type-II maximum likelihood instead of path matching, exact LOGO vs 10-fold paths, and the "
+        "validity cut-off made small differences (Table 3). The eigen-spectrum taken from unlabelled spectra did not improve on the pilot's own spectra "
+        "under $r=1$ (pilot-only covariance {{abl_RPM_pilotcov}}), because with $r=1$ the forecast depends little on the spectral tail. The follow-up "
+        "ablation for RPM-T (defined before its results were seen) gave " + d.get("ablT_sentence", "") + "; unlabelled spectra are therefore not what "
+        "limits these forecasts.")
+    s.append(f"![**Fig. 9.** Pre-registered ablation: change in mean absolute log error relative to RPM (positive = variant worse), with bootstrap 95% CI.]({fig('Fig7_ablation')}){{width=9cm}}")
+    # 4.7 -------------------------------------------------------------------------------------------
     s.append("## 4.7. Controlled simulation")
     s.append(
         "The simulation with Monte-Carlo ground truth isolates the role of the alignment assumption (Supplementary Tables S21–S22). When the true "
@@ -385,46 +424,53 @@ def results_markdown(ctx, TAB_, FIG, table_md):
         "and nearly unbiased (median signed error {{simbias_r1_RPM}}), against {{sim_r1_IPL3}} for IPL3 and {{sim_r1_FLAT}} for FLAT. Misspecification "
         "biased RPM in the direction predicted by the theory. With the signal in weak modes ($r=0.5$), RPM was pessimistic ({{simbias_r05_RPM}}) and "
         "IPL3 was the most accurate method ({{sim_r05_IPL3}} vs {{sim_r05_RPM}}). With the signal in dominant modes ($r=2$), RPM was slightly optimistic "
-        "({{simbias_r2_RPM}}), and the flat rule became hard to beat ({{sim_r2_FLAT}}). "
-        "Transferring an exponent of 0.46 (RPM-T) removed the bias when the true exponent was close to it ({{simbias_r05_RPM_T}} at $r=0.5$) but made "
-        "small-pilot forecasts unstable (median error {{simn0_30_RPM_T}} for 30-sample pilots vs {{simn0_30_RPM}} for RPM). This reproduces, under "
-        "controlled conditions, the noise-floor problem observed on real data (Section 4.4). Across scenarios, RPM's error fell from {{simn0_30_RPM}} to "
-        "{{simn0_120_RPM}} as the pilot grew from 30 to 120 samples. The small pilot, not the theory, limits accuracy when the assumptions hold.")
-    # 4.8 robustness
+        "({{simbias_r2_RPM}}), and the flat rule became hard to beat ({{sim_r2_FLAT}}). Transferring an exponent of 0.46 (RPM-T) removed the bias when the "
+        "true exponent was close to it ({{simbias_r05_RPM_T}} at $r=0.5$), but it made small-pilot forecasts unstable (median error {{simn0_30_RPM_T}} for "
+        "30-sample pilots vs {{simn0_30_RPM}} for RPM). This reproduces, under controlled conditions, the noise-floor problem observed on real data. Across "
+        "scenarios, RPM's error fell from {{simn0_30_RPM}} to {{simn0_120_RPM}} as the pilot grew from 30 to 120 samples. When the assumptions hold, the "
+        "small pilot, not the theory, limits accuracy.")
+    # 4.8 -------------------------------------------------------------------------------------------
     s.append("## 4.8. Robustness and distribution shift")
     s.append(table4_md(table_md))
     s.append(
-        "The method ranking was stable across pre-processing (raw absorbance, first derivative), Kennard–Stone-selected pilots and noisier reference "
-        "values (Table 4). Under a genuine distribution shift, all pilot-based forecasts degraded. They describe the population from which the pilot was "
-        "drawn, so a new harvest season with a different composition, or new orchard populations, lies outside what any of them can anticipate "
-        "(Table 4, mango scenarios). This reinforces the standard advice that pilot sets be drawn from the population in which the calibration will be used.")
-    s.append(f"![**Fig. 9.** Robustness scenarios: mean absolute log error of RPM, RPM-T, IPL3 and the no-improvement rule.]({fig('Fig8_robustness')}){{width=10cm}}")
-    # 4.9 error analysis
+        "The ranking RPM ≈ FLAT ≪ IPL3 held for raw-absorbance and first-derivative spectra and for noisier reference values (Table 4). It changed with "
+        "Kennard–Stone-selected pilots. A pilot that spans the extremes of the spectral space has a larger cross-validated error than a random sample, "
+        "so RPM and FLAT became strongly pessimistic (bias {{robb_ks_pilot_RPM}} and {{robb_ks_pilot_FLAT}}), and IPL3's optimism happened to cancel this "
+        "bias ({{rob_ks_pilot_IPL3}} vs {{rob_ks_pilot_RPM}} for RPM). Pilot-based forecasts assume random pilots, and pilots chosen to cover the spectral "
+        "space should not be used for this purpose. Under a genuine distribution shift, no method anticipated the change. For a new mango season the "
+        "truth was worse than within the calibration seasons. RPM's within-population pessimism (bias {{robb_iid_ref_seasons123_RPM}} on an i.i.d. "
+        "reference split) then happened to land close to the shifted truth ({{rob_shift_season_RPM}}), whereas FLAT became optimistic "
+        "({{robb_shift_season_FLAT}}) and IPL3 collapsed ({{rob_shift_season_IPL3}}). These are compensating biases, not skill. With orchard populations "
+        "held out, all methods were pessimistic. Pilot sets must therefore be drawn at random from the population in which the calibration will be used, "
+        "and forecasts do not transfer across shifts.")
+    s.append(f"![**Fig. 10.** Robustness scenarios: mean absolute log error of RPM, RPM-T, RPM-wT, IPL3 and the no-improvement rule.]({fig('Fig8_robustness')}){{width=10cm}}")
+    # 4.9 -------------------------------------------------------------------------------------------
     s.append("## 4.9. Error analysis and computational cost")
     s.append(
-        "Across tasks, RPM's error was associated with the following descriptors (Spearman correlations; Supplementary Table S17): " + d.get("corr_sentence", "") + ". "
-        "The largest errors arose for small pools, designed experiments and properties with strong non-linearity, where the theory's random-sampling and "
-        "linearity premises are weakest (Supplementary Fig. S2). Computationally, an RPM forecast including 50 bootstrap refits took {{t_rpm_mean}} s per pilot "
-        "on one CPU core, compared with {{t_curve_mean}} s for building the within-pilot learning curve that the curve-fitting baselines need. Both are negligible "
-        "against the cost of a single reference analysis.")
-    # 4.10 recommendations
+        "Across tasks, RPM's error correlated with the following descriptors (Spearman correlations; Supplementary Table [[ST:T13b_error_correlates]]): " + d.get("corr_sentence", "") + ". "
+        "The largest errors arose for the small fuel and pharmaceutical sets, the designed mixtures and the Kennard–Stone and shift scenarios, where the "
+        "theory's premises of random sampling from a stable population are weakest (Supplementary Fig. [[SF:Fig9_error_analysis]]). An RPM forecast including 50 bootstrap refits "
+        "took {{t_rpm_mean}} s per pilot on one CPU core, against {{t_curve_mean}} s to build the within-pilot learning curve that the curve-fitting "
+        "baselines need. SLOPE-T and FLAT are instantaneous. All are negligible next to the cost of one reference analysis.")
+    # 4.10 ------------------------------------------------------------------------------------------
     s.append("## 4.10. Practical recommendations")
     s.append(
-        "(i) Do not extrapolate learning curves with power-law or logarithmic fits to a small pilot: across {{n_tasks}} tasks they were "
-        "systematically optimistic, and their errors grew rapidly with the extrapolation ratio. (ii) If a forecast of the RMSE at a larger calibration "
-        "size is needed, RPM (with $r=1$) provides a conservative, nearly unbiased estimate with useful uncertainty bands at the cost of a few seconds of computation. "
-        "Over moderate extrapolations, however, the pilot's cross-validated error is an equally good point estimate. (iii) Treat forecasts of the "
-        "*sample size* needed to reach a target RMSE with great caution: for shallow learning curves this quantity is ill-conditioned for any method. "
-        "(iv) Pilot sets of at least 100 samples, drawn at random from the target population, roughly halve the forecast error compared with "
-        "25-sample pilots (Supplementary Table S3).")
+        "(i) Do not extrapolate learning curves with power-law, exponential or logarithmic fits to a small pilot: across {{n_tasks}} tasks they were "
+        "systematically optimistic, and their error grew rapidly with the extrapolation ratio. (ii) To forecast the RMSE at a larger calibration size, start "
+        "from the pilot's group-wise cross-validated error and expect a reduction of roughly {{slope_pct_per_doubling}} per doubling of the calibration set "
+        "(less when the reference method is noisy relative to the property's range). Such a rule (SLOPE-T) was as accurate as any method tested and "
+        "outperformed the theory-based forecasts in forecasting the gain; it should be re-validated prospectively. (iii) Report forecasts with bands "
+        "calibrated on previous calibrations; for 25–200-sample pilots, honest 80% bands span a factor of about {{confw80_SLOPE_T}} in RMSE. (iv) Treat "
+        "forecasts of the *sample size* required for a target RMSE with great caution, because for shallow learning curves this quantity is ill-conditioned for "
+        "any method. (v) Use random pilot sets from the target population; space-filling selections such as Kennard–Stone bias every pilot-based forecast. "
+        "(vi) Where no previous calibrations are available, RPM-w provides a theory-based, conservative alternative that requires only the pilot and is far "
+        "more reliable than curve-shape extrapolation.")
     return "\n\n".join(x for x in s if x)
-
 
 LIMITATIONS = """# 5. Limitations
 
-1. **Linear calibrations only.** The theory describes ridge regression; PLS learning curves were tracked closely (Section 4.1), but the forecasts do not apply to non-linear or local calibration methods (kernel, Cubist, memory-based or deep models), which may continue to improve after linear models saturate.
-2. **What a pilot can reveal.** The alignment between analyte signal and weak spectral modes cannot be identified from a small pilot (Sections 2.4 and 4.4). RPM resolves this with the conservative assumption $r=1$, which under-predicts improvement where the true exponent is low (Vis/NIR spectra). Transferring a realistic exponent from other data sets made the forecasts unstable. Better external information, for example from replicate reference analyses that bound the noise floor, is needed to narrow the forecasts.
-3. **Shallow curves and noisy pilots.** Over 2- to 16-fold extrapolations, the sampling error of a 25–200-sample pilot is comparable to the improvement to be forecast. The no-improvement rule is then as accurate as any extrapolation, and forecasts of the *sample size* required for a target error are ill-conditioned for every method.
-4. **Random sampling from a stable population.** The theory assumes that pilot, future calibration samples and future test samples come from the same population. Designed experiments, Kennard–Stone selection and genuine shifts (new seasons, new populations) violate this assumption; Table 4 quantifies the consequences.
-5. **Data sets.** {{n_soil}} of the {{n_tasks}} tasks are soil calibrations from the Open Soil Spectral Library; the fruit, fuel, pharmaceutical, meat and mixture sets are smaller and allow only short extrapolations. Group definitions for soil profiles rely on site identifiers or coordinates. Each task used one fixed group-disjoint test split.
-6. **Post-hoc elements.** RPM-w, RPM-T, RPM-wT, the SLOPE-T competitor and the gain and bracket analyses were added after the design was frozen, and the ICRAF-VisNIR tasks informed exploratory design choices. All such decisions are time-stamped in the experiment log, evaluated on the same pilots as the registered method, and reported regardless of outcome."""
+1. **Linear calibrations only.** The theory describes ridge regression, and PLS learning curves were tracked closely (Section 4.1). The conclusions do not cover non-linear or local calibration methods (kernel, Cubist, memory-based or deep models), which may continue to improve after linear models saturate.
+2. **What a pilot can reveal.** The noise floor and the analyte signal in weak spectral modes cannot be separated from a small pilot (Sections 2.4 and 4.4). Every forecast must therefore import this information, either by assumption (RPM, $r=1$; conservative) or empirically (SLOPE-T). Transferring a realistic alignment exponent alone made the forecasts unstable.
+3. **Post-hoc elements.** RPM-w, RPM-T, RPM-wT and SLOPE-T, the gain, bracket and ratio-stratified analyses, and the conformal calibration of the bands were added after the design was frozen; the ICRAF-VisNIR tasks informed exploratory design choices. All decisions are time-stamped in the experiment log, all additions were evaluated on the same pilots, and all are reported regardless of outcome. The transferred-slope rule and the calibrated bands rest on the slope distribution of these 38 tasks and need prospective validation on new instruments and applications.
+4. **Random sampling from a stable population.** Pilot, future calibration and test samples are assumed to come from one population. Designed experiments, Kennard–Stone selection and genuine shifts (new seasons, new populations) violate this assumption; Table 4 quantifies the consequences.
+5. **Data sets.** {{n_soil}} of the {{n_tasks}} tasks are soil calibrations from the Open Soil Spectral Library. The fruit, fuel, pharmaceutical, meat and mixture sets are smaller and allow only short extrapolations. Group definitions for soil profiles rely on site identifiers or coordinates, and each task used one fixed group-disjoint test split."""

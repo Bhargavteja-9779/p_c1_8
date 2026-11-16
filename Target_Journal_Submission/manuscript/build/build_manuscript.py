@@ -136,9 +136,8 @@ def table_md(df, caption, label, floatfmt=3, cols=None, rename=None):
         return str(v)
     cells = [[f(v) for v in r] for r in d.itertuples(index=False)]
     head = "| " + " | ".join(str(c) for c in d.columns) + " |"
-    widths = [max([len(str(c)) + 2] + [len(r[i]) for r in cells]) for i, c in enumerate(d.columns)]
     def numeric(i):
-        vals = [r[i].replace("%", "").replace(",", "").replace("–", "").replace("+", "").replace("−", "").strip() for r in cells]
+        vals = [r[i].replace("%", "").replace(",", "").replace("–", "").replace("+", "").replace("−", "").replace("<", "").strip() for r in cells]
         ok = 0
         for v in vals:
             try:
@@ -146,9 +145,34 @@ def table_md(df, caption, label, floatfmt=3, cols=None, rename=None):
             except (ValueError, IndexError):
                 pass
         return ok >= 0.8 * max(len(vals), 1)
-    tot = sum(widths)
-    dashes = [max(7, int(round(72 * w / tot))) for w in widths]
-    sep = "|" + "|".join(("-" * (n - 1) + ":") if (i > 0 and numeric(i)) else (":" + "-" * (n - 1)) for i, n in enumerate(dashes)) + "|"
+    num = [numeric(i) for i in range(len(d.columns))]
+    # numeric cells must not wrap: non-breaking spaces and word joiners around dashes / slashes
+    for r in cells:
+        for i in range(len(r)):
+            if num[i] or len(r[i]) <= 12:
+                r[i] = (r[i].replace(" ", "\u00a0").replace("–", "\u2060–\u2060").replace("/", "\u2060/\u2060"))
+    def vis(s):
+        return len(s.replace("\u2060", ""))
+    # column widths (in characters): numeric cells never wrap; text columns shrink towards their longest
+    # unbreakable token only as far as needed to fit the text width (16 cm at 8.5 pt ~ 0.15 cm per character)
+    ncol = len(d.columns)
+    cap = (16.0 - 0.38 * ncol) / 0.15
+    hard, soft = [], []
+    for i, c in enumerate(d.columns):
+        hw = 1.15 * max((len(w) for w in str(c).split()), default=1)          # bold header word
+        toks = [max((vis(t) for t in r[i].split(" ")), default=1) for r in cells]
+        full = [vis(r[i]) for r in cells]
+        hard.append(max(toks + [hw]) + 1.5)
+        soft.append(max(full + [hw]) + 1.5)
+    widths = list(soft)
+    excess = sum(widths) - cap
+    if excess > 0:
+        shrink = [(s - h) if not num[i] else 0.0 for i, (s, h) in enumerate(zip(soft, hard))]
+        tot = sum(shrink)
+        if tot > 0:
+            widths = [s - min(excess, tot) * k / tot for s, k in zip(soft, shrink)]
+    dashes = [max(3, int(round(3 * w))) for w in widths]
+    sep = "|" + "|".join(("-" * (n - 1) + ":") if (i > 0 and num[i]) else (":" + "-" * (n - 1)) for i, n in enumerate(dashes)) + "|"
     rows = ["| " + " | ".join(r) + " |" for r in cells]
     return f"\n**{label}.** {caption}\n\n" + "\n".join([head, sep] + rows) + "\n"
 
@@ -167,7 +191,8 @@ def main():
     body, order = number_citations(body, refs)
     reflist = "\n\n".join(f"[{i + 1}] {format_reference(refs[k])}" for i, k in enumerate(order))
     front = fill(front, ctx)
-    md = front + "\n\n" + body + "\n\n# References\n\n" + reflist + "\n"
+    import supp_index
+    md = supp_index.resolve(front + "\n\n" + body + "\n\n# References\n\n" + reflist + "\n")
     md_path = os.path.join(HERE, "manuscript_full.md")
     open(md_path, "w").write(md)
     json.dump({"citation_order": order}, open(os.path.join(HERE, "citation_order.json"), "w"), indent=1)

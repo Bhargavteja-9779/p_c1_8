@@ -1,15 +1,6 @@
 | variant | n_tasks | mean_abs_logerr | rpm_same_tasks | mean_diff_vs_rpm | ci95_lo | ci95_hi | p_raw | p_holm | rank_biserial |
 |---|---|---|---|---|---|---|---|---|---|
-| RPM | 3 | method
-RPM    0.238362
-RPM    0.238362
-dtype: float64 | method
-RPM    0.238362
-RPM    0.238362
-dtype: float64 | method
-RPM    0.0
-RPM    0.0
-dtype: float64 | 0.0000 | 0.0000 | – | – | – |
+| RPM | 3 | 0.2384 | 0.2384 | 0.0000 | 0.0000 | 0.0000 | – | – | – |
 | RPM-rfree | 3 | 0.3381 | 0.2384 | 0.0997 | 0.0076 | 0.2813 | 0.2500 | 1.0000 | 1.0000 |
 | RPM-ML2 | 3 | 0.1609 | 0.2384 | -0.0775 | -0.1390 | -0.0178 | 0.2500 | 1.0000 | -1.0000 |
 | RPM-pilotcov | 3 | 0.2301 | 0.2384 | -0.0083 | -0.1110 | 0.0972 | 0.7500 | 1.0000 | -0.3333 |

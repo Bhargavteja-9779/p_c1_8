@@ -18,8 +18,10 @@ import pandas as pd
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
-RES, TAB, FIG = os.path.join(ROOT, "results"), os.path.join(ROOT, "tables"), os.path.join(ROOT, "figures")
-OUT = os.path.join(ROOT, "manuscript")
+RES = os.environ.get("MS_RES", os.path.join(ROOT, "results"))
+TAB = os.environ.get("MS_TAB", os.path.join(ROOT, "tables"))
+FIG = os.environ.get("MS_FIG", os.path.join(ROOT, "figures"))
+OUT = os.environ.get("MS_OUT", os.path.join(ROOT, "manuscript"))
 
 
 def load_numbers():
@@ -55,6 +57,8 @@ def fill(text, ctx):
     def rep(m):
         key = m.group(1).strip()
         if key not in ctx:
+            if os.environ.get("MS_ALLOW_MISSING") == "1":   # pipeline tests only; final builds fail hard
+                return f"[MISSING:{key}]"
             raise KeyError(f"placeholder {key} missing")
         USED[key] = str(ctx[key])
         return str(ctx[key])
@@ -130,9 +134,22 @@ def table_md(df, caption, label, floatfmt=3, cols=None, rename=None):
                 return f"{v:,.0f}"
             return f"{v:.{floatfmt}f}"
         return str(v)
-    head = "| " + " | ".join(d.columns) + " |"
-    sep = "|" + "|".join([":--" if i == 0 else "--:" for i in range(len(d.columns))]) + "|"
-    rows = ["| " + " | ".join(f(v) for v in r) + " |" for r in d.itertuples(index=False)]
+    cells = [[f(v) for v in r] for r in d.itertuples(index=False)]
+    head = "| " + " | ".join(str(c) for c in d.columns) + " |"
+    widths = [max([len(str(c))] + [len(r[i]) for r in cells]) for i, c in enumerate(d.columns)]
+    def numeric(i):
+        vals = [r[i].replace("%", "").replace(",", "").replace("–", "").replace("+", "").replace("−", "").strip() for r in cells]
+        ok = 0
+        for v in vals:
+            try:
+                float(v.split()[0]); ok += 1
+            except (ValueError, IndexError):
+                pass
+        return ok >= 0.8 * max(len(vals), 1)
+    tot = sum(widths)
+    dashes = [max(3, int(round(60 * w / tot))) for w in widths]
+    sep = "|" + "|".join(("-" * (n - 1) + ":") if (i > 0 and numeric(i)) else (":" + "-" * (n - 1)) for i, n in enumerate(dashes)) + "|"
+    rows = ["| " + " | ".join(r) + " |" for r in cells]
     return f"\n**{label}.** {caption}\n\n" + "\n".join([head, sep] + rows) + "\n"
 
 
@@ -140,7 +157,7 @@ def main():
     sys.path.insert(0, HERE)
     import content  # noqa: E402  (results-dependent text and tables)
     numbers = load_numbers()
-    refs = json.load(open(os.path.join(OUT, "refs", "verified_refs.json")))
+    refs = json.load(open(os.path.join(ROOT, "manuscript", "refs", "verified_refs.json")))
     ctx = content.context(numbers, RES, TAB)
     front = content.front_matter(ctx)
     parts = [open(os.path.join(HERE, "part1_intro_theory_methods.md")).read(),
@@ -149,6 +166,7 @@ def main():
     body = fill("\n\n".join(parts), ctx)
     body, order = number_citations(body, refs)
     reflist = "\n\n".join(f"[{i + 1}] {format_reference(refs[k])}" for i, k in enumerate(order))
+    front = fill(front, ctx)
     md = front + "\n\n" + body + "\n\n# References\n\n" + reflist + "\n"
     md_path = os.path.join(HERE, "manuscript_full.md")
     open(md_path, "w").write(md)

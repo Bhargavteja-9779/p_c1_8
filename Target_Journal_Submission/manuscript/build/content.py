@@ -9,8 +9,8 @@ import pandas as pd
 from context_builder import build_context
 import docx_utils
 
-TITLE = ("How many reference samples does a spectroscopic calibration need? Forecasting multivariate-calibration "
-         "learning curves from small pilot sets with random-matrix theory")
+TITLE = ("Explaining and forecasting learning curves of multivariate spectroscopic calibrations "
+         "with random-matrix theory")
 SHORT_TITLE = "Forecasting calibration learning curves"
 KEYWORDS = ["Multivariate calibration", "Sample-size planning", "Learning curve", "Near-infrared spectroscopy",
             "Ridge regression", "Random-matrix theory"]

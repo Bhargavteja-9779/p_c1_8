@@ -328,10 +328,15 @@ def run_analysis(cfg, paths, mode, log):
     for m in ABL_METHODS:
         if m not in pta:
             continue
-        both = pta[["RPM", m]].dropna()
-        lo, hi = bootstrap_ci_mean(both[m].values - both["RPM"].values, seed=5) if m != "RPM" else (0.0, 0.0)
-        abl.append({"variant": m, "n_tasks": len(both), "mean_abs_logerr": both[m].mean(), "rpm_same_tasks": both["RPM"].mean(),
-                    "mean_diff_vs_rpm": (both[m] - both["RPM"]).mean(), "ci95_lo": lo, "ci95_hi": hi})
+        if m == "RPM":
+            r0 = pta["RPM"].dropna()
+            abl.append({"variant": m, "n_tasks": int(len(r0)), "mean_abs_logerr": float(r0.mean()), "rpm_same_tasks": float(r0.mean()),
+                        "mean_diff_vs_rpm": 0.0, "ci95_lo": 0.0, "ci95_hi": 0.0})
+            continue
+        both = pd.DataFrame({"RPM": pta["RPM"], "V": pta[m]}).dropna()
+        lo, hi = bootstrap_ci_mean(both["V"].values - both["RPM"].values, seed=5)
+        abl.append({"variant": m, "n_tasks": int(len(both)), "mean_abs_logerr": float(both["V"].mean()), "rpm_same_tasks": float(both["RPM"].mean()),
+                    "mean_diff_vs_rpm": float((both["V"] - both["RPM"]).mean()), "ci95_lo": lo, "ci95_hi": hi})
     T7 = pd.DataFrame(abl)
     st = paired_comparison(pta["RPM"].values, {m: pta[m].values for m in ABL_METHODS if m != "RPM" and m in pta}, seed=7)
     T7 = T7.merge(pd.DataFrame(st)[["comparison", "p_raw", "p_holm", "rank_biserial"]].rename(columns={"comparison": "variant"}), on="variant", how="left")
@@ -359,7 +364,7 @@ def run_analysis(cfg, paths, mode, log):
                "coverage_task_mean_pct": 100 * cov.groupby(m.task).mean().mean(),
                "median_width_log": float(np.median(hi - lo)), "median_width_factor": float(np.exp(np.median(hi - lo)))}
         for n0, g in m.assign(cov=cov, w=hi - lo).groupby("n0"):
-            out[f"coverage_n0_{n0}"] = 100 * g.cov.mean(); out[f"median_width_factor_n0_{n0}"] = float(np.exp(g.w.median()))
+            out[f"coverage_n0_{n0}"] = 100 * g["cov"].mean(); out[f"median_width_factor_n0_{n0}"] = float(np.exp(g["w"].median()))
         return out
     br = [b for b in (bracket("RPM-T", "RPM", "[RPM-T, RPM]"), bracket("IPL3", "FLAT", "[IPL3, FLAT]"), bracket("RPM", "FLAT", "[RPM, FLAT]")) if b]
     if br:

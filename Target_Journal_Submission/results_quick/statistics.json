@@ -116,6 +116,19 @@
    "ref_wins": 2,
    "ref_losses": 1,
    "p_holm": 1.0
+  },
+  {
+   "comparison": "SLOPE-T",
+   "n_tasks": 3,
+   "wilcoxon_W": 2.0,
+   "p_raw": 0.75,
+   "median_diff": -0.006922308040006736,
+   "ci95_lo": -0.09890407382322375,
+   "ci95_hi": 0.08013715871263904,
+   "rank_biserial": -0.3333333333333333,
+   "ref_wins": 1,
+   "ref_losses": 2,
+   "p_holm": 1.0
   }
  ],
  "pls": [
@@ -235,15 +248,28 @@
    "ref_wins": 2,
    "ref_losses": 1,
    "p_holm": 1.0
+  },
+  {
+   "comparison": "SLOPE-T",
+   "n_tasks": 3,
+   "wilcoxon_W": 3.0,
+   "p_raw": 1.0,
+   "median_diff": -0.016324108127535986,
+   "ci95_lo": -0.04535790880956886,
+   "ci95_hi": 0.11390242814826967,
+   "rank_biserial": 0.0,
+   "ref_wins": 1,
+   "ref_losses": 2,
+   "p_holm": 1.0
   }
  ],
  "ablation": [
   {
    "variant": "RPM",
    "n_tasks": 3,
-   "mean_abs_logerr": "method\nRPM    0.238362\nRPM    0.238362\ndtype: float64",
-   "rpm_same_tasks": "method\nRPM    0.238362\nRPM    0.238362\ndtype: float64",
-   "mean_diff_vs_rpm": "method\nRPM    0.0\nRPM    0.0\ndtype: float64",
+   "mean_abs_logerr": 0.23836223677375243,
+   "rpm_same_tasks": 0.23836223677375243,
+   "mean_diff_vs_rpm": 0.0,
    "ci95_lo": 0.0,
    "ci95_hi": 0.0,
    "p_raw": NaN,

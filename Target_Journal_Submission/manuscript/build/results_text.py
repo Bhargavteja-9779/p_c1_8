@@ -13,8 +13,8 @@ import pandas as pd
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
-TAB = os.path.join(ROOT, "tables")
-RES = os.path.join(ROOT, "results")
+TAB = os.environ.get("MS_TAB", os.path.join(ROOT, "tables"))
+RES = os.environ.get("MS_RES", os.path.join(ROOT, "results"))
 
 
 def _t(name):
@@ -36,11 +36,61 @@ def _p(p):
 
 # ----------------------------------------------------------------------------------------------
 ABSTRACT_BACKGROUND = (
-    "Multivariate calibrations of near- and mid-infrared spectra need costly reference analyses, yet no "
-    "principled method predicts, from a small pilot set, how prediction error will fall as samples are added. "
-    "The learning-curve extrapolation used in analytical chemistry assumes a power-law curve shape.")
-ABSTRACT_RESULTS = "{{abstract_results}}"
-ABSTRACT_SIGNIFICANCE = "{{abstract_significance}}"
+    "Multivariate calibrations of NIR and MIR spectra need costly reference analyses, yet no principled method predicts from a small "
+    "pilot set how the prediction error will fall as samples are added; current learning-curve extrapolation assumes a power-law shape.")
+ABSTRACT_RESULTS = (
+    "Across 38 public calibration tasks from six sources (soils, fruit, fuel, tablets, meat, mixtures), the deterministic-equivalent "
+    "(random-matrix) risk of ridge regression reproduced ridge and PLS learning curves (mean absolute log error {{tv_ridge_mean}} and "
+    "{{tv_pls_mean}}), and test errors at calibration sizes of 50–6400 collapsed onto one curve. In every task the analyte signal extended "
+    "into weak spectral modes (alignment exponent {{r_min}}–{{r_max}}). Regularisation-path matching (RPM), which fits the theory to a pilot "
+    "set's exact leave-one-group-out errors, forecast the RMSE at larger calibration sizes from {{n_pilots_total}} pilots of 25–200 samples "
+    "with a mean absolute log error of {{mae_RPM}} ({{mae_RPM_w}} with a weighted fit), versus {{mae_IPL3}} for inverse-power-law "
+    "extrapolation (RPM better on {{st_IPL3_wins}} of {{n_tasks}} tasks; p < 0.0001), which, like other curve-shape fits, was strongly "
+    "optimistic. The pilot's own cross-validated error was as accurate ({{mae_FLAT}}). Transferring a realistic alignment exponent failed "
+    "because a pilot cannot separate noise from weak-mode signal, and no method reliably forecast the sample size needed for a target error.")
+ABSTRACT_SIGNIFICANCE = (
+    "Calibration learning curves are governed by the spectral eigen-structure and the analyte's alignment with it. Power-law extrapolation "
+    "from small pilots should be avoided. The theory-based forecast is nearly unbiased, but with 25–200-sample pilots the pilot's "
+    "cross-validated error is equally informative, and sample-size planning needs independent information on the noise floor.")
+
+HIGHLIGHTS = [
+    "Random-matrix theory reproduces learning curves of 38 spectroscopic calibrations",
+    "Analyte signal extends into weak spectral modes in every calibration task",
+    "Path matching forecasts calibration error better than power-law extrapolation",
+    "Power-law and log extrapolations of learning curves are strongly over-optimistic",
+    "Forecasting the sample size for a target error is ill-conditioned for all methods",
+]
+
+CONCLUSION = (
+    "Learning curves of multivariate calibrations are not arbitrary. Across 38 tasks they followed the deterministic-equivalent risk of ridge "
+    "regression, which is set by the eigen-structure of the spectra and by an alignment exponent that was below one in every task. It was lowest "
+    "for Vis/NIR spectra, whose analyte information resides in weak spectral modes. This structure allows a pilot's cross-validation path to be "
+    "extrapolated with far less bias than the power-law fits used today. It also exposes a hard limit: a small pilot cannot tell how much of its "
+    "residual error is learnable signal in weak modes and how much is irreducible noise. Consequently, for pilots of 25–200 samples, the pilot's own "
+    "cross-validated error forecast future performance as well as any extrapolation, and no method reliably forecast the sample size required for a "
+    "given error. Practical sample-size planning therefore needs independent information on the noise floor, for example from replicate reference "
+    "analyses; combining such information with the theory is the most promising direction for further work.")
+
+COVER_LETTER = [
+    "Building a multivariate calibration for NIR or MIR spectroscopy is dominated by the cost of reference analyses, and analysts routinely "
+    "have to decide, from a small pilot set, how many more reference samples are worth collecting. The learning-curve extrapolation currently used "
+    "for this purpose in analytical chemistry fits an assumed power-law shape. Our manuscript shows that calibration learning curves instead follow "
+    "the deterministic-equivalent (random-matrix) risk of ridge regression, determined by the eigen-structure of the spectra and by how the analyte "
+    "signal aligns with it, and turns this theory into a forecasting method, regularisation-path matching.",
+    "On 38 public calibration tasks from six sources (soil Vis/NIR, MIR and handheld NIR libraries, fruit, fuel, pharmaceutical tablets, meat and "
+    "designed mixtures), the theory reproduced ridge and PLS learning curves (mean absolute log error {{tv_ridge_mean}} and {{tv_pls_mean}}). "
+    "The analyte signal extended into weak spectral modes in every task. The proposed forecaster was more accurate than power-law extrapolation on "
+    "{{st_IPL3_wins}} of {{n_tasks}} tasks (p < 0.0001). We also report the method's limits transparently: the pilot's own cross-validated error was "
+    "equally accurate, transferring a realistic alignment exponent failed for an identifiability reason that we explain, and forecasting the sample size "
+    "for a target error was ill-conditioned for every method.",
+    "We believe the work fits Analytica Chimica Acta's emphasis on fundamental methodological developments in chemometrics and data treatment. "
+    "It concerns a question shared by all quantitative spectroscopic applications, it builds on and corrects current practice, and it is "
+    "fully reproducible: all data are public, the experimental design was pre-registered in a time-stamped log, and one script regenerates every number, "
+    "table and figure.",
+    "The manuscript is original, has not been published previously and is not under consideration for publication elsewhere. All authors "
+    "have approved the submission and declare no competing interests. No human or animal subjects were involved. The use of an AI assistant "
+    "in preparing the work is declared in the manuscript. Suggested reviewers: [to be provided by the authors].",
+]
 
 
 def dynamic_context(ctx):

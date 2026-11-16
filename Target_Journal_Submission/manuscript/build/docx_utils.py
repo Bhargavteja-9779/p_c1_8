@@ -6,9 +6,17 @@ from docx.oxml.ns import qn
 from docx.shared import Pt, Cm
 
 
+def _suppress_ln(paragraph):
+    pPr = paragraph._p.get_or_add_pPr()
+    if pPr.find(qn("w:suppressLineNumbers")) is None:
+        pPr.append(OxmlElement("w:suppressLineNumbers"))
+
+
 def _add_page_number(section):
+    section.footer.is_linked_to_previous = False
     p = section.footer.paragraphs[0] if section.footer.paragraphs else section.footer.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    _suppress_ln(p)
     run = p.add_run()
     for tag, text in (("begin", None), (None, "PAGE"), ("end", None)):
         if tag:
@@ -53,14 +61,52 @@ def _three_rule_table(tbl):
                         r.font.bold = True
 
 
+def _number_equations(d):
+    """Place each display equation (m:oMathPara) in a borderless two-cell table with a right-aligned number."""
+    M = "{http://schemas.openxmlformats.org/officeDocument/2006/math}"
+    body = d.element.body
+    k = 0
+    for p in list(body.iterchildren(qn("w:p"))):
+        if p.find(".//" + M + "oMathPara") is None:
+            continue
+        k += 1
+        tbl = d.add_table(rows=1, cols=2)
+        tblPr = tbl._tbl.tblPr
+        borders = OxmlElement("w:tblBorders")
+        for edge in ("top", "bottom", "left", "right", "insideH", "insideV"):
+            e = OxmlElement(f"w:{edge}"); e.set(qn("w:val"), "nil"); borders.append(e)
+        tblPr.append(borders)
+        tbl.columns[0].width = Cm(14.5); tbl.columns[1].width = Cm(1.5)
+        c0, c1 = tbl.rows[0].cells
+        c0.width = Cm(14.5); c1.width = Cm(1.5)
+        p.addprevious(tbl._tbl)                     # move the table to the equation's position
+        c0._tc.remove(c0._tc.find(qn("w:p")))
+        c0._tc.append(p)                            # move the equation paragraph into the left cell
+        num = c1.paragraphs[0]; num.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+        r = num.add_run(f"({k})"); r.font.name = "Times New Roman"; r.font.size = Pt(12)
+        for cell in (c0, c1):
+            tcPr = cell._tc.get_or_add_tcPr()
+            va = OxmlElement("w:vAlign"); va.set(qn("w:val"), "center"); tcPr.append(va)
+            for pp in cell.paragraphs:
+                _suppress_ln(pp)
+    return k
+
+
 def postprocess(docx_path, max_img_cm=16.0):
     d = Document(docx_path)
+    n_eq = _number_equations(d)
     for s in d.sections:
         s.page_height = Cm(29.7); s.page_width = Cm(21.0)
         s.left_margin = s.right_margin = Cm(2.5); s.top_margin = s.bottom_margin = Cm(2.5)
         _line_numbers(s); _add_page_number(s)
     for t in d.tables:
+        if t._tbl.find(".//{http://schemas.openxmlformats.org/officeDocument/2006/math}oMathPara") is not None:
+            continue          # equation tables stay borderless
         _three_rule_table(t)
+        for row in t.rows:
+            for cell in row.cells:
+                for p in cell.paragraphs:
+                    _suppress_ln(p)
     for shape in d.inline_shapes:
         if shape.width > Cm(max_img_cm):
             ratio = Cm(max_img_cm) / shape.width

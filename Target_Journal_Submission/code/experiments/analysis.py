@@ -370,6 +370,62 @@ def run_analysis(cfg, paths, mode, log):
     if br:
         T15 = pd.DataFrame(br); write_table(T15, paths, "T15_posthoc_bracket", float_fmt="{:.3f}")
         numbers["posthoc_bracket"] = T15.to_dict(orient="records")
+    # ---------------- POST-HOC: SLOPE-T as reference (T3c), LOSO-conformal bands (T16), slope explanation (T17)
+    ptS = per_task(df, "abs_err", MAIN_METHODS)
+    T3c = pd.DataFrame(paired_comparison(ptS["SLOPE-T"].values, {m: ptS[m].values for m in MAIN_METHODS if m != "SLOPE-T"}, seed=13))
+    T3c.insert(0, "reference", "SLOPE-T")
+    write_table(T3c, paths, "T3c_posthoc_stats_slopeT_reference", float_fmt="{:.4f}")
+    numbers["stats_slopeT_reference"] = rec(T3c, "comparison") if False else T3c.to_dict(orient="records")
+    # leave-one-source-out conformal bands: band = forecast - quantiles of the log errors of the same method,
+    # same extrapolation-ratio bin, observed on tasks of OTHER data sources
+    df["src"] = df.task.map(source_of); df["rbin"] = np.round(np.log2(df.ratio)).astype(int)
+    conf_rows = []
+    for m in ["RPM", "RPM-w", "SLOPE-T", "FLAT", "IPL3"]:
+        dm = df[df.method == m]
+        cov = {80: [], 95: []}; wid = {80: [], 95: []}
+        for s, g in dm.groupby("src"):
+            other = dm[dm.src != s]
+            for rb, gg in g.groupby("rbin"):
+                e = other[other.rbin == rb].err.values
+                if len(e) < 20:
+                    e = other.err.values
+                for lev in (80, 95):
+                    lo_q, hi_q = np.quantile(e, [(1 - lev / 100) / 2, 1 - (1 - lev / 100) / 2])
+                    lo = gg.fc_logrmse - hi_q; hi = gg.fc_logrmse - lo_q
+                    cov[lev] += list(((lo <= gg.truth_ridge_logrmse) & (gg.truth_ridge_logrmse <= hi)).astype(float))
+                    wid[lev] += list(hi - lo)
+        for lev in (80, 95):
+            conf_rows.append({"method": m, "nominal": lev, "coverage_pct": 100 * float(np.mean(cov[lev])),
+                              "median_width_factor": float(np.exp(np.median(wid[lev])))})
+    T16 = pd.DataFrame(conf_rows)
+    write_table(T16, paths, "T16_posthoc_loso_conformal_bands", float_fmt="{:.3f}")
+    numbers["posthoc_conformal"] = T16.to_dict(orient="records")
+    df.drop(columns=["src", "rbin"], inplace=True)
+    al_p = os.path.join(paths["results"], "alignment_exponents.csv")
+    if os.path.exists(al_p):
+        import statsmodels.api as sm
+        from scipy.stats import spearmanr
+        alg = pd.read_csv(al_p)
+        mm = slope_tab.merge(alg, on="task").merge(T1[["task", "eigen_decay_exponent", "family"]], on="task")
+        rows17 = []
+        for c in ["noise_frac_full_pool", "r_full_pool", "eigen_decay_exponent", "n_pool"]:
+            rho, p = spearmanr(mm[c], mm.slope_per_doubling)
+            rows17.append({"descriptor": c, "spearman_rho": rho, "p": p})
+        X = sm.add_constant(np.column_stack([mm.r_full_pool, np.log(mm.noise_frac_full_pool), mm.eigen_decay_exponent]))
+        fit = sm.OLS(mm.slope_per_doubling.values, X).fit()
+        rows17.append({"descriptor": "OLS: slope ~ r + log(noise fraction) + eigen-decay", "spearman_rho": np.nan, "p": float(fit.f_pvalue), "r2": float(fit.rsquared)})
+        T17 = pd.DataFrame(rows17)
+        write_table(T17, paths, "T17_posthoc_slope_explanation", float_fmt="{:.4f}")
+        def region(t):
+            lib = t.split(":")[0]
+            return "MIR (soil)" if "MIR" in lib else ("Vis/NIR (soil)" if ("VisNIR" in lib or "Neospectra" in lib) else lib)
+        mm["region"] = mm.task.map(region)
+        T17b = mm.groupby("region").slope_per_doubling.agg(["count", "median", "min", "max"]).reset_index()
+        write_table(T17b, paths, "T17b_slope_by_region", float_fmt="{:.3f}")
+        numbers["slope_median"] = float(mm.slope_per_doubling.median()); numbers["slope_q1"] = float(mm.slope_per_doubling.quantile(0.25))
+        numbers["slope_q3"] = float(mm.slope_per_doubling.quantile(0.75)); numbers["slope_min"] = float(mm.slope_per_doubling.min())
+        numbers["slope_max"] = float(mm.slope_per_doubling.max()); numbers["slope_ols_r2"] = float(fit.rsquared)
+        numbers["slope_ols_p_noise"] = float(fit.pvalues[2]); numbers["slope_spearman"] = T17.to_dict(orient="records")
     # ---------------- RPM-T eigen-spectrum ablation (T7b)
     abt_files = sorted(glob.glob(os.path.join(raw, "forecasts_ablT_*.csv")))
     if abt_files:

@@ -675,6 +675,25 @@
   "type": "journal-article",
   "publisher": "Elsevier BV"
  },
+ "luca2017": {
+  "doi": "10.1016/j.geoderma.2016.11.015",
+  "verified": true,
+  "title": "Effect of calibration set size on prediction at local scale of soil carbon by Vis-NIR spectroscopy",
+  "authors": [
+   "Luc\u00e0, Federica",
+   "Conforti, Massimo",
+   "Castrignan\u00f2, Annamaria",
+   "Matteucci, Giorgio",
+   "Buttafuoco, Gabriele"
+  ],
+  "year": 2017,
+  "journal": "Geoderma",
+  "volume": "288",
+  "issue": null,
+  "pages": "175-183",
+  "type": "journal-article",
+  "publisher": "Elsevier BV"
+ },
  "bordelon2020": {
   "arxiv": "2002.02561",
   "verified": true,
@@ -779,5 +798,22 @@
    "Dario Amodei"
   ],
   "year": 2020
+ },
+ "konstantinidis2025": {
+  "arxiv": "2510.01210",
+  "verified": true,
+  "title": "Minimum Sample Size Calculation for Multivariable Regression of Continuous Outcomes in Chemometrics for Astrobiology and Planetary Science",
+  "authors": [
+   "M. Konstantinidis",
+   "E. A. Lalla",
+   "S. J. Gonzalez",
+   "J. Manrique",
+   "G. Lopez-Reyes",
+   "A. Barlow",
+   "E. Sawyers",
+   "B. Barrios",
+   "M. G. Daly"
+  ],
+  "year": 2025
  }
 }

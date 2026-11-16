@@ -58,7 +58,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", choices=["quick", "full"], default="quick")
     ap.add_argument("--jobs", type=int, default=max(1, (os.cpu_count() or 2)))
-    ap.add_argument("--stage", choices=["all", "main", "simulation", "refinement", "robustness", "analysis"], default="all")
+    ap.add_argument("--stage", choices=["all", "main", "simulation", "refinement", "ablation_t", "robustness", "analysis"], default="all")
     a = ap.parse_args()
     cfg = yaml.safe_load(open(os.path.join(HERE, "config", f"{a.mode}.yaml")))
     root = os.path.abspath(os.path.join(HERE, ".."))
@@ -89,6 +89,10 @@ def main():
         from experiments.refinement import run_refinement
         run_refinement(cfg, paths, a.mode, a.jobs)
         log.write(json.dumps({"stage": "refinement", "done": True}) + "\n"); log.flush()
+    if a.stage in ("all", "ablation_t"):
+        from experiments.ablation_t import run_ablation_t
+        run_ablation_t(paths, a.mode, a.jobs)
+        log.write(json.dumps({"stage": "ablation_t", "done": True}) + "\n"); log.flush()
     if a.stage in ("all", "robustness"):
         from experiments.robustness import run_robustness
         run_robustness(cfg, paths, a.mode, a.jobs, log)

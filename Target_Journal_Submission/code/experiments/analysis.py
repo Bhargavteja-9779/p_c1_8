@@ -16,10 +16,10 @@ from src.statistics.tests import paired_comparison, bootstrap_ci_mean
 from src.data.datasets import TASKS_FULL
 from src.models.theory import DEFAULT_MU_REL, solve_kappa, df2_of, risk, power_signal
 
-MAIN_METHODS = ["RPM", "RPM-w", "RPM-T", "RPM-wT", "IPL3", "IPL2", "EXP3", "LOG2", "FLAT", "DFOLS"]
+MAIN_METHODS = ["RPM", "RPM-w", "RPM-T", "RPM-wT", "IPL3", "IPL2", "EXP3", "LOG2", "FLAT", "DFOLS", "SLOPE-T"]
 ABL_METHODS = ["RPM", "RPM-rfree", "RPM-ML2", "RPM-pilotcov", "RPM-pilotcov+tail", "RPM-U250", "RPM-Uextra",
                "RPM-kfold10", "RPM-cut0.5", "RPM-cut0.95"]
-LABELS = {"RPM": "RPM (pre-registered, r = 1)", "RPM-w": "RPM-w (weighted path fit)", "RPM-T": "RPM-T (transferred alignment)", "RPM-wT": "RPM-wT (weighted + transferred)", "IPL3": "Inverse power law (IPL3)", "IPL2": "Power law (IPL2)",
+LABELS = {"RPM": "RPM (pre-registered, r = 1)", "RPM-w": "RPM-w (weighted path fit)", "RPM-T": "RPM-T (transferred alignment)", "RPM-wT": "RPM-wT (weighted + transferred)", "SLOPE-T": "Transferred slope (SLOPE-T)", "IPL3": "Inverse power law (IPL3)", "IPL2": "Power law (IPL2)",
           "EXP3": "Exponential (EXP3)", "LOG2": "Logarithmic (LOG2)", "FLAT": "No improvement (FLAT)",
           "DFOLS": "Fixed-complexity formula (DF-OLS)"}
 
@@ -43,6 +43,38 @@ def per_task(df, col="abs_err", methods=MAIN_METHODS, by=None):
     keys = ["task"] + ([by] if by else [])
     t = df[df.method.isin(methods)].groupby(keys + ["method"])[col].mean().unstack("method")
     return t[[m for m in methods if m in t.columns]]
+
+
+def source_of(task_name):
+    lib = task_name.split(":")[0]
+    for pre in ("ICRAF", "KSSL", "AfSIS1", "Neospectra", "Mango", "Diesel", "Tablets", "Tecator", "CGL"):
+        if lib.startswith(pre):
+            return pre
+    return lib
+
+
+def add_slope_transfer(df, raw_dir):
+    """Simple competitor (added after the pre-registration, as a hostile-reviewer check): extrapolate the
+    pilot CV error with the median log-RMSE slope per doubling of n observed in the ground-truth curves of
+    OTHER data sources (leave-one-source-out)."""
+    slopes = {}
+    for f in glob.glob(os.path.join(raw_dir, "truth_*.npz")):
+        z = np.load(f, allow_pickle=True); name = os.path.basename(f)[6:-4].replace("__", ":")
+        x = np.log2(z["n"].astype(float)); yv = 0.5 * np.log(z["ridge_mse"])
+        slopes[name] = float(np.polyfit(x, yv, 1)[0]) if len(x) >= 2 else np.nan
+    st = pd.Series(slopes)
+    src = {t: source_of(t) for t in st.index}
+    loso = {t: float(st[[u for u in st.index if src[u] != src[t]]].median()) for t in st.index}
+    base = df[df.method == "RPM"].copy()
+    base["method"] = "SLOPE-T"
+    base["fc_logrmse"] = base.pilot_cv_logrmse + base.task.map(loso) * np.log2(base.n / base.n0)
+    for c in ("lo80", "hi80", "lo95", "hi95", "log_sigma2", "log_tau2", "r"):
+        if c in base:
+            base[c] = np.nan
+    base["err"] = base.fc_logrmse - base.truth_ridge_logrmse; base["abs_err"] = base.err.abs()
+    base["err_pls"] = base.fc_logrmse - base.truth_pls_logrmse; base["abs_err_pls"] = base.err_pls.abs()
+    return pd.concat([df, base], ignore_index=True), pd.DataFrame({"task": st.index, "slope_per_doubling": st.values,
+                                                                     "slope_loso_prior": [loso[t] for t in st.index]})
 
 
 def summary_table(df, methods=MAIN_METHODS, err="err"):
@@ -125,6 +157,39 @@ def decision_table(df, methods=MAIN_METHODS):
     return pd.DataFrame(out), r
 
 
+def posthoc_gain(df, raw_dir, methods):
+    """POST-HOC (not pre-registered): forecast of the *gain* RMSE(n)/RMSE(n0) and a planning decision.
+
+    gain error = |log(fc(n)/pilot_cv) - log(truth(n)/truth(n0))|; truth(n0) from the ground-truth curve
+    (available for n0 in the truth grid, i.e. 50, 100, 200). Decision: 'an 8x larger calibration set
+    reduces RMSEP by >= 10 %'; balanced accuracy of each method's prediction (FLAT always predicts no).
+    """
+    tr = {}
+    for f in glob.glob(os.path.join(raw_dir, "truth_*.npz")):
+        z = np.load(f, allow_pickle=True); name = os.path.basename(f)[6:-4].replace("__", ":")
+        tr[name] = dict(zip(z["n"].tolist(), (0.5 * np.log(z["ridge_mse"])).tolist()))
+    d = df[df.method.isin(methods)].copy()
+    d["t_n0"] = [tr.get(t, {}).get(int(n0), np.nan) for t, n0 in zip(d.task, d.n0)]
+    d = d[d.t_n0.notna()]
+    d["gain_fc"] = d.fc_logrmse - d.pilot_cv_logrmse
+    d["gain_true"] = d.truth_ridge_logrmse - d.t_n0
+    d["gain_abs_err"] = (d.gain_fc - d.gain_true).abs()
+    pt = d.groupby(["task", "method"]).gain_abs_err.mean().unstack()
+    rows = []
+    thr = np.log(0.9)
+    for m in methods:
+        if m not in pt:
+            continue
+        g = d[(d.method == m) & (d.ratio == 8)]
+        yt = g.gain_true <= thr; yp = g.gain_fc <= thr
+        sens = float((yp & yt).sum() / max(yt.sum(), 1)); spec = float((~yp & ~yt).sum() / max((~yt).sum(), 1))
+        rows.append({"method": m, "n_tasks": int(pt[m].notna().sum()), "mean_task_gain_abs_err": pt[m].mean(),
+                     "median_task_gain_abs_err": pt[m].median(), "mean_gain_bias": float((d[d.method == m].gain_fc - d[d.method == m].gain_true).mean()),
+                     "decision_8x_10pct_balanced_acc": 0.5 * (sens + spec), "decision_sensitivity": sens, "decision_specificity": spec,
+                     "prevalence_worthwhile": float(yt.mean()) if len(g) else np.nan})
+    return pd.DataFrame(rows), pt
+
+
 def theory_validity(raw_dir):
     """RQ1: theory curve fitted to the full-pool CV path vs empirical ridge / PLS truth at each n."""
     rows, collapse = [], {}
@@ -150,6 +215,32 @@ def theory_validity(raw_dir):
             pts.append((int(n), k[ok], (emp[i][ok] * (1 - d2[ok] / n) / (1 + 1 / n))))
         collapse[name] = pts
     return pd.DataFrame(rows), collapse
+
+
+def collapse_dispersion(collapse, raw_dir):
+    """Quantify the kappa-collapse: on a common grid inside the overlap of the kappa ranges observed at
+    different n, the across-n standard deviation of log N_hat(kappa) (rescaled empirical test MSE).
+    Reference ('no collapse'): the same statistic for the un-rescaled test MSE against the raw penalty mu."""
+    rows = []
+    for f in glob.glob(os.path.join(raw_dir, "truth_*.npz")):
+        z = np.load(f, allow_pickle=True); name = os.path.basename(f)[6:-4].replace("__", ":")
+        pts = collapse.get(name, [])
+        if len(pts) < 3:
+            continue
+        lo = max(np.log(k.min()) for _, k, _ in pts if len(k)); hi = min(np.log(k.max()) for _, k, _ in pts if len(k))
+        if not np.isfinite(lo) or hi <= lo:
+            continue
+        grid = np.linspace(lo, hi, 25)
+        curves = []
+        for n, k, nn in pts:
+            o = np.argsort(k)
+            curves.append(np.interp(grid, np.log(k[o]), np.log(nn[o])))
+        disp = float(np.mean(np.std(np.array(curves), axis=0)))
+        # reference: raw test MSE vs log(mu) (no kappa mapping, no prefactor) over the same number of n
+        mus = np.log(z["mus"]); emp = np.log(z["ridge_mu_mse"])
+        ref = float(np.mean(np.std(emp[:len(pts)], axis=0)))
+        rows.append({"task": name, "n_curves": len(pts), "collapse_sd_log": disp, "no_collapse_ref_sd_log": ref})
+    return pd.DataFrame(rows)
 
 
 def eigen_decay(lam, kmax=60):
@@ -183,6 +274,8 @@ def run_analysis(cfg, paths, mode, log):
     df, timing = load_main(raw)
     if not len(df):
         print("no results yet"); return
+    df, slope_tab = add_slope_transfer(df, raw)
+    slope_tab.to_csv(os.path.join(paths["results"], "slope_per_doubling.csv"), index=False)
     numbers = {"mode": mode}
     tasks = sorted(df.task.unique()); numbers["n_tasks"] = len(tasks)
     numbers["n_forecast_rows"] = int(len(df[df.method.isin(MAIN_METHODS)]))
@@ -243,6 +336,48 @@ def run_analysis(cfg, paths, mode, log):
     st = paired_comparison(pta["RPM"].values, {m: pta[m].values for m in ABL_METHODS if m != "RPM" and m in pta}, seed=7)
     T7 = T7.merge(pd.DataFrame(st)[["comparison", "p_raw", "p_holm", "rank_biserial"]].rename(columns={"comparison": "variant"}), on="variant", how="left")
     write_table(T7, paths, "T7_ablation", float_fmt="{:.4f}")
+    # ---------------- POST-HOC gain analysis (T14)
+    gm = [m for m in ["RPM", "RPM-w", "RPM-T", "RPM-wT", "IPL3", "IPL2", "EXP3", "LOG2", "FLAT", "DFOLS", "SLOPE-T"] if m in set(df.method)]
+    T14, gpt = posthoc_gain(df, raw, gm)
+    write_table(T14, paths, "T14_posthoc_gain_and_decision", float_fmt="{:.3f}")
+    ref_g = "RPM"
+    T14s = pd.DataFrame(paired_comparison(gpt[ref_g].values, {m: gpt[m].values for m in gm if m != ref_g and m in gpt}, seed=11))
+    T14s.insert(0, "reference", ref_g)
+    write_table(T14s, paths, "T14b_posthoc_gain_stats", float_fmt="{:.4f}")
+    numbers["posthoc_gain"] = T14.to_dict(orient="records"); numbers["posthoc_gain_stats"] = T14s.to_dict(orient="records")
+    # ---------------- POST-HOC bracket analysis (T15)
+    def bracket(lo_m, hi_m, label):
+        k = ["task", "n0", "pilot", "n"]
+        A_ = df[df.method == lo_m][k + ["fc_logrmse", "truth_ridge_logrmse"]].rename(columns={"fc_logrmse": "a"})
+        B_ = df[df.method == hi_m][k + ["fc_logrmse"]].rename(columns={"fc_logrmse": "b"})
+        m = A_.merge(B_, on=k)
+        if not len(m):
+            return None
+        lo = np.minimum(m.a, m.b); hi = np.maximum(m.a, m.b)
+        cov = ((lo <= m.truth_ridge_logrmse) & (m.truth_ridge_logrmse <= hi)).astype(float)
+        out = {"bracket": label, "n_forecasts": int(len(m)), "coverage_pct": 100 * cov.mean(),
+               "coverage_task_mean_pct": 100 * cov.groupby(m.task).mean().mean(),
+               "median_width_log": float(np.median(hi - lo)), "median_width_factor": float(np.exp(np.median(hi - lo)))}
+        for n0, g in m.assign(cov=cov, w=hi - lo).groupby("n0"):
+            out[f"coverage_n0_{n0}"] = 100 * g.cov.mean(); out[f"median_width_factor_n0_{n0}"] = float(np.exp(g.w.median()))
+        return out
+    br = [b for b in (bracket("RPM-T", "RPM", "[RPM-T, RPM]"), bracket("IPL3", "FLAT", "[IPL3, FLAT]"), bracket("RPM", "FLAT", "[RPM, FLAT]")) if b]
+    if br:
+        T15 = pd.DataFrame(br); write_table(T15, paths, "T15_posthoc_bracket", float_fmt="{:.3f}")
+        numbers["posthoc_bracket"] = T15.to_dict(orient="records")
+    # ---------------- RPM-T eigen-spectrum ablation (T7b)
+    abt_files = sorted(glob.glob(os.path.join(raw, "forecasts_ablT_*.csv")))
+    if abt_files:
+        ab = pd.concat([pd.read_csv(f) for f in abt_files], ignore_index=True)
+        ab["abs_err"] = (ab.fc_logrmse - ab.truth_ridge_logrmse).abs(); ab["err"] = ab.fc_logrmse - ab.truth_ridge_logrmse
+        V = ["RPM-T", "RPM-T-pilotcov", "RPM-T-pilotcov+tail", "RPM-T-U250"]
+        ptb = ab.groupby(["task", "method"]).abs_err.mean().unstack()[V]
+        stb = pd.DataFrame(paired_comparison(ptb["RPM-T"].values, {m: ptb[m].values for m in V[1:]}, seed=9))
+        T7b = pd.DataFrame({"variant": V, "n_tasks": [int(ptb[m].notna().sum()) for m in V], "mean_abs_logerr": [ptb[m].mean() for m in V],
+                            "median_task_abs_logerr": [ptb[m].median() for m in V], "mean_bias": [ab[ab.method == m].err.mean() for m in V]})
+        T7b = T7b.merge(stb[["comparison", "median_diff", "ci95_lo", "ci95_hi", "p_holm", "ref_wins", "ref_losses"]].rename(columns={"comparison": "variant"}), on="variant", how="left")
+        write_table(T7b, paths, "T7b_ablation_eigenspectrum_rpmT", float_fmt="{:.4f}")
+        numbers["ablation_rpmT"] = rec(T7b, "variant") if "rec" in dir() else T7b.to_dict(orient="records")
     # ---------------- RQ1 theory validity (T9)
     tv, collapse = theory_validity(raw)
     tv["err_ridge"] = tv.theory_logrmse - tv.ridge_logrmse; tv["err_pls"] = tv.theory_logrmse - tv.pls_logrmse
@@ -250,6 +385,10 @@ def run_analysis(cfg, paths, mode, log):
                                           mean_abs_err_pls=("err_pls", lambda x: np.mean(np.abs(x))),
                                           r=("r", "first"), noise_frac=("noise_frac", "first")).reset_index()
     write_table(T9, paths, "T9_theory_validity_full_pool_fit")
+    cd = collapse_dispersion(collapse, raw)
+    if len(cd):
+        write_table(cd, paths, "T9b_kappa_collapse_dispersion", float_fmt="{:.4f}")
+        numbers["collapse_sd_median"] = float(cd.collapse_sd_log.median()); numbers["collapse_ref_sd_median"] = float(cd.no_collapse_ref_sd_log.median())
     # ---------------- efficiency (T10)
     T10 = pd.DataFrame([{"component": "RPM point forecast + 50 bootstrap refits (s per pilot)", "mean": timing.t_rpm_sec.mean(), "median": timing.t_rpm_sec.median(), "max": timing.t_rpm_sec.max()},
                         {"component": "Within-pilot sub-sampling curve for IPL/EXP/LOG fits (s per pilot)", "mean": timing.t_curve_sec.mean(), "median": timing.t_curve_sec.median(), "max": timing.t_curve_sec.max()}])

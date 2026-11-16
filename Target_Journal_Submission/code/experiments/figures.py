@@ -104,9 +104,10 @@ def fig_examples(df, paths, tasks=("KSSL-VisNIR:clay", "Mango:DM", "Diesel:bp50"
     fig.tight_layout(rect=(0, 0.08, 1, 1)); _save(fig, paths, "Fig3_example_forecasts")
 
 
-def fig_main_accuracy(df, paths, methods=("RPM", "RPM-w", "IPL3", "IPL2", "EXP3", "LOG2", "FLAT", "DFOLS")):
+def fig_main_accuracy(df, paths, methods=("RPM", "RPM-w", "RPM-T", "RPM-wT", "SLOPE-T", "IPL3", "IPL2", "EXP3", "LOG2", "FLAT", "DFOLS")):
     n0s = sorted(df.n0.unique())
-    fig, axes = plt.subplots(1, len(n0s), figsize=(1.9 * len(n0s) + 0.6, 2.8), sharey=True)
+    methods = [m for m in methods if m in set(df.method)]
+    fig, axes = plt.subplots(1, len(n0s), figsize=(2.3 * len(n0s) + 0.6, 3.0), sharey=True)
     axes = np.atleast_1d(axes)
     for ax, n0 in zip(axes, n0s):
         pt = df[(df.n0 == n0) & df.method.isin(methods)].groupby(["task", "method"]).abs_err.mean().unstack()
@@ -185,8 +186,9 @@ def fig_error_analysis(ea, paths):
     fig.tight_layout(); _save(fig, paths, "Fig9_error_analysis")
 
 
-def fig_decisions(dec_rows, paths, methods=("RPM", "RPM-w", "IPL3", "IPL2", "EXP3", "LOG2", "FLAT", "DFOLS")):
-    fig, ax = plt.subplots(figsize=(3.6, 2.5))
+def fig_decisions(dec_rows, paths, methods=("RPM", "RPM-w", "RPM-T", "RPM-wT", "SLOPE-T", "IPL3", "IPL2", "EXP3", "LOG2", "FLAT", "DFOLS")):
+    methods = [m for m in methods if m in set(dec_rows.method)]
+    fig, ax = plt.subplots(figsize=(4.4, 2.6))
     s = dec_rows.groupby("method").success_factor2.mean().reindex(methods) * 100
     f = dec_rows.groupby("method").failure.mean().reindex(methods) * 100
     x = np.arange(len(methods))
@@ -206,6 +208,33 @@ def fig_datasets(T1, paths):
     ax.legend(fontsize=6.3, title="family", title_fontsize=6.3); fig.tight_layout(); _save(fig, paths, "Fig11_dataset_overview")
 
 
+def fig_alignment(at_path, paths):
+    """Large-sample alignment exponent r per task (path fit on the full pool), by spectral region."""
+    if not os.path.exists(at_path):
+        return
+    at = pd.read_csv(at_path)
+    def region(t):
+        lib = t.split(":")[0]
+        if "MIR" in lib: return "MIR (soil)"
+        if "VisNIR" in lib or "Neospectra" in lib: return "Vis/NIR (soil)"
+        return {"Mango": "SWNIR (fruit)", "Diesel": "NIR (fuel)", "Tablets": "NIR (tablets)", "Tecator": "NIR (meat)", "CGL": "NIR (mixtures)"}.get(lib, lib)
+    at["region"] = at.task.map(region)
+    order = ["Vis/NIR (soil)", "SWNIR (fruit)", "MIR (soil)", "NIR (fuel)", "NIR (meat)", "NIR (tablets)", "NIR (mixtures)"]
+    order = [o for o in order if o in set(at.region)]
+    fig, ax = plt.subplots(figsize=(4.2, 2.8))
+    for i, rg in enumerate(order):
+        v = at[at.region == rg].r_full_pool.values
+        ax.scatter(np.full(len(v), i) + np.linspace(-0.15, 0.15, len(v)), v, s=16, color=C["RPM"], lw=0, alpha=0.85)
+        ax.plot([i - 0.25, i + 0.25], [np.median(v)] * 2, color=INK, lw=1.4)
+    ax.axhline(1.0, color=C["IPL3"], ls="--", lw=1.1)
+    ax.text(len(order) - 0.5, 1.02, "r = 1 (isotropic prior)", ha="right", va="bottom", fontsize=6.5, color=INK2)
+    ax.axhspan(at.r_loso_prior.min(), at.r_loso_prior.max(), color=GRID, zorder=0)
+    ax.text(-0.45, at.r_loso_prior.max() + 0.01, "range of transferred priors", fontsize=6.2, color=INK2, va="bottom")
+    ax.set_xticks(range(len(order))); ax.set_xticklabels(order, rotation=35, ha="right", fontsize=6.6)
+    ax.set_ylabel("alignment exponent $r$ (large-sample fit)"); ax.set_ylim(0, 1.15)
+    fig.tight_layout(); _save(fig, paths, "Fig12_alignment_exponents")
+
+
 def make_all(df, T1, tv, collapse, T5, dec_rows, T7, ea, paths, rob_path):
     fig_workflow(paths)
     fig_theory_validity(tv, collapse, paths)
@@ -220,3 +249,4 @@ def make_all(df, T1, tv, collapse, T5, dec_rows, T7, ea, paths, rob_path):
     fig_error_analysis(ea, paths)
     fig_decisions(dec_rows, paths)
     fig_datasets(T1, paths)
+    fig_alignment(os.path.join(paths["results"], "alignment_exponents.csv"), paths)

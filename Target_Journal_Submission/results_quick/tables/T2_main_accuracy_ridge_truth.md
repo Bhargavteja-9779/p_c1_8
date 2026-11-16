@@ -2,8 +2,10 @@
 
 | method | label | n_tasks | mean_abs_logerr | ci95_lo | ci95_hi | median_task_abs_logerr | median_abs_logerr_rows | mean_bias | pct_within_10 | pct_within_20 |
 |---|---|---|---|---|---|---|---|---|---|---|
-| RPM | RPM (pre-registered) | 3 | 0.260 | 0.227 | 0.302 | 0.252 | 0.236 | 0.092 | 14.035 | 36.842 |
-| RPM-w | RPM-w (weighted refinement) | 3 | 0.250 | 0.218 | 0.267 | 0.265 | 0.233 | 0.107 | 8.772 | 35.088 |
+| RPM | RPM (pre-registered, r = 1) | 3 | 0.260 | 0.227 | 0.302 | 0.252 | 0.236 | 0.092 | 14.035 | 36.842 |
+| RPM-w | RPM-w (weighted path fit) | 3 | 0.250 | 0.218 | 0.267 | 0.265 | 0.233 | 0.107 | 8.772 | 35.088 |
+| RPM-T | RPM-T (transferred alignment) | 3 | 0.268 | 0.146 | 0.352 | 0.305 | 0.189 | 0.017 | 35.088 | 49.123 |
+| RPM-wT | RPM-wT (weighted + transferred) | 3 | 0.415 | 0.151 | 0.824 | 0.271 | 0.200 | -0.151 | 26.316 | 47.368 |
 | IPL3 | Inverse power law (IPL3) | 3 | 0.584 | 0.145 | 1.269 | 0.337 | 0.178 | -0.533 | 26.316 | 50.877 |
 | IPL2 | Power law (IPL2) | 3 | 0.809 | 0.145 | 1.951 | 0.331 | 0.536 | -0.787 | 17.544 | 29.825 |
 | EXP3 | Exponential (EXP3) | 3 | 0.489 | 0.151 | 0.841 | 0.474 | 0.171 | -0.370 | 29.825 | 52.632 |

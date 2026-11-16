@@ -43,9 +43,10 @@ DOIS = {
  "kerby2014": "10.2466/11.IT.3.1",
  "talanta2026": "10.1016/j.talanta.2026.130941",
  "walsh2024": "10.1016/j.saa.2024.124003",
+ "luca2017": "10.1016/j.geoderma.2016.11.015",
 }
 ARXIV = {"bordelon2020": "2002.02561", "simon2023": "2110.03922", "jacot2020": "2006.09796", "wei2022": "2203.06176",
-         "atanasov2024": "2405.00592", "adriaensen2023": "2310.20447", "hestness2017": "1712.00409", "kaplan2020": "2001.08361"}
+         "atanasov2024": "2405.00592", "adriaensen2023": "2310.20447", "hestness2017": "1712.00409", "kaplan2020": "2001.08361", "konstantinidis2025": "2510.01210"}
 
 def crossref(doi):
     url = "https://api.crossref.org/works/" + urllib.parse.quote(doi, safe="")

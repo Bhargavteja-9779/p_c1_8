@@ -7,7 +7,10 @@ import pandas as pd
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
-TAB, FIG, SUP = os.path.join(ROOT, "tables"), os.path.join(ROOT, "figures"), os.path.join(ROOT, "supplementary")
+TAB = os.environ.get("MS_TAB", os.path.join(ROOT, "tables"))
+FIG = os.environ.get("MS_FIG", os.path.join(ROOT, "figures"))
+SUP_SRC = os.path.join(ROOT, "supplementary")
+SUP = os.environ.get("MS_OUT", SUP_SRC)
 
 TABLES = [
     ("T1_tasks", "Calibration tasks: pool and test sizes, number of spectral variables, largest ground-truth calibration size and eigen-decay exponent (slope of log λk vs log k, k ≤ 60)."),
@@ -71,7 +74,7 @@ def main():
         if os.path.exists(p):
             parts += [f"![**Figure S{i}.** {cap}]({p}){{width=15cm}}", ""]
     for fn, title in NOTES:
-        p = os.path.join(SUP, fn)
+        p = os.path.join(SUP_SRC, fn)
         if os.path.exists(p):
             txt = open(p).read().split("\n", 1)[-1]
             parts += [f"# Note: {title}", "", txt, ""]

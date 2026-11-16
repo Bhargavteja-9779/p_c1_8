@@ -92,8 +92,24 @@ def _number_equations(d):
     return k
 
 
+def _explicit_delimiters(d):
+    """OMML <m:d> delimiters default to parentheses in Word, but LibreOffice renders missing begChr/endChr
+    as bars; make every default delimiter explicit so both renderers show parentheses."""
+    M = "http://schemas.openxmlformats.org/officeDocument/2006/math"
+    n = 0
+    for dd in d.element.body.iter("{%s}d" % M):
+        dPr = dd.find("{%s}dPr" % M)
+        if dPr is None:
+            dPr = OxmlElement("m:dPr"); dd.insert(0, dPr)
+        for tag, ch in (("begChr", "("), ("endChr", ")")):
+            if dPr.find("{%s}%s" % (M, tag)) is None:
+                e = OxmlElement(f"m:{tag}"); e.set("{%s}val" % M, ch); dPr.insert(0, e); n += 1
+    return n
+
+
 def postprocess(docx_path, max_img_cm=16.0):
     d = Document(docx_path)
+    _explicit_delimiters(d)
     n_eq = _number_equations(d)
     for s in d.sections:
         s.page_height = Cm(29.7); s.page_width = Cm(21.0)

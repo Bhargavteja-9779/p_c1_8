@@ -140,7 +140,7 @@ All methods were implemented in Python (NumPy, SciPy, pandas, scikit-learn). The
 **Table 1.** Calibration tasks. N = samples after replicate averaging (pool + group-disjoint test set); p = spectral variables after sub-sampling; max. n = largest calibration size in the ground-truth curve.
 
 | Library | Domain | Instrument / range | Properties | Tasks | N per task | p | Max. n (truth) |
-|:-----|:-----|:-------------------|:----------|--:|----:|--:|------:|
+|:------|:------|:----------------------|:------------|------:|------:|------:|--------:|
 | ICRAF-VisNIR | Soil (global) | ASD FieldSpec, 400–2480 nm (10 nm) | OC, clay, pH, CEC | 1 | 3,700 | 208 | 1,600 |
 | Mango | Fruit | Felix F750 handheld Vis–SWNIR, 684–990 nm | dry matter | 1 | 4,021 | 94 | 1,600 |
 | Tecator | Meat | Tecator Infratec 850–1050 nm | fat, moisture, protein | 1 | 240 | 99 | 100 |
@@ -166,7 +166,7 @@ Table 2 summarises 627 forecasts from 15 pilot sets. The pre-registered RPM reac
 **Table 2.** Forecast accuracy against the ridge ground truth over all tasks, pilot sizes, pilots and horizons. |log err| = |log(RMSE_forecast/RMSE_true)|, averaged within each task; CI = bootstrap over tasks. Δ = median paired difference of per-task errors (method − RPM; positive favours RPM) with bootstrap CI and Holm-adjusted two-sided Wilcoxon p. RPM is the pre-registered method; RPM-w, RPM-T, RPM-wT and SLOPE-T were added after the pre-registration (Section 3.6, EXPERIMENT_LOG).
 
 | Method | Mean |log err| [95% CI] | Median task |log err| | Bias | Within ±20% | Δ vs RPM [95% CI]; Holm p | RPM better / worse |
-|:-------------|---------:|--------:|--:|----:|------------:|-------:|
+|:---------------|-----------:|----------:|------:|------:|--------------:|--------:|
 | RPM (pre-registered, r = 1) | 0.260 [0.227, 0.302] | 0.252 | +0.092 | 36.8% | — | — |
 | RPM-w (weighted path fit) | 0.250 [0.218, 0.267] | 0.265 | +0.107 | 35.1% | -0.033 [-0.035, +0.038]; 1.0000 | 1 / 2 |
 | RPM-T (transferred alignment) | 0.268 [0.146, 0.352] | 0.305 | +0.017 | 49.1% | +0.004 [-0.081, +0.100]; 1.0000 | 2 / 1 |
@@ -208,7 +208,7 @@ The pre-registered decision metric asked each method for the calibration size at
 **Table 3.** Pre-registered ablation of RPM (n0 ∈ {50, 100}, 10 pilots per task, same pilots for all variants). Δ = mean paired difference of per-task errors (variant − RPM; positive = variant worse) with bootstrap CI; Holm-adjusted Wilcoxon p.
 
 | Variant | Tasks | Mean |log err| | Δ vs RPM [95% CI] | Holm p |
-|:---------------------------------|--:|-------:|------------:|--:|
+|:-------------------------------------|------:|---------:|-------------:|------:|
 | RPM (r = 1, pool eigen-spectrum, exact LOGO path, cut-off 0.8) | 3 | 0.238 | — | — |
 | free alignment exponent r | 3 | 0.338 | +0.100 [+0.008, +0.281] | 1.000 |
 | type-II maximum likelihood instead of path matching | 3 | 0.161 | -0.077 [-0.139, -0.018] | 1.000 |
@@ -235,7 +235,7 @@ The simulation with Monte-Carlo ground truth isolates the role of the alignment 
 **Table 4.** Robustness and distribution shift (n0 ∈ {50, 100}, 10 pilots). Entries: mean task |log err| (bias). Pre-processing, Kennard–Stone and noise scenarios use six representative tasks (ICRAF-MIR OC, KSSL-VisNIR clay, Neospectra-NIR pH, mango DM, diesel bp50, tablet assay).
 
 | Scenario | RPM | RPM-T | IPL3 | FLAT | RPM 80% cov. |
-|:---------------------|-------:|-------:|-------:|-------:|------:|
+|:-------------------------|--------:|--------:|--------:|--------:|---------:|
 | Savitzky–Golay 1st derivative | 0.416 (+0.18) | 0.439 (+0.00) | 0.276 (+0.04) | 0.388 (+0.08) | 0% |
 | Kennard–Stone pilot | 0.091 (+0.10) | 0.048 (+0.01) | 0.121 (-0.08) | 0.120 (+0.12) | 17% |
 | Reference noise added (25% of var y) | 0.227 (+0.25) | 0.238 (+0.24) | 0.406 (-0.61) | 0.120 (+0.13) | 8% |

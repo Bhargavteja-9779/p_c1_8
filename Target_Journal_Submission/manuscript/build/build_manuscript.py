@@ -136,7 +136,7 @@ def table_md(df, caption, label, floatfmt=3, cols=None, rename=None):
         return str(v)
     cells = [[f(v) for v in r] for r in d.itertuples(index=False)]
     head = "| " + " | ".join(str(c) for c in d.columns) + " |"
-    widths = [max([len(str(c))] + [len(r[i]) for r in cells]) for i, c in enumerate(d.columns)]
+    widths = [max([len(str(c)) + 2] + [len(r[i]) for r in cells]) for i, c in enumerate(d.columns)]
     def numeric(i):
         vals = [r[i].replace("%", "").replace(",", "").replace("–", "").replace("+", "").replace("−", "").strip() for r in cells]
         ok = 0
@@ -147,7 +147,7 @@ def table_md(df, caption, label, floatfmt=3, cols=None, rename=None):
                 pass
         return ok >= 0.8 * max(len(vals), 1)
     tot = sum(widths)
-    dashes = [max(3, int(round(60 * w / tot))) for w in widths]
+    dashes = [max(7, int(round(72 * w / tot))) for w in widths]
     sep = "|" + "|".join(("-" * (n - 1) + ":") if (i > 0 and numeric(i)) else (":" + "-" * (n - 1)) for i, n in enumerate(dashes)) + "|"
     rows = ["| " + " | ".join(r) + " |" for r in cells]
     return f"\n**{label}.** {caption}\n\n" + "\n".join([head, sep] + rows) + "\n"

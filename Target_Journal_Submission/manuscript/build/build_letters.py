@@ -56,10 +56,16 @@ def cover_letter(paragraphs, title, path):
 
 def main():
     import content
-    numbers = json.load(open(os.path.join(ROOT, "results", "numbers.json")))
-    ctx = build_context(numbers, os.path.join(ROOT, "results"), os.path.join(ROOT, "tables"))
-    highlights(content.highlight_lines(ctx), os.path.join(ROOT, "manuscript", "Highlights.docx"))
-    cover_letter(content.cover_letter_paragraphs(ctx), content.TITLE, os.path.join(ROOT, "manuscript", "cover_letter.docx"))
+    res = os.environ.get("MS_RES", os.path.join(ROOT, "results")); tab = os.environ.get("MS_TAB", os.path.join(ROOT, "tables"))
+    out = os.environ.get("MS_OUT", os.path.join(ROOT, "manuscript"))
+    numbers = json.load(open(os.path.join(res, "numbers.json")))
+    ctx = build_context(numbers, res, tab)
+    highlights(content.highlight_lines(ctx), os.path.join(out, "Highlights.docx"))
+    cover_letter(content.cover_letter_paragraphs(ctx), content.TITLE, os.path.join(out, "cover_letter.docx"))
+    import subprocess
+    for f in ("cover_letter.docx", "Highlights.docx"):
+        subprocess.run(["soffice", "--headless", "--convert-to", "pdf", "--outdir", out, os.path.join(out, f)], check=True,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     print("letters built")
 
 

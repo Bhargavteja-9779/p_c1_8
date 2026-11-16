@@ -133,6 +133,19 @@ def build_context(numbers, RES, TAB):
             k = f"{r.variant}_{r.method}".replace("-", "_").replace(".", "")
             c[f"rob_{k}"] = f3(r.mean_abs_logerr); c[f"robb_{k}"] = f"{r.mean_bias:+.3f}"
             c[f"robc_{k}"] = pct(r.coverage80, 0) if not pd.isna(r.coverage80) else "–"
+    ps = os.path.join(RES, "simulation_raw.csv")
+    if os.path.exists(ps):
+        sm = pd.read_csv(ps); sm["ae"] = sm.err.abs()
+        def med(q, col="ae"):
+            return float(sm.query(q)[col].median())
+        for rv, tag in ((0.5, "r05"), (1.0, "r1"), (2.0, "r2")):
+            for m in ("RPM", "RPM-w", "RPM-T", "IPL3", "FLAT"):
+                k = m.replace("-", "_")
+                c[f"sim_{tag}_{k}"] = f3(med(f"r == {rv} and method == '{m}'"))
+                c[f"simbias_{tag}_{k}"] = f"{med(f'r == {rv} and method == {chr(39)}{m}{chr(39)}', 'err'):+.3f}"
+        for n0 in sorted(sm.n0.unique()):
+            for m in ("RPM", "RPM-w", "RPM-T", "IPL3", "FLAT"):
+                c[f"simn0_{int(n0)}_{m.replace('-', '_')}"] = f3(med(f"n0 == {n0} and method == '{m}'"))
     S0 = pd.read_csv(os.path.join(TAB, "S0_stats_excluding_ICRAF_VisNIR.csv")).set_index("comparison")
     for m in S0.index:
         c[f"s0_{m.replace('-', '_')}_p"] = pfmt(S0.loc[m, "p_holm"])

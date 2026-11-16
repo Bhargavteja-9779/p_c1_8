@@ -330,9 +330,16 @@ def results_markdown(ctx, TAB_, FIG, table_md):
     # 4.7 simulation
     s.append("## 4.7. Controlled simulation")
     s.append(
-        "In the simulation with Monte-Carlo ground truth (Supplementary Table S22), median absolute log errors (median signed errors) for pilots of "
-        + d.get("sim_n0s", "") + " samples were: " + d.get("sim_sentence", "") + ". By true alignment exponent: " + d.get("sim_by_r", "") + ". "
-        "The simulation confirms that RPM is consistent when its assumptions hold and that small pilots, rather than the theory, limit its accuracy.")
+        "The simulation with Monte-Carlo ground truth isolates the role of the alignment assumption (Supplementary Tables S21–S22). When the true "
+        "exponent matched RPM's assumption ($r=1$), RPM was the most accurate forecaster (median absolute log error {{sim_r1_RPM}}; RPM-w {{sim_r1_RPM_w}}) "
+        "and nearly unbiased (median signed error {{simbias_r1_RPM}}), against {{sim_r1_IPL3}} for IPL3 and {{sim_r1_FLAT}} for FLAT. Misspecification "
+        "biased RPM in the direction predicted by the theory. With the signal in weak modes ($r=0.5$), RPM was pessimistic ({{simbias_r05_RPM}}) and "
+        "IPL3 was the most accurate method ({{sim_r05_IPL3}} vs {{sim_r05_RPM}}). With the signal in dominant modes ($r=2$), RPM was slightly optimistic "
+        "({{simbias_r2_RPM}}), and the flat rule became hard to beat ({{sim_r2_FLAT}}). "
+        "Transferring an exponent of 0.46 (RPM-T) removed the bias when the true exponent was close to it ({{simbias_r05_RPM_T}} at $r=0.5$) but made "
+        "small-pilot forecasts unstable (median error {{simn0_30_RPM_T}} for 30-sample pilots vs {{simn0_30_RPM}} for RPM). This reproduces, under "
+        "controlled conditions, the noise-floor problem observed on real data (Section 4.4). Across scenarios, RPM's error fell from {{simn0_30_RPM}} to "
+        "{{simn0_120_RPM}} as the pilot grew from 30 to 120 samples. The small pilot, not the theory, limits accuracy when the assumptions hold.")
     # 4.8 robustness
     s.append("## 4.8. Robustness and distribution shift")
     s.append(table4_md(table_md))

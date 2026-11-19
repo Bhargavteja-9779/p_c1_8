@@ -33,15 +33,20 @@ ICRAF-ISRIC VisNIR soils, 6 properties: omniscient theory within ~±10% MSE of e
 2. Literature matrix + novelty map + hypothesis/RQs + pre-registered experimental design (EXPERIMENT_DESIGN.md).
 3. Data download scripts (OSSL libraries, mango DMC, Tecator, …), leakage audit, implementation, run_all.py quick/full.
 
-## 5. Exact next execution step (updated 2026-11-16 14:57 UTC)
-Status: main stage DONE (38 tasks). Pre-registered result: RPM (r=1) >> IPL3/IPL2/EXP3/LOG2/DF-OLS (Holm p<1e-4), ≈ FLAT (n.s.).
-Key findings: theory reproduces curves (mean |log err| 0.10), kappa-collapse SD 0.041 vs 0.52; alignment exponent r<1 in 38/38 tasks
-(median ~0.55; Vis/NIR ~0.37, MIR ~0.62). RPM-T (transferred r) FAILS (noise-floor collapse) -> negative result, reported.
-RUNNING: /tmp/claude-0/chain.sh (refinement -> simulation -> robustness -> analysis), then /tmp/claude-0/chain2.sh (ablation_t -> analysis).
-If interrupted: cd Target_Journal_Submission/code && for st in refinement simulation ablation_t robustness analysis; do python3 run_all.py --mode full --stage $st --jobs 4; done
-(all stages resumable; finished tasks skipped).
-THEN:
-1. Check pending claims in manuscript/build/results_text.py against tables (robustness, simulation, error analysis wording).
-2. Write abstract results/significance, highlights, conclusion, cover letter (results_text.py), build: python3 manuscript/build/build_manuscript.py; build_letters.py; build_supplementary.py.
-3. Review cycle 1: 10 background Agent reviewers using scratchpad/reviewer_brief.md -> REVIEW/raw/cycle_01/*.json; verify serious issues; fix; REVIEW/review_01.md.
-4. Repeat cycles 2-10; final audits; package; decision.
+## 5. Exact next execution step (updated 2026-11-19)
+Status: all experiment stages DONE; manuscript, supplementary, highlights, cover letter built (manuscript/build/*.py);
+journal historical-paper analysis written (journal_selection/journal_paper_analysis.md).
+Review cycle 1 IN PROGRESS: 10 reviewer agents (briefs: Target_Journal_Submission/REVIEW/raw/cycle_01/briefs/R1..R10.md)
+write REVIEW/raw/cycle_01/R*.json. (First attempt was interrupted by the API usage limit on 2026-11-16; resumed 2026-11-19.)
+Next, per cycle k = 01..10:
+ 1. Verify every FATAL/CRITICAL/MAJOR issue against code/results; record verdict + response in REVIEW/raw/cycle_k/decisions.json.
+ 2. Fix research (code/analysis/experiments) first, then text; rerun affected stages:
+    cd Target_Journal_Submission/code && python3 run_all.py --mode full --stage <stage> --jobs 4   (analysis stage ~30 s)
+ 3. Rebuild: cd ../manuscript/build && python3 build_manuscript.py && python3 build_supplementary.py && python3 build_letters.py
+ 4. python3 ../../REVIEW/tools/consolidate.py k  -> REVIEW/review_k.md; update REVIEW_HISTORY.md, CHANGELOG.md; commit + push.
+ 5. Next cycle: new briefs with prior-issue list (REVIEW/review_*.md) so reviewers do not repeat fixed issues.
+Candidate verified ACA references to add if reviewers ask for positioning (Crossref-checked 2026-11-16):
+ Olivieri 2026 ACA 1396:345155; Holman & Kurouski 2026 ACA 1414:345655; Lopez et al. 2026 ACA 1384:344838;
+ Riu et al. 2026 ACA 1419:345885; Al-Shaebi et al. 2026 ACA 1423:346185; Fan et al. 2025 ACA 1379:344728.
+After cycle 10: Phases 34-42 (consistency + reproducibility audits incl. quick-mode rerun, final DOCX/PDF, package manifest,
+REVIEW/final_audit.md, rejection-risk report, READY/NOT READY decision).

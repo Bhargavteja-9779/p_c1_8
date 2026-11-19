@@ -30,7 +30,7 @@ import yaml  # noqa: E402
 from joblib import Parallel, delayed  # noqa: E402
 
 from src.data.datasets import load_task, TASKS_FULL, TASKS_QUICK  # noqa: E402
-from src.evaluation.forecast_experiment import run_truth, run_pilots  # noqa: E402
+from src.evaluation.forecast_experiment import run_truth, run_pilots, n_splits_for  # noqa: E402
 
 
 def detect_hardware():
@@ -45,13 +45,24 @@ def detect_hardware():
     return info
 
 
-def _one_task(spec, cfg, paths, mode):
+SMALL_KINDS = ("diesel", "tablets", "tecator", "cgl")     # N < 1000: evaluated over 10 repeated outer splits
+
+
+def _n_splits(spec):
+    return 10 if spec[0] in SMALL_KINDS else 1
+
+
+def _one_task(spec, cfg, paths, mode, split=0):
     t0 = time.time()
     task = load_task(spec, paths["raw"], paths["cache"], prep=cfg.get("prep", "snv"))
-    truth = run_truth(task, paths["raw_out"], with_pls=True)
-    run_pilots(task, truth, paths["raw_out"], n0_list=tuple(cfg["n0_list"]), n_pilots=cfg["n_pilots"],
-               n_boot=cfg["n_boot"], ablation_n0=tuple(cfg["ablation_n0"]), ablation_pilots=cfg["ablation_pilots"])
-    return task.name, time.time() - t0
+    k = n_splits_for(task)
+    assert k == _n_splits(spec), (task.name, k)
+    truth = run_truth(task, paths["raw_out"], with_pls=True, split=split)
+    npil = cfg["n_pilots"] if k == 1 else cfg.get("n_pilots_split", 10)
+    abl = cfg["ablation_pilots"] if k == 1 else max(1, cfg["ablation_pilots"] // k)
+    run_pilots(task, truth, paths["raw_out"], n0_list=tuple(cfg["n0_list"]), n_pilots=npil,
+               n_boot=cfg["n_boot"], ablation_n0=tuple(cfg["ablation_n0"]), ablation_pilots=abl, split=split)
+    return f"{task.name}#s{split}", time.time() - t0
 
 
 def main():
@@ -72,12 +83,19 @@ def main():
         os.makedirs(p, exist_ok=True)
     log = open(os.path.join(paths["logs"], f"run_{a.mode}.log"), "a")
     hw = detect_hardware()
+    try:
+        import subprocess as _sp
+        hw["git_commit"] = _sp.run(["git", "rev-parse", "HEAD"], cwd=HERE, capture_output=True, text=True).stdout.strip()
+        hw["git_dirty"] = bool(_sp.run(["git", "status", "--porcelain", "--", "."], cwd=HERE, capture_output=True, text=True).stdout.strip())
+    except Exception:
+        pass
     log.write(json.dumps({"start": time.strftime("%Y-%m-%d %H:%M:%S"), "mode": a.mode, "hardware": hw, "config": cfg}) + "\n"); log.flush()
     print("hardware:", hw)
     specs = [tuple(s) for s in (TASKS_QUICK if a.mode == "quick" else TASKS_FULL)]
     if a.stage in ("all", "main"):
         order = sorted(specs, key=lambda s: 0 if s[0] == "ossl" and s[1] and s[1].startswith("KSSL") else 1)
-        res = Parallel(n_jobs=a.jobs, verbose=5)(delayed(_one_task)(s, cfg, paths, a.mode) for s in order)
+        units = [(s, j) for s in order for j in range(_n_splits(s))]
+        res = Parallel(n_jobs=a.jobs, verbose=5)(delayed(_one_task)(s, cfg, paths, a.mode, j) for s, j in units)
         for name, sec in res:
             log.write(json.dumps({"task": name, "seconds": round(sec, 1)}) + "\n")
         log.flush()

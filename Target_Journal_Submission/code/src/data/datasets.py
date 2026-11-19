@@ -34,6 +34,7 @@ class Task:
     wavelengths: np.ndarray
     meta: dict = field(default_factory=dict)
     X_unlabeled_extra: np.ndarray | None = None
+    X_unlabeled_groups: np.ndarray | None = None      # site/profile group of each unlabelled spectrum
 
 
 OSSL_PROPS = {
@@ -85,6 +86,56 @@ def _read_ossl(raw_root, folder, stype, rng_axis, suffix, cache_dir):
     return ids, X, axis, None
 
 
+def _icraf_profiles(site):
+    """ICRAF-ISRIC has no site identifier and ~11% of layers lack coordinates. Profiles are reconstructed from
+    runs of consecutive sample numbers within an ID prefix whose layer sequence increases (a new profile starts
+    when the prefix changes, the layer sequence does not increase, or the sample number jumps by more than 3).
+    Where coordinates exist this agrees with the coordinate groups for ~98.5% of profiles."""
+    s = site[["id.layer_local_c", "layer.sequence_usda_uint16"]].copy()
+    s["pref"] = s["id.layer_local_c"].str.split("_").str[0]
+    s["num"] = pd.to_numeric(s["id.layer_local_c"].str.extract(r"(\d+)$")[0], errors="coerce")
+    s = s.sort_values(["pref", "num"])
+    seq = s["layer.sequence_usda_uint16"].to_numpy(); pref = s["pref"].to_numpy(); num = s["num"].to_numpy()
+    prof, p = [], 0
+    for i in range(len(s)):
+        if i == 0 or pref[i] != pref[i - 1] or not (seq[i] > seq[i - 1]) or not (num[i] - num[i - 1] <= 3):
+            p += 1
+        prof.append(p)
+    return pd.Series(["P_%d" % v for v in prof], index=s.index).reindex(site.index)
+
+
+def _ossl_groups(raw_root, folder, site):
+    """Group label (site / profile) per layer, used for group-disjoint splits and leave-one-group-out CV.
+    KSSL: dataset site id. Neospectra: the KSSL site of the matching KSSL layer (Neospectra soils are KSSL
+    archive samples). AfSIS1: sentinel site + sampling cluster. ICRAF-ISRIC: coordinates, else the profile
+    reconstructed from sample-number runs. A layer receives its own group only if none of these exists."""
+    lid = site["id.layer_local_c"].astype(str)
+    coords = None
+    lon, lat = site.get("longitude.point_wgs84_dd"), site.get("latitude.point_wgs84_dd")
+    if lon is not None and lat is not None:
+        coords = pd.Series(np.where(lon.notna() & lat.notna(), "C_" + lon.round(5).astype(str) + "_" + lat.round(5).astype(str), None), index=site.index)
+    if "id.dataset.site_ascii_txt" in site.columns and site["id.dataset.site_ascii_txt"].notna().mean() > 0.5:
+        g = "S_" + site["id.dataset.site_ascii_txt"].astype(str)
+        g[site["id.dataset.site_ascii_txt"].isna()] = None
+    elif folder == "Neospectra" and "id.kssl.lay_local_txt" in site.columns:
+        ks = pd.read_csv(os.path.join(raw_root, "ossl", "KSSL", "ossl_soilsite_v1.3.csv.gz"), low_memory=False,
+                         usecols=["id.layer_local_c", "id.dataset.site_ascii_txt"])
+        kmap = dict(zip(ks["id.layer_local_c"].astype(str), ks["id.dataset.site_ascii_txt"].astype(str)))
+        key = pd.to_numeric(site["id.kssl.lay_local_txt"], errors="coerce")
+        g = pd.Series([("S_" + kmap[str(int(k))]) if (pd.notna(k) and str(int(k)) in kmap) else None for k in key], index=site.index)
+    elif "site.name_src_txt" in site.columns and "site.cluster_src_id" in site.columns:
+        ok = site["site.name_src_txt"].notna() & site["site.cluster_src_id"].notna()
+        g = pd.Series(np.where(ok, "A_" + site["site.name_src_txt"].astype(str) + "_" + site["site.cluster_src_id"].astype(str), None), index=site.index)
+    elif folder == "ICRAF_ISRIC":
+        prof = _icraf_profiles(site)
+        g = coords.where(coords.notna(), prof) if coords is not None else prof
+    else:
+        g = pd.Series([None] * len(site), index=site.index)
+    if coords is not None:
+        g = g.where(g.notna(), coords)
+    return g.where(g.notna(), "L_" + lid)
+
+
 def load_ossl(raw_root, lib, prop, cache_dir, max_n=15000, seed=0, prep="snv"):
     folder, stype, rng_axis, suffix, instrument = OSSL_LIBS[lib]
     ids, Xraw, axis, _ = _read_ossl(raw_root, folder, stype, rng_axis, suffix, cache_dir)
@@ -97,13 +148,9 @@ def load_ossl(raw_root, lib, prop, cache_dir, max_n=15000, seed=0, prep="snv"):
     lab = lab[["id.layer_local_c", col]].dropna()
     lab["id.layer_local_c"] = lab["id.layer_local_c"].astype(str)
     lab = lab.groupby("id.layer_local_c", as_index=False)[col].mean()
-    # leakage-control group: site / profile identifier (coordinates or site id), else the layer itself
+    # leakage-control group: the site / profile a layer belongs to (see _ossl_groups)
     site["id.layer_local_c"] = site["id.layer_local_c"].astype(str)
-    if "id.dataset.site_ascii_txt" in site.columns and site["id.dataset.site_ascii_txt"].notna().mean() > 0.5:
-        site["grp"] = site["id.dataset.site_ascii_txt"].astype(str)
-    else:
-        lon, lat = site.get("longitude.point_wgs84_dd"), site.get("latitude.point_wgs84_dd")
-        site["grp"] = np.where(lon.notna() & lat.notna(), lon.round(5).astype(str) + "_" + lat.round(5).astype(str), "L_" + site["id.layer_local_c"])
+    site["grp"] = _ossl_groups(raw_root, folder, site)
     site = site.drop_duplicates("id.layer_local_c")[["id.layer_local_c", "grp"]]
     idx = pd.DataFrame({"id.layer_local_c": ids, "row": np.arange(len(ids))})
     m = idx.merge(lab, on="id.layer_local_c").merge(site, on="id.layer_local_c", how="left")
@@ -128,18 +175,21 @@ def load_ossl(raw_root, lib, prop, cache_dir, max_n=15000, seed=0, prep="snv"):
     X, y, grp = X[ok], y[ok], m["grp"].to_numpy()[ok]
     absorb = suffix == "ref"
     Xp = preprocess(X, prep, absorbance_from_reflectance=absorb)
-    Xu = None
+    Xu = None; Gu = None
     if len(unl_rows) > 0:
         sel = unl_rows if len(unl_rows) <= 20000 else rng.choice(unl_rows, 20000, replace=False)
         Xu_raw = Xraw[sel].astype(float)
-        Xu_raw = Xu_raw[np.all(np.isfinite(Xu_raw), 1)]
+        fin = np.all(np.isfinite(Xu_raw), 1)
+        Xu_raw = Xu_raw[fin]
+        gmap = dict(zip(site["id.layer_local_c"], site["grp"]))
+        Gu = np.array([gmap.get(i, "L_" + i) for i in ids[sel][fin]], dtype=object)
         Xu = preprocess(Xu_raw, prep, absorbance_from_reflectance=absorb) if len(Xu_raw) else None
     return Task(name=f"{lib}:{prop}", family="soil", X=Xp, y=y, groups=grp, wavelengths=axis,
                 meta={"library": lib, "property": prop, "column": col, "transform": transform, "unit": unit,
                       "instrument": instrument, "spectral_type": stype, "prep": prep,
                       "source": "Open Soil Spectral Library v1.3", "license": "CC-BY 4.0 / ODbL (AfSIS1)",
                       "n_groups": int(len(np.unique(grp)))},
-                X_unlabeled_extra=Xu)
+                X_unlabeled_extra=Xu, X_unlabeled_groups=Gu)
 
 
 def load_mango(raw_root, prep="snv", group_level="fruit"):
@@ -247,12 +297,16 @@ def load_tecator(raw_root, prop, prep="snv"):
     target = {"fat": "fat", "moisture": "moisture", "protein": "protein"}[prop]
     tcol = next(c for c in attrs if c.lower() == target)
     X = D[acols].to_numpy(float); y = D[tcol].to_numpy(float)
+    # the data provider designates the last 25 samples (sets E1, E2) for extrapolation studies and asks users to
+    # ignore them for interpolation work; they are excluded (samples 1-215 are used)
+    X, y = X[:215], y[:215]
     Xp = preprocess(X, prep, absorbance_from_reflectance=False)
     return Task(name=f"Tecator:{prop}", family="meat", X=Xp, y=y, groups=np.arange(len(y)),
                 wavelengths=np.linspace(850, 1050, X.shape[1]),
                 meta={"library": "Tecator", "property": prop, "transform": "none", "unit": "% w/w",
                       "instrument": "Tecator Infratec Food & Feed Analyzer (850-1050 nm)", "spectral_type": "nir",
-                      "prep": prep, "source": "StatLib / OpenML data id 505", "license": "public (StatLib)", "n_groups": len(y)})
+                      "prep": prep, "source": "StatLib / OpenML data id 505", "license": "public domain; redistribution with the Tecator permission note",
+                      "n_groups": len(y), "excluded": "extrapolation sets E1/E2 (last 25 samples), as designated by the data provider"})
 
 
 def load_cgl(raw_root, prop, prep="snv"):

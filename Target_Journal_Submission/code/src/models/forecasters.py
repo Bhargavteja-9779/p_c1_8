@@ -53,32 +53,49 @@ def complete_tail_powerlaw(lam_obs, p, fit_frac=0.5):
 # --------------------------------------------------------------------------------------
 # RPM
 # --------------------------------------------------------------------------------------
-def _path_points(lam, e, n_eff, mu_rel, cutoff, w=None):
+def _kappa_quadrature(k):
+    """Trapezoid weights in log kappa: each path point represents the stretch of the kappa axis it covers.
+    Near the interpolation limit many penalties map to (almost) the same kappa; they then share one weight
+    instead of each counting as a separate observation (review cycle 1, R2-C01-01)."""
+    lk = np.log(np.asarray(k, float))
+    order = np.argsort(lk); ls = lk[order]
+    if len(ls) < 2:
+        return np.ones(len(ls))
+    gaps = np.diff(ls)
+    w_sorted = np.zeros(len(ls))
+    w_sorted[:-1] += gaps / 2; w_sorted[1:] += gaps / 2
+    w = np.empty(len(ls)); w[order] = w_sorted
+    w = np.clip(w, 1e-6 * max(w.max(), 1e-300), None)
+    return w / w.mean()
+
+
+def _path_points(lam, e, n_eff, mu_rel, cutoff, w=None, kappa_weights=True):
     mus = mu_rel * lam.max()
     k = solve_kappa(lam, n_eff, mus)
     d2 = df2_of(lam, k)
     pref = (1.0 + 1.0 / n_eff) / (1.0 - d2 / n_eff)
     ok = np.isfinite(e) & (e > 0) & (d2 / n_eff <= cutoff)
-    if w is None:
-        return k[ok], pref[ok], e[ok]
-    return k[ok], pref[ok], e[ok], w[ok]
+    q = _kappa_quadrature(k[ok]) if kappa_weights else np.ones(int(ok.sum()))
+    ww = q if w is None else q * w[ok]
+    return k[ok], pref[ok], e[ok], ww
 
 
-def fit_rpm(lam, path_mse, n_eff, mu_rel=DEFAULT_MU_REL, r_mode="fixed1", cutoff=0.8, r_prior=None, path_var_log=None, r_value=1.0):
+def fit_rpm(lam, path_mse, n_eff, mu_rel=DEFAULT_MU_REL, r_mode="fixed1", cutoff=0.8, r_prior=None, path_var_log=None, r_value=1.0,
+            sigma2_floor=None, kappa_weights=True):
     """Fit (log tau2, r, log sigma2) to an observed CV path. Returns dict of parameters.
 
-    If `path_var_log` (delta-method variance of log CV-MSE per path point) is given, the log-space
-    least-squares fit is inverse-variance weighted (weights normalised to mean 1)."""
+    If `sigma2_floor` > 0 is given, the noise variance is constrained to sigma2 >= sigma2_floor (used with a
+    statistical noise-variance estimate, see dicker_noise).
+
+    Path points are weighted by their spacing in log kappa (`kappa_weights=True`, default since review cycle 1);
+    `kappa_weights=False` reproduces the originally registered implementation, in which every penalty of the
+    log-uniform mu grid counted equally. If `path_var_log` (delta-method variance of log CV-MSE per path point)
+    is given, these weights are multiplied by heuristic inverse-variance weights (RPM-w)."""
     wv = None if path_var_log is None else 1.0 / np.clip(np.asarray(path_var_log, float), 1e-12, None)
-    if wv is None:
-        k, P, e = _path_points(lam, path_mse, n_eff, mu_rel, cutoff); W = np.ones(len(k))
-        if len(k) < 3:
-            k, P, e = _path_points(lam, path_mse, n_eff, mu_rel, 0.95); W = np.ones(len(k))
-    else:
-        k, P, e, W = _path_points(lam, path_mse, n_eff, mu_rel, cutoff, wv)
-        if len(k) < 3:
-            k, P, e, W = _path_points(lam, path_mse, n_eff, mu_rel, 0.95, wv)
-        W = W / W.mean()
+    k, P, e, W = _path_points(lam, path_mse, n_eff, mu_rel, cutoff, wv, kappa_weights)
+    if len(k) < 3:                      # documented fallback: relax the validity cut-off if < 3 points remain
+        k, P, e, W = _path_points(lam, path_mse, n_eff, mu_rel, 0.95, wv, kappa_weights)
+    W = W / W.mean()
     ln = lam / lam.max()
     B = (k[:, None] / (lam[None, :] + k[:, None])) ** 2      # (J, p)
     loge = np.log(e)
@@ -99,14 +116,17 @@ def fit_rpm(lam, path_mse, n_eff, mu_rel=DEFAULT_MU_REL, r_mode="fixed1", cutoff
         return float(np.sum(W * (np.log(model(lt, r, ls)) - loge) ** 2)) + pen
 
     best = None
+    ls_lo = np.log(v) - 25
+    if sigma2_floor is not None and np.isfinite(sigma2_floor) and sigma2_floor > 0:
+        ls_lo = min(max(ls_lo, float(np.log(sigma2_floor))), np.log(v) + 1.9)
     for frac_noise in (0.1, 0.4, 0.8):
-        ls0 = np.log(max(frac_noise * np.min(e), 1e-12))
+        ls0 = min(max(np.log(max(frac_noise * np.min(e), 1e-12)), ls_lo + 1e-6), np.log(v) + 1.9)
         for r0 in ((r_fix,) if fixed else (0.3, 1.0, 1.8)):
             lt0 = np.log(max(v - frac_noise * np.min(e), 1e-12) / np.sum(ln ** r0))
             if fixed:
-                x0 = [lt0, ls0]; bnds = [(lt0 - 25, lt0 + 25), (np.log(v) - 25, np.log(v) + 2)]
+                x0 = [lt0, ls0]; bnds = [(lt0 - 25, lt0 + 25), (ls_lo, np.log(v) + 2)]
             else:
-                x0 = [lt0, r0, ls0]; bnds = [(lt0 - 40, lt0 + 40), (-0.5, 3.0), (np.log(v) - 25, np.log(v) + 2)]
+                x0 = [lt0, r0, ls0]; bnds = [(lt0 - 40, lt0 + 40), (-0.5, 3.0), (ls_lo, np.log(v) + 2)]
             res = minimize(loss, x0, method="L-BFGS-B", bounds=bnds)
             if best is None or res.fun < best.fun:
                 best = res
@@ -128,10 +148,10 @@ class RPMForecaster:
     name = "RPM"
 
     def __init__(self, mu_rel=DEFAULT_MU_REL, r_mode="fixed1", cutoff=0.8, n_boot=50, seed=0,
-                 r_prior=None, cv="logo", weighted=False, r_value=1.0):
+                 r_prior=None, cv="logo", weighted=False, r_value=1.0, sigma2_floor=None, kappa_weights=True):
         self.mu_rel = mu_rel; self.r_mode = r_mode; self.cutoff = cutoff
         self.n_boot = n_boot; self.seed = seed; self.r_prior = r_prior; self.cv = cv; self.weighted = weighted
-        self.r_value = r_value
+        self.r_value = r_value; self.sigma2_floor = sigma2_floor; self.kappa_weights = kappa_weights
 
     def _path(self, X0, y0, g0, lam, w=None):
         """Returns (CV MSE path, variance of log CV MSE or None)."""
@@ -143,23 +163,33 @@ class RPMForecaster:
         return ridge_cv_path(X0, y0, mus, groups=g0, weights=w), None
 
     def fit_forecast(self, X0, y0, g0, lam, ns):
+        import time as _time
+        _t0 = _time.perf_counter()
         n0 = len(y0)
         gsz = 1.0 if g0 is None else float(np.mean(np.unique(g0, return_counts=True)[1]))
         n_eff = n0 - gsz
         e, ev = self._path(X0, y0, g0, lam)
-        self.params_ = fit_rpm(lam, e, n_eff, self.mu_rel, self.r_mode, self.cutoff, self.r_prior, ev, self.r_value)
+        self.params_ = fit_rpm(lam, e, n_eff, self.mu_rel, self.r_mode, self.cutoff, self.r_prior, ev, self.r_value,
+                               self.sigma2_floor, self.kappa_weights)
         point = forecast_theory(lam, self.params_, ns, self.mu_rel)
         out = {"point": point, "params": self.params_, "path": e}
+        self.t_point_ = _time.perf_counter() - _t0
+        _t1 = _time.perf_counter()
         if self.n_boot and self.n_boot > 0:
             rng = np.random.default_rng(self.seed)
             sims = []
+            gg = np.arange(n0) if g0 is None else np.unique(np.asarray(g0), return_inverse=True)[1]
             for _ in range(self.n_boot):
-                w = rng.dirichlet(np.ones(n0)) * n0
+                wg = rng.dirichlet(np.ones(gg.max() + 1))        # Bayesian bootstrap over groups (clusters)
+                w = wg[gg] / np.bincount(gg)[gg]
+                w = w / w.sum() * n0
                 eb, evb = self._path(X0, y0, g0, lam, w)
-                pb = fit_rpm(lam, eb, n_eff, self.mu_rel, self.r_mode, self.cutoff, self.r_prior, evb, self.r_value)
+                pb = fit_rpm(lam, eb, n_eff, self.mu_rel, self.r_mode, self.cutoff, self.r_prior, evb, self.r_value,
+                             self.sigma2_floor, self.kappa_weights)
                 sims.append(forecast_theory(lam, pb, ns, self.mu_rel))
             sims = np.log(np.sqrt(np.array(sims)))
             out["boot_logrmse"] = sims
+        self.t_boot_ = _time.perf_counter() - _t1
         return out
 
 
@@ -267,9 +297,12 @@ def curve_forecast(kind, ms, es, ns, alphas=(0.8, 0.95)):
     ns = np.asarray(ns, float)
     if fit is None:
         pt = np.full(len(ns), es[-1])
-        return {"point": pt, "bands": {a: (np.log(np.sqrt(pt)), np.log(np.sqrt(pt))) for a in alphas}, "failed": True}
+        return {"point": pt, "bands": {a: (np.log(np.sqrt(pt)), np.log(np.sqrt(pt))) for a in alphas}, "failed": True,
+                "floored": np.zeros(len(ns), bool)}
     f, popt, pcov = fit
-    pt = np.maximum(f(ns, *popt), 1e-12)
+    raw = f(ns, *popt)
+    floored = raw <= 1.0001e-12
+    pt = np.maximum(raw, 1e-12)
     bands = {}
     eps = 1e-6
     G = np.zeros((len(ns), len(popt)))
@@ -278,11 +311,13 @@ def curve_forecast(kind, ms, es, ns, alphas=(0.8, 0.95)):
         G[:, i] = (f(ns, *(popt + dp)) - f(ns, *(popt - dp))) / (2 * dp[i])
     pcov = np.where(np.isfinite(pcov), pcov, 0.0)
     sd = np.sqrt(np.clip(np.einsum("ij,jk,ik->i", G, pcov, G), 0, None))
+    # delta-method bands on the log scale (sd of log MSE = sd / MSE); the MSE-scale bands used before the
+    # first review cycle were clipped at zero, which made them artificially wide
+    sdl = sd / pt
     for a in alphas:
         z = norm.ppf(0.5 + a / 2)
-        lo = np.maximum(pt - z * sd, 1e-12); hi = pt + z * sd
-        bands[a] = (np.log(np.sqrt(lo)), np.log(np.sqrt(hi)))
-    return {"point": pt, "bands": bands, "failed": False, "popt": popt}
+        bands[a] = (0.5 * (np.log(pt) - z * sdl), 0.5 * (np.log(pt) + z * sdl))
+    return {"point": pt, "bands": bands, "failed": False, "popt": popt, "floored": floored}
 
 
 def flat_forecast(X0, y0, g0, mu_grid, ns):
@@ -302,3 +337,73 @@ def dfols_forecast(X0, y0, g0, mu_grid, ns):
     s2 = rss / max(n0 - df - 1, 1.0)
     ns = np.asarray(ns, float)
     return s2 * (1 + 1 / ns + df / np.maximum(ns - df - 1, 1.0))
+
+
+# --------------------------------------------------------------------------------------
+# Pilot diagnostics added in review cycle 1
+# --------------------------------------------------------------------------------------
+def nested_cv_mse(X0, y0, g0, mu_grid, k=10, seed=0):
+    """Nested grouped CV estimate of the pilot's prediction MSE: outer grouped k-fold; within each outer
+    training part the penalty is selected by exact LOGO (inner loop), so the estimate is free of the
+    selection optimism of min_mu CV(mu)."""
+    rng = np.random.default_rng(seed)
+    g = np.arange(len(y0)) if g0 is None else np.asarray(g0)
+    ug = np.unique(g); perm = rng.permutation(len(ug))
+    fid_g = dict(zip(ug[perm], np.arange(len(ug)) % min(k, len(ug))))
+    fid = np.array([fid_g[v] for v in g])
+    sse = 0.0
+    for f in np.unique(fid):
+        tr, te = fid != f, fid == f
+        if tr.sum() < 4:
+            continue
+        m = RidgeCV(mu_grid).fit(X0[tr], y0[tr], g[tr])
+        sse += float(np.sum((m.predict(X0[te]) - y0[te]) ** 2))
+    return sse / len(y0)
+
+
+def pilot_test_mse(X0, y0, g0, mu_grid, Xte, yte):
+    """Realised test MSE of the calibration actually obtained from the pilot (LOGO-selected penalty)."""
+    m = RidgeCV(mu_grid).fit(X0, y0, g0)
+    return float(np.mean((m.predict(Xte) - yte) ** 2))
+
+
+def dicker_noise(X0, y0, mean_pool, lam_pool, V_pool, rel_tol=1e-10):
+    """Method-of-moments estimate of the residual variance of the best linear predictor (Dicker 2014,
+    Biometrika 101:269), with the predictors whitened by the (unlabelled) pool covariance.
+    Returns (sigma2_hat, tau2_hat); either can be negative (unbiased moment estimates)."""
+    keep = lam_pool > rel_tol * lam_pool.max()
+    W = V_pool[:, keep] / np.sqrt(lam_pool[keep])[None, :]
+    Z = (X0 - mean_pool) @ W
+    yc = y0 - y0.mean()
+    n, p = Z.shape
+    yy = float(yc @ yc); zy = Z.T @ yc; zz = float(zy @ zy)
+    n1 = n - 1                       # one degree of freedom used by centring y
+    sig2 = (n1 + p + 1) / (n1 * (n1 + 1)) * yy - zz / (n1 * (n1 + 1))
+    tau2 = -p / (n1 * (n1 + 1)) * yy + zz / (n1 * (n1 + 1))
+    return float(sig2), float(tau2)
+
+
+def wei_exponent(X0, y0, lam_pool, mu_grid, cutoff=0.8, kmax=60):
+    """Scaling-exponent estimator of Wei, Hu & Steinhardt (ICML 2022, Props. 4-5): eigen-decay gamma from the
+    (unlabelled) spectrum, lambda_k ~ k^-(1+gamma); alignment delta from the pilot regularisation path,
+    y'(XX' + N lambda I)^-1 y ~ kappa(lambda, N)^(-(1-delta)/(1+gamma)); predicted MSE scaling n^-alpha with
+    alpha = gamma + delta (noiseless, optimally tuned ridge)."""
+    from .theory import solve_kappa, df2_of
+    n0 = len(y0)
+    lam = np.sort(lam_pool)[::-1]
+    k = np.arange(1, min(kmax, int(np.sum(lam > 1e-12 * lam[0]))) + 1)
+    slope = np.polyfit(np.log(k), np.log(lam[: len(k)]), 1)[0]
+    gamma = -slope - 1.0
+    Xc = X0 - X0.mean(0); yc = y0 - y0.mean()
+    U, S, _ = np.linalg.svd(Xc, full_matrices=False)
+    uy = U.T @ yc; rest = float(yc @ yc - uy @ uy)
+    mus = np.asarray(mu_grid, float)
+    kap = np.asarray(solve_kappa(lam_pool, n0, mus), float).ravel()
+    okk = np.asarray(df2_of(lam_pool, kap), float).ravel() / n0 <= cutoff
+    qs = np.array([float(np.sum(uy ** 2 / (S ** 2 + n0 * mu)) + rest / (n0 * mu)) for mu in mus])[okk]
+    ks = kap[okk]
+    if len(qs) < 3:
+        return {"alpha": np.nan, "gamma": gamma, "delta": np.nan}
+    b = np.polyfit(np.log(ks), np.log(qs), 1)[0]
+    delta = 1.0 + b * (1.0 + gamma)
+    return {"alpha": float(gamma + delta), "gamma": float(gamma), "delta": float(delta)}

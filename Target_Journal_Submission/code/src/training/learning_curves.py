@@ -6,7 +6,7 @@ import numpy as np
 from ..models.ridge import ridge_cv_path, PLSCV
 from ..models.theory import DEFAULT_MU_REL
 
-TRUTH_GRID = (50, 100, 200, 400, 800, 1600, 3200, 6400)
+TRUTH_GRID = (25, 50, 100, 200, 400, 800, 1600, 3200, 6400)
 
 
 def reps_for(n):
@@ -52,7 +52,8 @@ def truth_curve(X, y, groups, pool, test, ns, seed, mu_rel=DEFAULT_MU_REL, with_
     lam_max = np.linalg.eigvalsh(np.cov(X[pool].T)).max()
     mus = mu_rel * lam_max
     Xte, yte = X[test], y[test]
-    out = {"n": [], "ridge_mse": [], "ridge_se": [], "pls_mse": [], "pls_se": [], "ridge_mu_mse": [], "reps": []}
+    out = {"n": [], "ridge_mse": [], "ridge_se": [], "pls_mse": [], "pls_se": [], "ridge_mu_mse": [], "reps": [],
+           "ridge_mse_reps": []}
     for n in ns:
         if n > len(pool):
             break
@@ -68,8 +69,11 @@ def truth_curve(X, y, groups, pool, test, ns, seed, mu_rel=DEFAULT_MU_REL, with_
         out["n"].append(n); out["reps"].append(R)
         out["ridge_mse"].append(float(np.mean(r_tuned))); out["ridge_se"].append(float(np.std(r_tuned) / np.sqrt(R)))
         out["ridge_mu_mse"].append(np.mean(np.array(r_allmu), 0))
+        out["ridge_mse_reps"].append(np.array(r_tuned))
         if with_pls:
             out["pls_mse"].append(float(np.mean(p_err))); out["pls_se"].append(float(np.std(p_err) / np.sqrt(R)))
     out["ridge_mu_mse"] = np.array(out["ridge_mu_mse"])
+    mr = max(len(v) for v in out["ridge_mse_reps"])           # per-repetition MSE (NaN-padded), i.e. realised calibrations
+    out["ridge_mse_reps"] = np.array([np.pad(v, (0, mr - len(v)), constant_values=np.nan) for v in out["ridge_mse_reps"]])
     out["mus"] = mus; out["lam_max"] = float(lam_max)
     return out

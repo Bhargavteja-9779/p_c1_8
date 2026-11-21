@@ -1,0 +1,25 @@
+| variant | method | n_tasks | mean_abs_logerr | mean_bias | coverage80 |
+|---|---|---|---|---|---|
+| iid_ref_seasons123 | FLAT | 1.000 | 0.157 | 0.135 | – |
+| iid_ref_seasons123 | IPL3 | 1.000 | 0.732 | -0.646 | 78.889 |
+| iid_ref_seasons123 | RPM | 1.000 | 0.396 | 0.396 | 0.000 |
+| iid_ref_seasons123 | RPM-T | 1.000 | 0.296 | 0.296 | 4.444 |
+| iid_ref_seasons123 | RPM-wT | 1.000 | 0.379 | 0.379 | 4.444 |
+| ks_pilot | FLAT | 6.000 | 0.298 | 0.250 | – |
+| ks_pilot | IPL3 | 6.000 | 0.317 | -0.082 | 77.391 |
+| ks_pilot | RPM | 6.000 | 0.374 | 0.292 | 20.870 |
+| ks_pilot | RPM-T | 6.000 | 0.327 | 0.187 | 31.739 |
+| ks_pilot | RPM-wT | 6.000 | 0.333 | 0.171 | 31.522 |
+| prep_raw | RPM-T | 6.000 | 0.391 | -0.120 | 41.034 |
+| prep_raw | RPM-wT | 6.000 | 0.441 | -0.138 | 40.862 |
+| prep_sg1 | RPM-T | 6.000 | 0.344 | 0.049 | 43.448 |
+| prep_sg1 | RPM-wT | 6.000 | 0.343 | 0.026 | 43.276 |
+| ref_noise | RPM-T | 6.000 | 0.145 | 0.030 | 55.345 |
+| ref_noise | RPM-wT | 6.000 | 0.142 | 0.011 | 55.690 |
+| shift_population | RPM-T | 1.000 | 0.335 | 0.335 | 2.727 |
+| shift_population | RPM-wT | 1.000 | 0.381 | 0.381 | 6.364 |
+| shift_season | FLAT | 1.000 | 0.255 | -0.255 | – |
+| shift_season | IPL3 | 1.000 | 1.040 | -1.040 | 41.111 |
+| shift_season | RPM | 1.000 | 0.086 | 0.058 | 53.333 |
+| shift_season | RPM-T | 1.000 | 0.105 | -0.065 | 77.778 |
+| shift_season | RPM-wT | 1.000 | 0.099 | 0.014 | 85.556 |

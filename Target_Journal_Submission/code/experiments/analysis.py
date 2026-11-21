@@ -8,6 +8,7 @@ from __future__ import annotations
 import glob
 import json
 import os
+import re
 
 import numpy as np
 import pandas as pd
@@ -25,6 +26,12 @@ LABELS = {"RPM": "RPM (pre-registered, r = 1)", "RPM-w": "RPM-w (weighted path f
 
 
 # ------------------------------------------------------------------------------------------
+def _truth_glob(raw_dir):
+    """Split-0 truth file per task; the repeated outer splits of small tasks (suffix __s<k>) are excluded so that
+    every task counts once in task-level tables."""
+    return [f for f in glob.glob(os.path.join(raw_dir, "truth_*.npz")) if not re.search(r"__s\d+\.npz$", f)]
+
+
 def load_main(raw_dir, tag="main"):
     files = sorted(glob.glob(os.path.join(raw_dir, f"forecasts_{tag}_*.csv")))
     files += sorted(glob.glob(os.path.join(raw_dir, "forecasts_refine_*.csv")))   # RPM-w (Phase-19 refinement)
@@ -46,11 +53,9 @@ def per_task(df, col="abs_err", methods=MAIN_METHODS, by=None):
 
 
 def source_of(task_name):
-    lib = task_name.split(":")[0]
-    for pre in ("ICRAF", "KSSL", "AfSIS1", "Neospectra", "Mango", "Diesel", "Tablets", "Tecator", "CGL"):
-        if lib.startswith(pre):
-            return pre
-    return lib
+    """Data source by sample provenance (KSSL and Neospectra = one source; see experiments/refinement.py)."""
+    from experiments.refinement import source_of as _src
+    return _src(task_name)
 
 
 def add_slope_transfer(df, raw_dir):
@@ -58,7 +63,7 @@ def add_slope_transfer(df, raw_dir):
     pilot CV error with the median log-RMSE slope per doubling of n observed in the ground-truth curves of
     OTHER data sources (leave-one-source-out)."""
     slopes = {}
-    for f in glob.glob(os.path.join(raw_dir, "truth_*.npz")):
+    for f in _truth_glob(raw_dir):
         z = np.load(f, allow_pickle=True); name = os.path.basename(f)[6:-4].replace("__", ":")
         x = np.log2(z["n"].astype(float)); yv = 0.5 * np.log(z["ridge_mse"])
         slopes[name] = float(np.polyfit(x, yv, 1)[0]) if len(x) >= 2 else np.nan
@@ -168,11 +173,12 @@ def posthoc_gain(df, raw_dir, methods):
     reduces RMSEP by >= 10 %'; balanced accuracy of each method's prediction (FLAT always predicts no).
     """
     tr = {}
-    for f in glob.glob(os.path.join(raw_dir, "truth_*.npz")):
+    for f in _truth_glob(raw_dir):
         z = np.load(f, allow_pickle=True); name = os.path.basename(f)[6:-4].replace("__", ":")
         tr[name] = dict(zip(z["n"].tolist(), (0.5 * np.log(z["ridge_mse"])).tolist()))
     d = df[df.method.isin(methods)].copy()
-    d["t_n0"] = [tr.get(t, {}).get(int(n0), np.nan) for t, n0 in zip(d.task, d.n0)]
+    t0 = df[df.ratio == 1].groupby(["task", "split", "n0"]).truth_ridge_logrmse.first().rename("t_n0").reset_index()
+    d = d.merge(t0, on=["task", "split", "n0"], how="left")
     d = d[d.t_n0.notna()]
     d["gain_fc"] = d.fc_logrmse - d.pilot_cv_logrmse
     d["gain_true"] = d.truth_ridge_logrmse - d.t_n0
@@ -196,7 +202,7 @@ def posthoc_gain(df, raw_dir, methods):
 def theory_validity(raw_dir):
     """RQ1: theory curve fitted to the full-pool CV path vs empirical ridge / PLS truth at each n."""
     rows, collapse = [], {}
-    for f in sorted(glob.glob(os.path.join(raw_dir, "truth_*.npz"))):
+    for f in sorted(_truth_glob(raw_dir)):
         z = np.load(f, allow_pickle=True)
         name = os.path.basename(f)[6:-4].replace("__", ":")
         lam = z["lam"]; ns = z["n"]; fits = json.loads(str(z["full_fits"]))
@@ -225,7 +231,7 @@ def collapse_dispersion(collapse, raw_dir):
     different n, the across-n standard deviation of log N_hat(kappa) (rescaled empirical test MSE).
     Reference ('no collapse'): the same statistic for the un-rescaled test MSE against the raw penalty mu."""
     rows = []
-    for f in glob.glob(os.path.join(raw_dir, "truth_*.npz")):
+    for f in _truth_glob(raw_dir):
         z = np.load(f, allow_pickle=True); name = os.path.basename(f)[6:-4].replace("__", ":")
         pts = collapse.get(name, [])
         if len(pts) < 3:
@@ -275,6 +281,8 @@ def run_analysis(cfg, paths, mode, log):
     from experiments import figures as F
     raw = paths["raw_out"]
     df, timing = load_main(raw)
+    df_n0 = df[df.ratio == 1].copy()            # rows at n = n0 (truth at the pilot size; gain decomposition only)
+    df = df[df.ratio >= 2].copy()               # forecasting endpoints use extrapolation ratios >= 2
     if not len(df):
         print("no results yet"); return
     df, slope_tab = add_slope_transfer(df, raw)
@@ -285,7 +293,7 @@ def run_analysis(cfg, paths, mode, log):
     numbers["n_pilots_total"] = int(df[df.method == "RPM"].groupby(["task", "n0", "pilot"]).ngroups)
     # ---------------- datasets table (T1)
     meta_rows = []
-    for f in sorted(glob.glob(os.path.join(raw, "truth_*.npz"))):
+    for f in sorted(_truth_glob(raw)):
         z = np.load(f, allow_pickle=True); name = os.path.basename(f)[6:-4].replace("__", ":")
         meta_rows.append({"task": name, "n_pool": len(z["pool"]), "n_test": len(z["test"]), "p": int(len(z["lam"])) ,
                           "max_n_truth": int(z["n"].max()), "eigen_decay_exponent": eigen_decay(z["lam"]),
@@ -346,7 +354,7 @@ def run_analysis(cfg, paths, mode, log):
     write_table(T7, paths, "T7_ablation", float_fmt="{:.4f}")
     # ---------------- POST-HOC gain analysis (T14)
     gm = [m for m in ["RPM", "RPM-w", "RPM-T", "RPM-wT", "IPL3", "IPL2", "EXP3", "LOG2", "FLAT", "DFOLS", "SLOPE-T"] if m in set(df.method)]
-    T14, gpt = posthoc_gain(df, raw, gm)
+    T14, gpt = posthoc_gain(pd.concat([df, df_n0], ignore_index=True), raw, gm)
     write_table(T14, paths, "T14_posthoc_gain_and_decision", float_fmt="{:.3f}")
     ref_g = "RPM"
     T14s = pd.DataFrame(paired_comparison(gpt[ref_g].values, {m: gpt[m].values for m in gm if m != ref_g and m in gpt}, seed=11))
@@ -446,7 +454,7 @@ def run_analysis(cfg, paths, mode, log):
     numbers["posthoc_ratio_strata"] = T18.to_dict(orient="records")
     # ---------------- POST HOC: noise-floor identifiability (T19): pilot-fitted noise fraction vs large-sample fit
     vt, fullnf = {}, {}
-    for f in sorted(glob.glob(os.path.join(raw, "truth_*.npz"))):
+    for f in sorted(_truth_glob(raw)):
         z = np.load(f, allow_pickle=True); name = os.path.basename(f)[6:-4].replace("__", ":")
         vt[name] = float(z["var_test"]); fits = json.loads(str(z["full_fits"]))
         fullnf[name] = {k: float(np.exp(v["log_sigma2"]) / vt[name]) for k, v in fits.items()}
@@ -507,7 +515,8 @@ def run_analysis(cfg, paths, mode, log):
         write_table(cd, paths, "T9b_kappa_collapse_dispersion", float_fmt="{:.4f}")
         numbers["collapse_sd_median"] = float(cd.collapse_sd_log.median()); numbers["collapse_ref_sd_median"] = float(cd.no_collapse_ref_sd_log.median())
     # ---------------- efficiency (T10)
-    T10 = pd.DataFrame([{"component": "RPM point forecast + 50 bootstrap refits (s per pilot)", "mean": timing.t_rpm_sec.mean(), "median": timing.t_rpm_sec.median(), "max": timing.t_rpm_sec.max()},
+    T10 = pd.DataFrame([{"component": "RPM point forecast (s per pilot)", "mean": timing.t_rpm_point_sec.mean(), "median": timing.t_rpm_point_sec.median(), "max": timing.t_rpm_point_sec.max()},
+                        {"component": "RPM 50 group-bootstrap refits (s per pilot)", "mean": timing.t_rpm_boot_sec.mean(), "median": timing.t_rpm_boot_sec.median(), "max": timing.t_rpm_boot_sec.max()},
                         {"component": "Within-pilot sub-sampling curve for IPL/EXP/LOG fits (s per pilot)", "mean": timing.t_curve_sec.mean(), "median": timing.t_curve_sec.median(), "max": timing.t_curve_sec.max()}])
     write_table(T10, paths, "T10_runtime")
     # ---------------- error analysis (T13)

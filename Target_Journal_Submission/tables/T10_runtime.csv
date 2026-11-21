@@ -1,0 +1,4 @@
+component,mean,median,max
+RPM point forecast (s per pilot),0.01906903959166468,0.0172502875000191,0.1167175170000973
+RPM 50 group-bootstrap refits (s per pilot),0.952311375754707,0.8807873994999227,2.7173265440000023
+Within-pilot sub-sampling curve for IPL/EXP/LOG fits (s per pilot),0.2767783395481896,0.16763707350003185,1.4811596230000532

@@ -233,10 +233,20 @@ def run_bayes_analysis(paths):
     num["lofo_soil_eta_post_median"] = float(ev[soil & (ev.method == "B-RPM-LOFO")].groupby("task").eta_post_mean.mean().median())
     num["lofo_soil_eta_prior_median"] = float(al[al.family != "soil"].noise_frac_full_pool.median())
     num["soil_eta_large_sample_median"] = float(al[al.family == "soil"].noise_frac_full_pool.median())
+    # value of a second batch: error of the forecast for a FIXED target size n* by pilot size (tasks with n* in the grid)
+    rows9 = []
+    for nstar in (400, 800, 1600):
+        g = ev[(ev.n == nstar) & ev.method.isin(["B-RPM", "FLAT", "SLOPE-T", "RPM", "IPL3"])]
+        tasks_all = set.intersection(*[set(g[g.n0 == k].task) for k in sorted(g.n0.unique())])
+        g = g[g.task.isin(tasks_all)]
+        t = g.groupby(["n0", "task", "method"]).abs_err.mean().groupby(["n0", "method"]).mean().unstack()
+        for n0v, r in t.iterrows():
+            rows9.append({"n_target": nstar, "n0": int(n0v), "n_tasks": len(tasks_all), **r.to_dict()})
+    TB9 = pd.DataFrame(rows9); num["TB9_fixed_target"] = TB9.to_dict("records")
     os.makedirs(tabs, exist_ok=True)
     for nm, t in (("TB1_brpm_summary", TB1), ("TB2_brpm_paired", TB2), ("TB3_brpm_by_family", TB3.reset_index()),
                   ("TB4_brpm_coverage", TB4), ("TB5_idset", pd.concat([TB5.astype({"ratio": str}), TB5b.assign(by="n0")])),
-                  ("TB6_decision", TB6), ("TB7_info_reliability", TB7), ("TB8_bias_by_ratio", TB8.reset_index())):
+                  ("TB6_decision", TB6), ("TB7_info_reliability", TB7), ("TB8_bias_by_ratio", TB8.reset_index()), ("TB9_fixed_target", TB9)):
         t.to_csv(os.path.join(tabs, nm + ".csv"), index=False)
     json.dump(num, open(os.path.join(paths["results"], "bayes_numbers.json"), "w"), indent=1, default=float)
     return num

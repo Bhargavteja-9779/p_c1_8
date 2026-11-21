@@ -1,4 +1,4 @@
-# Literature matrix, gap analysis and novelty map (Phases 3–4)
+# Literature matrix, gap analysis and novelty map
 
 All references were verified against Crossref / DataCite / arXiv (`manuscript/refs/verified_refs.json`).
 
@@ -39,6 +39,3 @@ All references were verified against Crossref / DataCite / arXiv (`manuscript/re
 | Soil sample-size studies (Ng 2020; Kuang 2014) | Observed size effects | Predictive, pre-hoc planning tool |
 
 **Closest prior art and residual risk.** No published work was found that forecasts calibration learning curves from a pilot by fitting deterministic-equivalent ridge risk to the cross-validation regularisation path. The individual ingredients (ridge risk theory, LOO/GCV, learning-curve extrapolation) are known; a reviewer may therefore judge the contribution as a principled combination. The paper addresses this by (a) demonstrating where the combination adds predictive value and where it does not (negative results reported), (b) analysing identifiability, and (c) providing a decision-oriented evaluation.
-
-## 4. Topic-selection record
-≥ 15 candidate directions were screened (conformal NIR intervals under shift — abandoned, prior art incl. Talanta 2026; standard-free calibration transfer — crowded in ACA 2026; local/library modelling — crowded; validation/splitting protocols — crowded; label noise — ACA 2026; small-sample deep learning — crowded; Raman bacterial ID — generic-DL risk; retention-time transfer — strong competing groups; CCS prediction — incremental; LIBS matrix effects — domain data limits; censored reference values — data scarcity; multi-fidelity calibration — no public data; EEM-PARAFAC model selection — prior ARD work; spectral XAI faithfulness — evaluation-only; sample-size planning by empirical IPL — prior art Ali 2018; **theory-based learning-curve forecasting — selected**). Toxicology/hazard-prediction topics were excluded by design.

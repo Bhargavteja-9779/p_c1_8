@@ -292,8 +292,6 @@ CONCLUSION = (
     "and a second batch whenever the set is wider than the decision requires.")
 
 COVER_LETTER = [
-    "Dear Editor,",
-    "We submit the manuscript \"{{title}}\" for consideration as a research article in Analytica Chimica Acta.",
     "Every multivariate calibration project faces the same early decision: will more reference analyses reduce the prediction error enough "
     "to justify their cost? Learning-curve extrapolation from a pilot set has been the standard answer since Ali et al. (Anal. Chem. 2018). "
     "Our manuscript shows, with a proof and a leakage-free benchmark on {{n_tasks}} public NIR/MIR calibration tasks, which part of a "
@@ -301,15 +299,14 @@ COVER_LETTER = [
     "The methodological contributions are: (i) Proposition 1, which locates the observability horizon of a pilot set and shows that the gain "
     "from more samples is not identifiable without prior information; (ii) a computable, prior-free identification set and an information "
     "fraction that tell the analyst, for every pilot, whether the sample-size question can be settled; and (iii) Bayesian regularisation-path "
-    "matching (B-RPM), the first forecaster to use a transferable structural prior together with the task's unlabelled spectra. B-RPM was the "
+    "matching (B-RPM), a forecaster that combines a transferable structural prior with the task's unlabelled spectra and the pilot's exact cross-validation path. B-RPM was the "
     "least biased method up to eightfold extrapolation, and unlike a transferred empirical slope it kept its accuracy when the prior "
     "came from a different application family.",
     "The work connects to current themes in Analytica Chimica Acta: validation design and leakage, the error structure of reference values "
     "and replicates, and calibration-set size. The study follows a pre-registered design. The new method and its hypotheses were fixed before "
-    "the results were seen, negative outcomes are reported, and all data and code are public, with a one-command rerun.",
+    "the results were seen, negative outcomes are reported, all data are public, and the complete code (one-command rerun) will be deposited in a public repository on acceptance and is available to referees on request.",
     "The manuscript has not been published and is not under consideration elsewhere. All authors approved the submission and declare no "
     "competing interests.",
-    "Sincerely,", "[Corresponding author]",
 ]
 
 LIMITATIONS = """# 5. Limitations

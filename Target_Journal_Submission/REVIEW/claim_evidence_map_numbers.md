@@ -73,6 +73,8 @@
 | `info_200` | 0.95 | `results/numbers.json` |
 | `info_25` | 0.17 | `results/numbers.json` |
 | `info_50` | 0.36 | `results/numbers.json` |
+| `lofo_eta_post` | 0.27 | `results/numbers.json` |
+| `lofo_eta_prior` | 0.04 | `results/numbers.json` |
 | `n_r_below_1` | 38 | `results/alignment_exponents.csv` |
 | `n_soil` | 23 | `tables/T1_tasks.csv` |
 | `n_tasks` | 38 | `tables/T1_tasks.csv` |
@@ -86,7 +88,17 @@
 | `rel_high` | 0.188 | `results/numbers.json` |
 | `rel_low` | 0.373 | `results/numbers.json` |
 | `rel_mid` | 0.297 | `results/numbers.json` |
+| `rob_prep_raw_B_RPM` | 0.289 | `tables/T8_robustness.csv` |
+| `rob_prep_raw_FLAT` | 0.215 | `tables/T8_robustness.csv` |
+| `rob_prep_raw_IPL3` | 0.467 | `tables/T8_robustness.csv` |
+| `rob_prep_sg1_B_RPM` | 0.319 | `tables/T8_robustness.csv` |
+| `rob_prep_sg1_FLAT` | 0.272 | `tables/T8_robustness.csv` |
+| `rob_prep_sg1_IPL3` | 0.398 | `tables/T8_robustness.csv` |
+| `rob_ref_noise_B_RPM` | 0.143 | `tables/T8_robustness.csv` |
+| `rob_ref_noise_FLAT` | 0.117 | `tables/T8_robustness.csv` |
+| `robb_ks_pilot_B_RPM` | +0.084 | `tables/T8_robustness.csv` |
 | `robb_ks_pilot_FLAT` | +0.233 | `tables/T8_robustness.csv` |
+| `robb_shift_season_B_RPM` | -0.502 | `tables/T8_robustness.csv` |
 | `robb_shift_season_FLAT` | -0.255 | `tables/T8_robustness.csv` |
 | `robb_shift_season_IPL3` | -1.040 | `tables/T8_robustness.csv` |
 | `sim_FLAT_05` | 0.408 | `tables/T0b_simulation_by_n0.csv` |
@@ -110,6 +122,7 @@
 | `slope_reg_tecator` | -0.122 | `results/numbers.json` |
 | `slope_reg_vis` | -0.083 | `results/numbers.json` |
 | `slope_rho_noise` | +0.54 | `results/numbers.json` |
+| `soil_eta_ls` | 0.20 | `results/numbers.json` |
 | `tv_pls_mean` | 0.153 | `tables/T9_theory_validity_full_pool_fit.csv` |
 | `tv_pls_mean_r1` | 0.220 | `tables/T9_theory_validity_full_pool_fit.csv` |
 | `tv_pls_median` | 0.132 | `tables/T9_theory_validity_full_pool_fit.csv` |

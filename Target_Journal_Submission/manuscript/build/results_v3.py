@@ -204,10 +204,12 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "noisier reference values, and on mango under a new-season and an orchard-population shift (Supplementary Table [[ST:T8_robustness]]). "
         "With raw and first-derivative spectra its mean absolute log errors were {{rob_prep_raw_B_RPM}} and {{rob_prep_sg1_B_RPM}} (FLAT "
         "{{rob_prep_raw_FLAT}} and {{rob_prep_sg1_FLAT}}; IPL3 {{rob_prep_raw_IPL3}} and {{rob_prep_sg1_IPL3}}). With added reference noise they "
-        "were {{rob_ref_noise_B_RPM}} (FLAT {{rob_ref_noise_FLAT}}). Kennard–Stone pilots made every anchored forecast pessimistic (B-RPM bias "
+        "were {{rob_ref_noise_B_RPM}} (FLAT {{rob_ref_noise_FLAT}}). In these scenarios B-RPM was therefore less accurate than the no-improvement rule, though more accurate than curve "
+        "extrapolation; on six tasks the pilot's own error remains the most robust single number. Kennard–Stone pilots made every anchored forecast pessimistic (B-RPM bias "
         "{{robb_ks_pilot_B_RPM}}, FLAT {{robb_ks_pilot_FLAT}}), because a pilot that spans the extremes of the spectral space has a larger "
-        "cross-validated error than a random sample. Under the season shift, B-RPM's bias was {{robb_shift_season_B_RPM}} against "
-        "{{robb_shift_season_FLAT}} for FLAT and {{robb_shift_season_IPL3}} for IPL3. No method anticipated a shift, and pilots must be drawn at "
+        "cross-validated error than a random sample. Under the season shift, B-RPM became clearly optimistic (bias {{robb_shift_season_B_RPM}}, against "
+        "{{robb_shift_season_FLAT}} for FLAT and {{robb_shift_season_IPL3}} for IPL3): it forecast the improvement expected within the "
+        "calibration seasons, which the new season did not deliver. No method anticipated a shift, and pilots must be drawn at "
         "random from the population in which the calibration will be used. In the controlled simulation (Supplementary Table "
         "[[ST:T0b_simulation_by_n0]]), B-RPM with the real-data prior (median $r$ = {{sim_prior_r}}) was the most accurate method when the true "
         "alignment was close to that prior ($r=0.5$: {{sim_b_05}} vs {{sim_FLAT_05}} for FLAT, {{sim_RPM_05}} for RPM and {{sim_IPL3_05}} for "
@@ -315,5 +317,5 @@ LIMITATIONS = """# 5. Limitations
 1. **Linear calibrations.** The theory describes ridge regression and tracked PLS closely (Section 4.1). Non-linear and local calibration methods may keep improving after linear models saturate, and their observability limits are not covered.
 2. **Parametric family.** The identification set and B-RPM use the power-law family $s_k\\propto\\lambda_k^r$. Other families could give wider sets. The coverage of about 90% on real data and 99% in simulation suggests that the family is adequate for these spectra, but it is not guaranteed for other materials.
 3. **Pre-specified hypotheses not met.** B-RPM's raw bands under-covered (HB3). Its level error was 0.02 above the no-improvement rule, so non-inferiority (HB2) was not shown. Under cross-family transfer, its gain error equalled that of the transferred slope (HB1). The recalibrated bands are post hoc.
-4. **Random sampling from a stable population.** Kennard–Stone pilots and genuine shifts bias every anchored forecast (Section 4.7).
+4. **Random sampling from a stable population.** Kennard–Stone pilots and genuine shifts bias every anchored forecast (Section 4.7). In the robustness scenarios, B-RPM was less accurate than the no-improvement rule, and under a season shift it was optimistic.
 5. **Data sets.** {{n_soil}} of the {{n_tasks}} tasks are soil calibrations. The fruit, fuel, pharmaceutical, meat and mixture sets are smaller and allow only short extrapolations, and the designed mixtures violate the random-sampling premise of the theory."""

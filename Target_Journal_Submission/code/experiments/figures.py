@@ -35,19 +35,23 @@ def _save(fig, paths, name):
 
 
 def fig_workflow(paths):
-    fig, ax = plt.subplots(figsize=(7.6, 2.5)); ax.axis("off"); ax.set_xlim(0, 11.2); ax.set_ylim(0, 3.2)
-    boxes = [(0.1, 1.9, "Unlabelled spectra\n(cheap, many)", "eigen-spectrum $\\lambda_k$"),
-             (0.1, 0.3, "Labelled pilot\n($n_0$ reference values)", "exact LOGO error\nalong ridge path $e(\\mu)$"),
-             (3.5, 1.1, "Regularisation-path\nmatching", "$\\mu\\mapsto\\kappa(n_0,\\mu)$;\nfit $\\tau^2,\\sigma^2$ of $N(\\kappa)$"),
-             (6.7, 1.1, "Deterministic-equivalent\nrisk at any $n$", "$\\min_\\mu\\,\\frac{(1+1/n)N(\\kappa)}{1-df_2/n}$\n+ bootstrap bands")]
-    for x, y, t, s in boxes:
-        ax.add_patch(plt.Rectangle((x, y), 2.9, 1.0, fc="#f4f6fb", ec=MUTED, lw=0.8))
-        ax.text(x + 1.45, y + 0.68, t, ha="center", va="center", fontsize=7.6, color=INK, weight="bold")
-        ax.text(x + 1.45, y + 0.24, s, ha="center", va="center", fontsize=6.8, color=INK2)
-    for (x0, y0, x1, y1) in [(3.0, 2.4, 3.5, 1.75), (3.0, 0.8, 3.5, 1.45), (6.4, 1.6, 6.7, 1.6)]:
+    fig, ax = plt.subplots(figsize=(7.6, 3.0)); ax.axis("off"); ax.set_xlim(0, 11.6); ax.set_ylim(0, 4.0)
+    boxes = [(0.1, 2.9, "Unlabelled spectra\n(cheap, many)", "eigen-spectrum $\\lambda_k$\n→ horizon $\\kappa_0(n_0)$"),
+             (0.1, 1.55, "Labelled pilot\n($n_0$ reference values)", "exact LOGO error\nalong ridge path $e(\\mu)$"),
+             (0.1, 0.2, "Previous calibrations\n(other materials)", "prior on alignment $r$\nand noise fraction $\\eta$"),
+             (3.75, 1.55, "Bayesian path\nmatching", "posterior over $(r,\\eta)$\n(likelihood: pilot path)"),
+             (7.15, 2.55, "Prior-free\nidentification set", "all curves consistent\nwith the pilot"),
+             (7.15, 0.55, "Posterior-predictive\nRMSEP($n$)", "deterministic-equivalent risk\n+ information fraction")]
+    for x, y, t, s_ in boxes:
+        ax.add_patch(plt.Rectangle((x, y), 2.9, 1.05, fc="#f4f6fb", ec=MUTED, lw=0.8))
+        ax.text(x + 1.45, y + 0.72, t, ha="center", va="center", fontsize=7.4, color=INK, weight="bold")
+        ax.text(x + 1.45, y + 0.25, s_, ha="center", va="center", fontsize=6.6, color=INK2)
+    arr = [(3.0, 3.4, 3.75, 2.3), (3.0, 2.07, 3.75, 2.07), (3.0, 0.72, 3.75, 1.85), (6.65, 2.2, 7.15, 3.0), (6.65, 1.9, 7.15, 1.1)]
+    for (x0, y0, x1, y1) in arr:
         ax.annotate("", xy=(x1, y1), xytext=(x0, y0), arrowprops=dict(arrowstyle="-|>", color=INK2, lw=1.0))
-    ax.annotate("", xy=(10.15, 1.6), xytext=(9.65, 1.6), arrowprops=dict(arrowstyle="-|>", color=INK2, lw=1.0))
-    ax.text(10.7, 1.6, "forecast\nRMSE($n$)\n→ sample-size\ndecision", ha="center", va="center", fontsize=7, color=INK)
+    for y in (3.07, 1.07):
+        ax.annotate("", xy=(10.6, 2.07), xytext=(10.05, y), arrowprops=dict(arrowstyle="-|>", color=INK2, lw=1.0))
+    ax.text(11.05, 2.07, "plan:\nextend,\nstop, or\nsecond\nbatch", ha="center", va="center", fontsize=6.8, color=INK)
     _save(fig, paths, "Fig1_workflow")
 
 

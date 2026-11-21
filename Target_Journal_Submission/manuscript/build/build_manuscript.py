@@ -184,7 +184,7 @@ def main():
     refs = json.load(open(os.path.join(ROOT, "manuscript", "refs", "verified_refs.json")))
     ctx = content.context(numbers, RES, TAB)
     front = content.front_matter(ctx)
-    parts = [open(os.path.join(HERE, "part1_intro_theory_methods.md")).read(),
+    parts = [open(os.path.join(HERE, "part1_intro_theory_methods.md")).read().replace("FIGDIR", FIG),
              content.results_discussion(ctx, TAB, FIG, table_md),
              content.closing(ctx)]
     body = fill("\n\n".join(parts), ctx)

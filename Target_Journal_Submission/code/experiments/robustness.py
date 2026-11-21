@@ -41,7 +41,7 @@ def _rpm_variants(r_bar):
     return [("RPM-T", dict(r_mode="fixed", r_value=r_bar)), ("RPM-wT", dict(weighted=True, r_mode="fixed", r_value=r_bar))]
 
 
-def _forecast_rows(task_name, family, variant, n0, s, X0, y0, g0, lam, horizons, tr_h, n_boot, seed, r_bar):
+def _forecast_rows(task_name, family, variant, n0, s, X0, y0, g0, lam, horizons, tr_h, n_boot, seed, r_bar, prior=None):
     f = RPMForecaster(n_boot=n_boot, seed=seed).fit_forecast(X0, y0, g0, lam, horizons)
     q = np.quantile(f["boot_logrmse"], [0.025, 0.1, 0.9, 0.975], axis=0)
     mu_grid = DEFAULT_MU_REL * lam.max()
@@ -55,6 +55,13 @@ def _forecast_rows(task_name, family, variant, n0, s, X0, y0, g0, lam, horizons,
         items.append((nm, fx["point"], {"80": (qx[1], qx[2]), "95": (qx[0], qx[3])}))
     items += [("IPL3", ipl["point"], {"80": ipl["bands"][0.8], "95": ipl["bands"][0.95]}),
               ("FLAT", np.full(len(horizons), flat), None)]
+    if prior is not None:
+        from src.models.bayes_rpm import fit_forecast_brpm
+        from src.models.ridge import ridge_cv_path
+        e_b, v_b = ridge_cv_path(X0, y0, mu_grid, groups=g0, return_var=True)
+        gsz = float(np.mean(np.unique(g0, return_counts=True)[1]))
+        fb = fit_forecast_brpm(lam, e_b, n0 - gsz, horizons, prior, v_b[int(np.argmin(e_b))])
+        items.append(("B-RPM", fb["point"], {"80": fb["bands"][0.8], "95": fb["bands"][0.95]}))
     rows = []
     for meth, pt, bands in items:
         lp = np.log(np.sqrt(np.maximum(pt, 1e-300)))
@@ -68,7 +75,8 @@ def _forecast_rows(task_name, family, variant, n0, s, X0, y0, g0, lam, horizons,
     return rows
 
 
-def _run_variant(spec, variant, cfg_r, paths, r_loso):
+def _run_variant(spec, variant, cfg_r, paths, r_loso, priors=None):
+    priors = priors or {}
     out = os.path.join(paths["raw_out"], "robustness")
     os.makedirs(out, exist_ok=True)
     fn = os.path.join(out, f"rob_{variant}_{spec[0]}_{spec[1]}_{spec[2]}.csv".replace("None", "x"))
@@ -83,7 +91,7 @@ def _run_variant(spec, variant, cfg_r, paths, r_loso):
         task.name = task.name + f"[{prep}]"
         truth = run_truth(task, out, with_pls=False)
         df = run_pilots(task, truth, out, n0_list=tuple(cfg_r["n0_list"]), n_pilots=cfg_r["n_pilots"],
-                        n_boot=cfg_r["n_boot"], ablation_n0=(), ablation_pilots=0, tag=f"rob_{prep}", extra_rpm=_rpm_variants(rb))
+                        n_boot=cfg_r["n_boot"], ablation_n0=(), ablation_pilots=0, tag=f"rob_{prep}", extra_rpm=_rpm_variants(rb), brpm_prior=priors.get(spec_name(spec)))
         df = df[df.method.isin(KEEP)].copy(); df["variant"] = variant
         df.to_csv(fn, index=False)
         return df
@@ -100,13 +108,13 @@ def _run_variant(spec, variant, cfg_r, paths, r_loso):
                 cand = rng.choice(pool, min(len(pool), 10 * n0), replace=False)   # candidate scans
                 pil = cand[kennard_stone(task.X[cand], n0)]
                 rows += _forecast_rows(task.name, task.family, variant, n0, s, task.X[pil], task.y[pil], task.groups[pil],
-                                       lam, horizons, tr_h, cfg_r["n_boot"], task_seed(task.name) + s, r_loso[task.name])
+                                       lam, horizons, tr_h, cfg_r["n_boot"], task_seed(task.name) + s, r_loso[task.name], priors.get(task.name))
     elif variant in ("shift_season", "shift_population", "iid_ref_seasons123"):
         if variant == "shift_population":
             task = load_mango(paths["raw"], group_level="pop"); task.name = "Mango:DM[pop-grouped]"
             truth = run_truth(task, out, with_pls=False)
             df = run_pilots(task, truth, out, n0_list=tuple(cfg_r["n0_list"]), n_pilots=cfg_r["n_pilots"],
-                            n_boot=cfg_r["n_boot"], ablation_n0=(), ablation_pilots=0, tag="rob_pop", extra_rpm=_rpm_variants(r_loso["Mango:DM"]))
+                            n_boot=cfg_r["n_boot"], ablation_n0=(), ablation_pilots=0, tag="rob_pop", extra_rpm=_rpm_variants(r_loso["Mango:DM"]), brpm_prior=priors.get("Mango:DM"))
             df = df[df.method.isin(KEEP)].copy(); df["variant"] = variant
             df.to_csv(fn, index=False)
             return df
@@ -127,7 +135,7 @@ def _run_variant(spec, variant, cfg_r, paths, r_loso):
                 rng2 = np.random.default_rng(1000 * n0 + s)
                 pil = rng2.choice(pool, n0, replace=False)
                 rows += _forecast_rows("Mango:DM", "fruit", variant, n0, s, task.X[pil], task.y[pil], task.groups[pil],
-                                       lam, horizons, tr_h, cfg_r["n_boot"], 100 + s, r_loso["Mango:DM"])
+                                       lam, horizons, tr_h, cfg_r["n_boot"], 100 + s, r_loso["Mango:DM"], priors.get("Mango:DM"))
     elif variant == "ref_noise":
         task = load_task(spec, paths["raw"], paths["cache"])
         rb = r_loso[task.name]
@@ -136,7 +144,7 @@ def _run_variant(spec, variant, cfg_r, paths, r_loso):
         task.name = task.name + "[+noise]"
         truth = run_truth(task, out, with_pls=False)
         df = run_pilots(task, truth, out, n0_list=tuple(cfg_r["n0_list"]), n_pilots=cfg_r["n_pilots"],
-                        n_boot=cfg_r["n_boot"], ablation_n0=(), ablation_pilots=0, tag="rob_noise", extra_rpm=_rpm_variants(rb))
+                        n_boot=cfg_r["n_boot"], ablation_n0=(), ablation_pilots=0, tag="rob_noise", extra_rpm=_rpm_variants(rb), brpm_prior=priors.get(spec_name(spec)))
         df = df[df.method.isin(KEEP)].copy(); df["variant"] = variant
         df.to_csv(fn, index=False)
         return df
@@ -145,13 +153,24 @@ def _run_variant(spec, variant, cfg_r, paths, r_loso):
     return df
 
 
-KEEP = ["RPM", "RPM-T", "RPM-wT", "IPL3", "FLAT"]
+KEEP = ["RPM", "RPM-T", "RPM-wT", "IPL3", "FLAT", "B-RPM"]
+
+
+def spec_name(spec):
+    if spec[0] == "ossl":
+        return f"{spec[1]}:{spec[2]}"
+    return {"mango": "Mango", "diesel": "Diesel", "tablets": "Tablets", "tecator": "Tecator", "cgl": "CGL"}[spec[0]] + f":{spec[2]}"
 
 
 def run_robustness(cfg, paths, mode, jobs, log):
     cfg_r = cfg["robustness"]
     at = pd.read_csv(os.path.join(paths["results"], "alignment_exponents.csv"))
     r_loso = dict(zip(at.task, at.r_loso_prior))
+    from experiments.bayes import family_of_source
+    from src.models.bayes_rpm import prior_from_table
+    if "family" not in at:
+        at["family"] = [family_of_source(s) for s in at.source]
+    priors = {t: prior_from_table(at, exclude_sources=(s,)) for t, s in zip(at.task, at.source)}
     jobs_list = []
     for spec in cfg_r["tasks"]:
         spec = tuple(spec)
@@ -161,7 +180,7 @@ def run_robustness(cfg, paths, mode, jobs, log):
         jobs_list.append((spec, "ref_noise"))
     jobs_list += [(("mango", None, "DM"), v) for v in ("shift_season", "iid_ref_seasons123", "shift_population")]
     t0 = time.time()
-    res = Parallel(n_jobs=jobs, verbose=5)(delayed(_run_variant)(s, v, cfg_r, paths, r_loso) for s, v in jobs_list)
+    res = Parallel(n_jobs=jobs, verbose=5)(delayed(_run_variant)(s, v, cfg_r, paths, r_loso, priors) for s, v in jobs_list)
     allr = pd.concat([r for r in res if r is not None and len(r)], ignore_index=True)
     allr.to_csv(os.path.join(paths["results"], "robustness_raw.csv"), index=False)
     log.write(json.dumps({"stage": "robustness", "rows": int(len(allr)), "seconds": round(time.time() - t0, 1)}) + "\n")

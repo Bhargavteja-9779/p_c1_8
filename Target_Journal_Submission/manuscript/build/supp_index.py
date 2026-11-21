@@ -12,6 +12,14 @@ TABLES = [
     ("T9b_kappa_collapse_dispersion", "κ-collapse: across-n standard deviation of rescaled log test errors plotted against κ, compared with the same errors plotted against the raw penalty μ."),
     ("T17_posthoc_slope_explanation", "POST HOC: regression of the ground-truth learning-curve slope (log RMSE per doubling of n) on large-sample theory parameters, and Spearman correlations."),
     ("T17b_slope_by_region", "POST HOC: learning-curve slopes and alignment exponents by spectral region."),
+    ("TB1_brpm_summary", "All forecasters on the version-2 design: task-level mean absolute log error (level), mean absolute gain error, mean signed bias, and source-level means."),
+    ("TB2_brpm_paired", "Paired comparisons of B-RPM (pre-specified hypotheses HB1–HB2 and secondary comparisons): mean improvement over the reference (positive favours B-RPM), bootstrap 95% CI, Wilcoxon p (task level, Holm-adjusted) and source-level results."),
+    ("TB3_brpm_by_family", "Level and gain error by application family for all forecasters."),
+    ("TB4_brpm_coverage", "Coverage and median width factor of 80% and 95% bands by family and pilot size, including the post-hoc leave-one-source-out recalibration of B-RPM."),
+    ("TB5_idset", "Prior-free identification set: coverage of the true learning curve, median width factor and median information fraction, by extrapolation ratio and pilot size (HB4)."),
+    ("TB6_decision", "Brier score of the probabilistic decision 'an eightfold larger calibration set reduces RMSEP by at least 15%'."),
+    ("TB7_info_reliability", "Forecast error of B-RPM by tertile of the information fraction."),
+    ("TB8_bias_by_ratio", "Mean signed log error by extrapolation ratio for all forecasters."),
     ("T2_main_accuracy_ridge_truth", "Forecast accuracy against the ridge ground truth (per-task means of |log(RMSE_fc/RMSE_true)|, bootstrap 95% CI over tasks, bias and share of forecasts within ±10% and ±20%)."),
     ("T2b_accuracy_by_n0", "Forecast accuracy by pilot size n0."),
     ("T3_stats_rpm_vs_baselines", "Paired two-sided Wilcoxon signed-rank tests (task level) of the pre-registered RPM against every other method; Holm-adjusted p-values; median paired difference (other − RPM; positive favours RPM) with bootstrap 95% CI; matched-pairs rank-biserial correlation."),
@@ -44,11 +52,15 @@ TABLES = [
     ("T3_stats_n0_200", "Paired tests against RPM at pilot size n0 = 200."),
 ]
 FIGS = [
+    ("Fig4_main_accuracy", "Distribution of task-level forecast errors for all methods of the first design (version-2 data)."),
+    ("Fig8_robustness", "Robustness scenarios: mean absolute log error by method."),
+    ("Fig12_alignment_exponents", "Alignment exponents by spectral region (large-sample fits)."),
     ("Fig10_sample_size_decisions", "Pre-registered sample-size decision metric by method."),
     ("Fig9_error_analysis", "Per-task RPM error against theory misfit, fitted noise fraction and eigen-decay exponent."),
     ("Fig11_dataset_overview", "Data-set overview: number of samples and eigen-decay exponent by family."),
 ]
 NOTES = [("EXPERIMENT_DESIGN_preregistration.md", "Pre-registered experimental design"),
+         ("BRPM_preregistration_addendum.md", "Pre-specification addendum for B-RPM (hypotheses HB1–HB4)"),
          ("DATA_LEAKAGE_AUDIT.md", "Data-leakage audit"),
          ("LITERATURE_MATRIX_AND_NOVELTY_MAP.md", "Literature matrix and novelty map")]
 

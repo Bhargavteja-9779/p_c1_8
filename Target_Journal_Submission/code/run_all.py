@@ -123,6 +123,10 @@ def main():
     if a.stage in ("all", "analysis"):
         from experiments.analysis import run_analysis
         run_analysis(cfg, paths, a.mode, log)
+        if a.mode == "full":
+            from experiments.bayes_analysis import run_bayes_analysis
+            from experiments.figures_bayes import make_bayes_figures
+            run_bayes_analysis(paths); make_bayes_figures(paths)
     log.write(json.dumps({"end": time.strftime("%Y-%m-%d %H:%M:%S")}) + "\n"); log.close()
 
 

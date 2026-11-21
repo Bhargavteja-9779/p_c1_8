@@ -9,18 +9,22 @@ import pandas as pd
 from context_builder import build_context
 import docx_utils
 
-TITLE = ("Random-matrix theory of multivariate calibration learning curves: what a small pilot set can and cannot predict")
+TITLE = ("What a pilot set can tell about a calibration learning curve: an observability limit and Bayesian regularisation-path matching for sample-size planning in spectroscopy")
 SHORT_TITLE = "Forecasting calibration learning curves"
-KEYWORDS = ["Multivariate calibration", "Sample-size planning", "Learning curve", "Near-infrared spectroscopy",
-            "Ridge regression", "Random-matrix theory"]
+KEYWORDS = ["Multivariate calibration", "Sample-size planning", "Learning curve", "Identifiability", "Bayesian forecasting",
+            "Near-infrared spectroscopy"]
 
 
 def context(numbers, RES, TAB):
-    return build_context(numbers, RES, TAB)
+    ctx = build_context(numbers, RES, TAB)
+    from results_v3 import bayes_context
+    ctx.update(bayes_context(os.path.abspath(os.path.join(TAB, ".."))))
+    ctx["title"] = TITLE
+    return ctx
 
 
 def front_matter(ctx):
-    from results_text import ABSTRACT_BACKGROUND, ABSTRACT_RESULTS, ABSTRACT_SIGNIFICANCE
+    from results_v3 import ABSTRACT_BACKGROUND, ABSTRACT_RESULTS, ABSTRACT_SIGNIFICANCE
     lines = [f"# {TITLE}", "",
              "[Author 1]^a^, [Author 2]^a,\\*^", "",
              "^a^ [Department, Institution, City, Country]", "",
@@ -35,11 +39,12 @@ def front_matter(ctx):
 
 def results_discussion(ctx, TAB, FIG, table_md):
     from results_text import results_markdown
-    return results_markdown(ctx, TAB, FIG, table_md)
+    from results_v3 import results_markdown_v3
+    return results_markdown_v3(ctx, TAB, FIG, table_md, results_markdown(ctx, TAB, FIG, table_md))
 
 
 def closing(ctx):
-    from results_text import LIMITATIONS, CONCLUSION
+    from results_v3 import LIMITATIONS, CONCLUSION
     text = LIMITATIONS + "\n\n" + open(os.path.join(os.path.dirname(__file__), "closing.md")).read()
     return text.replace("{{conclusion_text}}", CONCLUSION)
 
@@ -49,11 +54,11 @@ def postprocess_docx(path):
 
 
 def highlight_lines(ctx):
-    from results_text import HIGHLIGHTS
+    from results_v3 import HIGHLIGHTS
     return [h.replace("{{", "{").replace("}}", "}").format(**ctx) if "{" in h else h for h in HIGHLIGHTS]
 
 
 def cover_letter_paragraphs(ctx):
-    from results_text import COVER_LETTER
+    from results_v3 import COVER_LETTER
     import re
     return [re.sub(r"\{\{([^}]+)\}\}", lambda m: ctx[m.group(1).strip()], p) for p in COVER_LETTER]

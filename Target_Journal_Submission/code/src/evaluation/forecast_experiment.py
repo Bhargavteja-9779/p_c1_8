@@ -68,7 +68,7 @@ def run_truth(task, out_dir, with_pls=True, grid=TRUTH_GRID, force=False, split=
 
 def run_pilots(task, truth, out_dir, n0_list=(25, 50, 100, 200), n_pilots=20, n_boot=50,
                ablation_n0=(50, 100), ablation_pilots=10, force=False, tag="main", extra_rpm=None, split=0,
-               diagnostics=True):
+               diagnostics=True, brpm_prior=None):
     """All forecasters on identical random pilots. Rows are written for every truth size n >= n0, including
     n = n0 itself (ratio 1, used for the level/gain decomposition; forecasting metrics use ratio >= 2)."""
     path = os.path.join(out_dir, f"forecasts_{tag}_{_sfx(task, split)}.csv")
@@ -102,7 +102,8 @@ def run_pilots(task, truth, out_dir, n0_list=(25, 50, 100, 200), n_pilots=20, n_
             X0, y0, g0 = X[pil], y[pil], g[pil]
             res = {}
             t_rpm_point = t_rpm_boot = np.nan
-            if tag == "main":
+            full = tag == "main" or tag.startswith("rob_")
+            if full:
                 # ---- RPM (unlabelled pool spectra for the eigen-spectrum)
                 fr = RPMForecaster(n_boot=n_boot, seed=base_seed + s)
                 f = fr.fit_forecast(X0, y0, g0, lam_pool, horizons)
@@ -132,7 +133,13 @@ def run_pilots(task, truth, out_dir, n0_list=(25, 50, 100, 200), n_pilots=20, n_
                 diag["dicker_sigma2_frac"] = sg / var_pool; diag["dicker_tau2_frac"] = tg / var_pool
                 wz = wei_exponent(X0, y0, lam_pool, mu_grid)
                 diag["wei_alpha"], diag["wei_gamma"], diag["wei_delta"] = wz["alpha"], wz["gamma"], wz["delta"]
-            if tag == "main":
+            if brpm_prior is not None:
+                from ..models.bayes_rpm import fit_forecast_brpm
+                e_b, v_b = ridge_cv_path(X0, y0, mu_grid, groups=g0, return_var=True)
+                gsz_b = float(np.mean(np.unique(g0, return_counts=True)[1]))
+                fb = fit_forecast_brpm(lam_pool, e_b, n0 - gsz_b, horizons, brpm_prior, v_b[int(np.argmin(e_b))])
+                res["B-RPM"] = (fb["point"], fb["bands"], {})
+            if full:
                 # ---- empirical learning-curve extrapolation family
                 t1 = time.perf_counter()
                 ms, es = pilot_subsample_curve(X0, y0, g0, mu_grid, seed=base_seed + s)

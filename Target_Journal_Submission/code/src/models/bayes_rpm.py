@@ -24,7 +24,11 @@ B-RPM makes that prior explicit and transferable at the level of *structure* ins
 All kappa-dependent quantities are independent of (r, eta, V) and are precomputed once per pilot, so the full
 posterior over 1,200 grid cells costs a few milliseconds.
 
-Also provides `posterior_information`: the prior-to-posterior contraction of the gain forecast, a per-pilot measure
+Also returns a prior-free *identification set* (partial identification): the range of forecasts over all (r, eta)
+cells whose profile deviance is within 6 of the best cell (about a 95 % likelihood region for two parameters),
+widened by the anchor uncertainty; its width measures the ambiguity left by the pilot.
+
+Also provides `info_gain`: the prior-to-posterior contraction of the gain forecast, a per-pilot measure
 of how much the pilot itself says about the future gain (0 = nothing beyond the prior, 1 = fully determined).
 """
 from __future__ import annotations
@@ -102,12 +106,16 @@ def fit_forecast_brpm(lam, path_mse, n_eff, ns, prior, path_var_log_opt, mu_rel=
     gain_post_sd = np.empty(H); gain_prior_sd = np.empty(H)
     lr_cells_all = []
     sd_a = 0.5 * np.sqrt(s2)
+    # prior-free identification set: cells whose profile deviance is within 6 (~ chi2_2 95 %) of the best cell
+    idmask = loglik >= loglik.max() - 3.0
+    id_lo = np.empty(H); id_hi = np.empty(H)
     for h in range(H):
         # risk/V = min_j P_j (eta + (1-eta) b_jr)
         val = P[h][:, None, None] * (eta_grid[None, None, :] + (1 - eta_grid[None, None, :]) * Bn[h][:, :, None])
         rmin = np.min(val, axis=0)                                                                # (R, E)
         lr = 0.5 * (logV + np.log(rmin))                                                          # log RMSE per cell
         lr_cells_all.append(lr)
+        id_lo[h] = float(lr[idmask].min() - 1.96 * sd_a); id_hi[h] = float(lr[idmask].max() + 1.96 * sd_a)
         mean_lr[h] = float(np.sum(post * lr))
         # predictive mixture quantiles (cells x Gaussian anchor noise)
         grid = np.linspace(lr.min() - 5 * sd_a, lr.max() + 5 * sd_a, 600)
@@ -129,7 +137,7 @@ def fit_forecast_brpm(lam, path_mse, n_eff, ns, prior, path_var_log_opt, mu_rel=
     with np.errstate(divide="ignore", invalid="ignore"):
         info = 1.0 - (gain_post_sd / gain_prior_sd) ** 2
     return {"point_logrmse": mean_lr, "point": np.exp(2 * mean_lr), "bands": {a: (lo[a], hi[a]) for a in alphas},
-            "post": summary, "info_gain": info, "gain_post_sd": gain_post_sd, "gain_prior_sd": gain_prior_sd}
+            "post": summary, "info_gain": info, "id_lo": id_lo, "id_hi": id_hi, "gain_post_sd": gain_post_sd, "gain_prior_sd": gain_prior_sd}
 
 
 def prior_from_table(tab, exclude_sources=(), exclude_families=(), sd_floor_r=0.1, sd_floor_e=0.3):

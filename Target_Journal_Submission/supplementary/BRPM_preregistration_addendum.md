@@ -1,6 +1,6 @@
 # Pre-specification addendum: Bayesian regularisation-path matching (B-RPM)
 
-_Written 2026-11-21 21:40 UTC (session 3), before any version-2 forecast result was inspected. The version-2 main
+_Written 2026-11-21 ~21:00 UTC (session 3; committed in git commit "Add B-RPM ..."), before any version-2 forecast result was inspected. The version-2 main
 stage was running at that time; only version-1 results (archived, `archive/v1_pre_review/`) had been seen._
 
 ## Rationale
@@ -22,6 +22,7 @@ propagates prior and pilot uncertainty into a posterior-predictive forecast.
   the pilot optimum; total variance V profiled.
 * Point forecast: posterior mean of log RMSE. Bands: 80 % / 95 % quantiles of the posterior-predictive mixture with
   Gaussian anchor noise (sd = half the square root of the residual variance).
+* Prior-free identification set: range of cell forecasts with profile deviance <= 6 of the best cell, widened by +-1.96 anchor sd (HB4: it contains the true curve in >= 90 % of pilot-horizon pairs; its width is reported by horizon).
 * Variants: B-RPM-LOFO (prior from other application families), B-RPM-r (prior on r only), B-RPM-0 (prior only),
   B-RPM-m10 (m_eff = 10). Same pilots and seeds as the main stage.
 

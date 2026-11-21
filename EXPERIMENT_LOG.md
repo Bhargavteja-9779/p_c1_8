@@ -24,4 +24,4 @@ All times UTC, 2026-11-15. Every design decision is logged with its timing relat
 | 16:10 | Robustness wording corrected: measured ordering in raw / SG1 / reference-noise scenarios is FLAT < RPM < IPL3 (not "RPM ≈ FLAT") | Text generated from T8 |
 | 16:30 | Review cycle 1 launched: ten independent reviewer agents (briefs in REVIEW/raw/cycle_01/briefs/) | — |
 | 2026-11-21 20:55 (session 3) | Version-2 main stage started from scratch on re-downloaded data (checksums in data_raw/SHA256SUMS.txt) | — |
-| 2026-11-21 21:40 | **B-RPM specified before any version-2 result was inspected** (`supplementary/BRPM_preregistration_addendum.md`; code `src/models/bayes_rpm.py`, `experiments/bayes.py`, stage `bayes`). Smoke test on synthetic data only | New method; hypotheses HB1–HB3 fixed |
+| 2026-11-21 21:00 | **B-RPM specified before any version-2 result was inspected** (`supplementary/BRPM_preregistration_addendum.md`; code `src/models/bayes_rpm.py`, `experiments/bayes.py`, stage `bayes`). Smoke test on synthetic data only | New method; hypotheses HB1–HB3 fixed |

@@ -76,6 +76,7 @@ def bayes_task(spec, cfg, paths, tab, split, force=False):
                     for a, (lo, hi) in f["bands"].items():
                         row[f"lo{int(a*100)}"] = float(lo[i]); row[f"hi{int(a*100)}"] = float(hi[i])
                     row.update({k: v for k, v in f["post"].items()})
+                    row["id_lo"] = float(f["id_lo"][i]); row["id_hi"] = float(f["id_hi"][i])
                     rows.append(row)
     pd.DataFrame(rows).to_csv(out, index=False)
     return task.name

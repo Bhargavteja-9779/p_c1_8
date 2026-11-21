@@ -1,0 +1,3313 @@
+1
+
+What a pilot set can tell about a calibration learning curve: an
+
+2
+
+observability limit and Bayesian regularisation-path matching for
+
+3
+
+sample-size planning in spectroscopy
+
+4
+
+[Author 1]a, [Author 2]a,*
+
+5
+
+a
+
+6
+
+* Corresponding author: [name, e-mail]
+
+7
+
+Abstract
+
+8
+
+Background: Multivariate calibrations of NIR and MIR spectra need costly reference
+
+9
+
+analyses, and analysts must decide from a small pilot set whether more samples will pay off.
+
+10
+
+Learning-curve extrapolation is used for this decision, but it is unknown which part of a
+
+11
+
+learning curve a pilot can determine.
+
+12
+
+Results: The deterministic-equivalent (random-matrix) risk of ridge regression reproduced
+
+13
+
+ridge and PLS learning curves of 38 public calibration tasks (mean absolute log error 0.130
+
+14
+
+and 0.153). From it we prove that a pilot observes the calibration’s bias function only above
+
+15
+
+an effective-regularisation horizon. Analyte signal below the horizon is indistinguishable from
+
+16
+
+noise, so the gain from more samples is not identifiable from a pilot alone. A computable
+
+17
+
+identification set of curves consistent with the pilot contained the true curve in 91% of cases
+
+18
+
+(99% in simulation) but spanned a factor of 15 in RMSEP at eightfold extrapolation; below
+
+19
+
+about 100 samples, gain forecasts came mainly from prior assumptions. Bayesian
+
+20
+
+regularisation-path matching (B-RPM) combines the pilot’s exact cross-validation path, the
+
+21
+
+task’s unlabelled spectra and a transferable prior on signal alignment and noise. It was the
+
+22
+
+least biased forecaster (mean bias +0.008; within ±0.040 up to eightfold extrapolation) and
+
+[Department, Institution, City, Country]
+
+1
+
+23
+
+kept its accuracy when the prior came from a different application family (0.292), whereas a
+
+24
+
+transferred learning-curve slope degraded to 0.392 (p = 0.001).
+
+25
+
+Significance: Every pilot-based learning-curve forecast imports prior information. B-RPM
+
+26
+
+makes it explicit and transferable, and the identification set shows when a pilot cannot settle
+
+27
+
+the sample-size question and a second batch is needed.
+
+28
+
+Keywords: Multivariate calibration; Sample-size planning; Learning curve; Identifiability;
+
+29
+
+Bayesian forecasting; Near-infrared spectroscopy
+
+30
+
+1. Introduction
+
+31
+
+Multivariate calibration of near-infrared (NIR), mid-infrared (MIR) and visible–near-infrared
+
+32
+
+(VisNIR) spectra is the workhorse of rapid quantitative analysis in agriculture, food, fuels,
+
+33
+
+pharmaceuticals and soil science [1,2]. Once a calibration exists, a measurement costs
+
+34
+
+seconds; building it does not. Every calibration sample needs a reference value from a slower
+
+35
+
+and more expensive primary method — oven drying, combustion analysis, wet chemistry or
+
+36
+
+chromatographic assay — and this cost usually dominates the development budget. Analysts
+
+37
+
+therefore face a recurring planning question before most of the reference work is done: how
+
+38
+
+many calibration samples are needed to reach a target prediction error, and is that target
+
+39
+
+achievable at all with a linear calibration? Current guidance is largely heuristic, for example
+
+40
+
+minimum sample numbers expressed relative to model complexity, or experience from related
+
+41
+
+applications. Formal minimum-sample-size criteria developed for low-dimensional clinical
+
+42
+
+prediction models, which limit overfitting and optimism under linear-Gaussian assumptions,
+
+43
+
+have only recently been transferred to chemometrics [3,4]. They bound overfitting at a given
+
+44
+
+size but do not predict how the error of a high-dimensional spectral calibration decreases as
+
+45
+
+samples are added. Empirical studies in soil spectroscopy show that accuracy keeps
+
+2
+
+46
+
+improving well beyond a few hundred samples before levelling off [5–7], but such curves are
+
+47
+
+observed only after the data have been collected.
+
+48
+
+A learning curve — prediction error as a function of calibration size — answers the planning
+
+49
+
+question if it can be forecast early. The established approach, introduced to analytical
+
+50
+
+chemistry for Raman classification by Ali et al. [8] and rooted in earlier work on microarray
+
+51
+
+and text classification [9,10], sub-samples a small pilot data set, fits a parametric curve such
+
+52
+
+as an inverse power law and extrapolates it. Its weakness is structural: the curve shape is
+
+53
+
+assumed rather than derived, and a small pilot constrains it only near the pilot size, so long
+
+54
+
+extrapolations are fragile [11]. Learning-curve extrapolation is also an active topic in
+
+55
+
+automated machine learning, where curves over training epochs are extrapolated with learned
+
+56
+
+priors [12], and empirical scaling laws are extrapolated in deep learning [13,14]; none of these
+
+57
+
+approaches uses the structure of spectroscopic data.
+
+58
+
+Statistical learning theory offers such structure. For ridge regression in high dimensions,
+
+59
+
+“deterministic-equivalent” formulas derived with random-matrix theory predict the expected
+
+60
+
+test error from two ingredients: the eigenvalue spectrum of the covariance of the inputs and
+
+61
+
+the way the target signal is distributed across the corresponding eigenvectors [15–18]. The
+
+62
+
+same results explain why learning curves of kernel methods differ between tasks (“spectral
+
+63
+
+bias” and “task–model alignment”) [19–22]. These analyses are, however, omniscient: they
+
+64
+
+explain a learning curve when the full data are available. Related estimators such as
+
+65
+
+generalised cross-validation (GCV) [23] and the kernel-alignment risk estimator [24,25]
+
+66
+
+estimate the risk at the current sample size, not at a larger one. Wei et al. [25] used these
+
+67
+
+estimators to predict how the error of trained neural representations scales with the number of
+
+68
+
+samples, and Beleites et al. [26] showed in this journal that the test sets of small classification
+
+69
+
+studies are too small to estimate performance reliably, let alone its future improvement. No
+
+70
+
+study has asked which part of a calibration learning curve a pilot set can determine at all. The
+3
+
+71
+
+question matters because planning methods are judged by how well they extrapolate, and a
+
+72
+
+method that extrapolates well on one application can fail on another for reasons that remain
+
+73
+
+invisible without such an analysis. Spectroscopy is a good setting in which to answer it. Ridge
+
+74
+
+regression, principal-component regression and partial least squares (PLS) are closely related
+
+75
+
+shrinkage estimators [27–29], and unlabelled spectra are cheap, so the covariance spectrum
+
+76
+
+can be estimated accurately long before many reference values exist.
+
+77
+
+This paper makes three contributions. (i) An observability limit. We prove that a pilot of n0
+
+78
+
+samples observes the bias function of a ridge calibration only above an effective-
+
+79
+
+regularisation horizon set by n0 and the eigen-spectrum; target signal carried by spectral
+
+80
+
+modes below that horizon is indistinguishable from irreducible noise in the pilot, yet it is
+
+81
+
+learned when the calibration grows (Proposition 1). The gain from adding samples is therefore
+
+82
+
+not identifiable from a pilot alone, and every forecaster, including power-law extrapolation
+
+83
+
+and the no-improvement rule, implicitly supplies a prior. The corollary is a computable, prior-
+
+84
+
+free identification set of learning curves consistent with the pilot, and an information fraction
+
+85
+
+that measures how much the pilot itself says about the future gain. These tools are related to
+
+86
+
+partial identification in econometrics [30] and to noise-variance estimation in high-
+
+87
+
+dimensional regression [31,32], but they are stated for the quantity a planner needs. (ii)
+
+88
+
+Bayesian regularisation-path matching (B-RPM). Instead of assuming a curve shape, B-
+
+89
+
+RPM places a transferable prior on two structural parameters of the deterministic-equivalent
+
+90
+
+risk, the alignment exponent and the noise fraction, learned from previous calibrations of
+
+91
+
+other materials. It combines this prior with the pilot’s exact leave-one-group-out
+
+92
+
+regularisation path and the eigen-spectrum of the task’s own unlabelled spectra, and returns a
+
+93
+
+posterior-predictive learning curve in a fraction of a second. (iii) A leakage-free benchmark
+
+94
+
+on 38 calibration tasks from six public sources (soils, mango fruit, diesel fuel,
+
+95
+
+pharmaceutical tablets, meat and designed mixtures). It includes a pre-registered first design,
+4
+
+96
+
+a pre-specified evaluation of B-RPM (hypotheses fixed before results were seen), a controlled
+
+97
+
+simulation, group-disjoint repeated splits and the strictest transfer test available, in which
+
+98
+
+priors come from a different application family. The main results are as follows. The theory
+
+99
+
+reproduces ridge and PLS learning curves. The identification set contains the true curve in
+
+100
+
+about nine of ten cases, and its width shows that pilots of fewer than about 100 samples carry
+
+101
+
+little information about future gains. B-RPM is the least biased forecaster up to eightfold
+
+102
+
+extrapolation, and it keeps its accuracy when its prior comes from a different application
+
+103
+
+family, whereas a transferred empirical slope does not.
+
+104
+
+2. Theory
+
+105
+
+2.1. Setting and notation
+
+106
+
+Let x ∈ R p denote a spectrum after sample-wise pre-processing and y the reference value. A
+
+107
+
+ridge calibration with an unpenalised intercept is fitted to n samples,
+n
+
+2
+1
+2
+β^ μ =arg min ∑ ( y i − a − x ⊤
+i β) +μ∥ β ∥ ,
+a , β n i=1
+
+(1)
+
+108
+
+with penalty μ>0 per sample. Let Σ=∑ λ k u k u k be the population covariance of the spectra (
+
+109
+
+¿
+λ1 ≥ λ 2 ≥ …), β ¿ the coefficient vector of the best linear predictor, s k = λ k ( u⊤
+k β ) the target
+
+110
+
+variance carried by mode k, and σ 2 the residual variance, which comprises reference-method
+
+111
+
+error and any non-linearity that a linear calibration cannot capture.
+
+112
+
+2.2. Deterministic-equivalent risk
+
+113
+
+Random-matrix theory shows that a ridge model trained on n samples behaves, in expectation,
+
+114
+
+like a population ridge with a larger effective penalty κ , the unique root of [15,16,18]
+
+⊤
+
+k
+
+2
+
+5
+
+(
+
+κ 1−
+
+)
+
+λk
+1
+=μ .
+∑
+n k λ k +κ
+
+(2)
+
+115
+
+Modes with λ k ≫ κ are learnt; modes with λ k ≪ κ are not. The expected mean-squared error
+
+116
+
+on new samples (including their reference error) is then
+
+( )
+
+( )
+
+( )
+
+2
+
+λk
+N (κ )
+1
+κ 2
+E ( n , μ ) = 1+
+, N ( κ ) =σ 2 + ∑ s k
+, d f 2 ( κ ) =∑
+,
+n 1− d f 2 ( κ ) /n
+λ k +κ
+λ k +κ
+k
+k
+
+(3)
+
+117
+
+where the factor 1+1/n accounts for estimating the intercept. A calibration whose penalty is
+
+118
+
+tuned by cross-validation is approximated by the minimum over the penalty grid,
+
+119
+
+E ¿ ( n ) =min μ E ( n , μ ). Eq. (3) makes the mechanism of a learning curve explicit. As n grows,
+
+120
+
+the attainable κ decreases, and the target power in the newly learnable modes is converted
+
+121
+
+into accuracy. The curve therefore keeps improving as long as s k is non-negligible for modes
+
+122
+
+with λ k between successive values of κ, and it saturates at σ 2.
+
+123
+
+2.3. Regularisation-path matching
+
+124
+
+Consider a labelled pilot of n0 samples and a set of unlabelled spectra from the same
+
+125
+
+population. Three observations make forecasting possible.
+
+126
+
+1.
+
+127
+128
+
+The eigenvalues λ k in Eqs. (2)–(3) depend only on spectra and are estimated from the
+unlabelled set.
+
+2.
+
+The exact leave-one-group-out (LOGO) error of ridge on the pilot, e ( μ j ), is available
+
+129
+
+in closed form for every penalty of a grid. For a linear smoother, the deleted residuals
+
+130
+
+are r g = ( I − H g g ) e g, where H is the hat matrix and g indexes groups of samples that
+
+131
+
+must be held out together.
+
+−1
+
+6
+
+132
+
+3.
+
+By Eq. (3), e ( μ j ) estimates E ( n0 , μ j ), which depends on μ j only through κ j =κ ( n0 , μ j )
+
+133
+
+and a known prefactor. The pilot’s regularisation path therefore observes the bias
+
+134
+
+function N ( κ ) on κ ≥ κ min ( n0 ):
+N (κ j) ≈ e ( μ j)
+
+1− d f 2 ( κ j ) /n0
+.
+1+1/n0
+
+(4)
+r
+
+135
+
+2
+RPM represents the target-power spectrum by s k =τ ( λ k / λ1 ) with r=1 (an isotropic prior on
+
+136
+
+the coefficients, under which ridge is the Bayes estimator). It fits θ= ( log τ 2 , log σ 2 ) by least
+
+137
+
+squares in log space over the path points with d f 2 /n0 ≤ 0.8 :
+2
+^
+θ=arg
+min ∑ w j [ log e ( μ j ) − log E θ ( n0 , μ j ) ) ,
+θ
+
+j
+
+(5)
+
+138
+
+with w j =1 in the pre-registered version (RPM). In the refined version (RPM-w; Section 3.6),
+
+139
+
+w j is the inverse of the delta-method variance of log e ( μ j ), estimated from the pilot’s own
+
+140
+
+R M S E ( n ) ={min μ E θ^ ( n , μ ) }1/2 for any n.
+squared LOGO residuals. The forecast is ^
+
+141
+
+Uncertainty bands are obtained with a Bayesian bootstrap of the pilot [33]: Dirichlet weights
+
+142
+
+enter the weighted ridge fit and the weighted LOGO path, Eq. (5) is refitted, and the forecasts
+
+143
+
+are recomputed.
+
+144
+
+2.4. What a pilot set can identify: the observability horizon
+
+145
+
+Write the deterministic-equivalent risk as E ( n , μ ) =P ( n , κ ) N ( κ ) with κ=κ ( n , μ ) (Eqs. 1–4).
+
+146
+
+For a pilot of n0 <r a n k ( Σ ) samples, κ ( n0 , μ ) decreases to a strictly positive limit
+
+147
+
+κ 0 =lim ¿ μ → 0 κ ( n0 , μ ) ¿, the root of ∑ λ k / ( λ k +κ 0 ) =n0, as the penalty vanishes. Even an
+
+148
+
+infinitely repeated pilot of size n0, observed at every penalty, therefore reveals the bias
+
+149
+
+function N ( κ ) only on the half-line κ ≥ κ 0. We call κ 0 the observability horizon of the pilot.
+
+150
+
+Modes with λ k ≫ κ 0 are resolved by the pilot; modes with λ k ≪ κ 0 are not.
+
+k
+
+7
+
+151
+
+Proposition 1 (non-identifiability of the gain). Let ( s , σ 2 ) be a target-power spectrum and
+
+152
+
+noise variance, let T be any set of modes with λ k ≤ δ κ 0 for some δ >0, and let S T = ∑ s k .
+
+153
+
+Define the alternative model ( s ′ , σ ′ 2 ) with s ′ k =0 for k ∈ T , s ′ k =s k otherwise, and
+
+154
+
+σ ′ 2=σ 2 + S T . Then
+
+155
+156
+
+k∈ T
+
+(a) for every penalty, the risk of a pilot of size n0 differs between the two models by at
+most
+0 ≤ E ′ ( n0 , μ ) − E ( n0 , μ ) ≤ 2 δ S T P ( n0 , κ ) , ( 6 )
+
+157
+158
+159
+
+(6)
+
+i.e. by a relative amount of at most 2 δ S T / N ( κ 0 );
+(b) at a calibration size n and any penalty for which κ n =κ ( n , μ ) ≤ δ ′ min k ∈ T λ k , the risks
+differ by at least
+E ′ ( n , μ ) − E ( n , μ ) ≥ ( 1 − δ ′ 2 ) S T P ( n , κ n ) ≥ ( 1− δ ′ 2 ) S T . ( 7 )
+
+(7)
+
+160
+
+Proof. N ′ ( κ ) − N ( κ ) = ∑ s k [ 1− κ / ( λ k +κ ) )= ∑ s k λ k ( λ k +2 κ ) / ( λ k +κ ) . Each summand lies
+
+161
+
+in [ 0 , 2 λ k /κ ), because κ λ k ( λ k +2 κ ) ≤ 2 λ k ( λ k +κ ) for all λ k , κ ≥ 0. For κ ≥ κ 0 and λ k ≤ δ κ 0 this
+
+162
+
+gives 0 ≤ N ′ − N ≤ 2 δ S T . The prefactor P ( n , κ ) depends only on the eigenvalues, not on ( s , σ 2 ),
+
+163
+
+and κ ( n , μ ) does not depend on them either; multiplying by P ( n0 , κ ) gives (a). For (b),
+
+164
+
+κ n / ( λ k +κ n ) ≤ κ n / λ k ≤ δ ′ for k ∈ T , so each summand is at least s k ( 1 − δ ′ 2 ), and P ≥ 1. ▫
+
+165
+
+Because N ′ ≥ N everywhere, the alternative model is also never better at its own optimal
+
+166
+
+penalty, and in the numerical examples of Section 4.2 the difference in optimal risk is of the
+
+167
+
+same order as S T .
+
+168
+
+In words: target power hidden below the observability horizon looks exactly like irreducible
+
+169
+
+noise to the pilot (to first order in λ k /κ 0), yet it is learned once the calibration is large enough
+
+2
+
+k∈ T
+
+2
+
+2
+
+k∈ T
+
+2
+
+8
+
+170
+
+for κ n to pass below those eigenvalues. The pilot path cannot separate the two explanations,
+
+171
+
+and the sampling noise of a cross-validated path (relative standard deviation of order ( 2/n0 ) )
+
+172
+
+makes the indistinguishability exact in practice whenever 2 δ S T / N ( κ 0 ) is smaller than that
+
+173
+
+noise. Because the gain from n0 to n is essentially the target power in the band κ n ≲ λ k ≲ κ 0, no
+
+174
+
+forecaster that uses only the pilot can predict the gain without prior information about
+
+175
+
+how target power is distributed below the horizon. Every published learning-curve
+
+176
+
+extrapolation supplies that information implicitly: the no-improvement rule assumes no power
+
+177
+
+below the horizon; inverse-power-law fits assume that the within-pilot trend continues; RPM
+
+178
+
+with r=1 assumes power proportional to the eigenvalue, which puts almost none below the
+
+179
+
+horizon. Proposition 1 is a deterministic-equivalent analogue of the known limits of noise-
+
+180
+
+variance estimation in high dimensions, which require a prior or a structural assumption on
+
+181
+
+the signal [31,32]; here it is stated for the quantity a sample-size planner needs, the gain.
+
+182
+
+Corollary (identification set). For a given parametric family of target-power spectra, the set
+
+183
+
+of parameters whose predicted pilot path is consistent with the observed path defines an
+
+184
+
+identification set of learning curves. Its width at n/n0 is the planning ambiguity that no pilot-
+
+185
+
+only method can remove, and it is computable from the pilot and the unlabelled spectra alone.
+
+186
+
+We report it for the family s k ∝ ( λ k / λ 1 ) , r ∈ [ 0.05 , 1.6 ), with noise fraction η ∈ [ 5 × 10− 4 , 0.97 )
+
+187
+
+(Section 2.5).
+
+188
+
+2.5. Bayesian regularisation-path matching (B-RPM)
+
+189
+
+Proposition 1 tells us where information must come from: the distribution of target power
+
+190
+
+below the observability horizon. B-RPM supplies it as an explicit, transferable prior on
+
+191
+
+structural parameters rather than on curve shapes. The bias function is parametrised as
+
+1/2
+
+r
+
+9
+
+∑ ( λk / λ1 )r κ 2 / ( λk +κ )2
+
+N ( κ ) =V [ η+ ( 1 − η ) b r ( κ ) ) , b r ( κ ) = k
+
+∑ ( λ k / λ 1 )r
+
+,(8)
+
+(8)
+
+k
+
+192
+
+where V is the total variance (N ( ∞ ) =V ), η the irreducible-noise fraction and r the alignment
+
+193
+
+exponent; the eigenvalues λ k are those of the task’s own unlabelled spectra. The prior is
+
+194
+
+Gaussian in r and in l o g i t η, with location and scale (median and 1.4826 × median absolute
+
+195
+
+deviation) taken from large-sample fits of previous calibrations, here all tasks of other data
+
+196
+
+sources (leave-one-source-out) or, in a stricter test, of other application families. The
+
+197
+
+likelihood is built from the pilot’s exact leave-one-group-out path: log CV-MSE residuals
+
+198
+
+have the delta-method variance of the log CV-MSE at the pilot optimum, and path points
+
+199
+
+carry κ-quadrature weights scaled to me f f =2 effective observations (the level and the
+
+200
+
+curvature of the path, since all points reuse the same residuals); V is profiled out. The
+
+201
+
+posterior on a 32 × 40 grid of ( r , η ) is combined with the deterministic-equivalent optimal risk
+
+202
+
+at every horizon to give a posterior-predictive distribution of log R M S E P ( n ), to which the
+
+203
+
+anchor uncertainty is added. All κ-dependent terms do not depend on ( r , η ,V ) and are
+
+204
+
+precomputed, so a complete forecast with bands takes about 0.2 s. Two by-products are
+
+205
+
+reported for every pilot: the prior-free identification set (Corollary) and the information
+
+206
+
+fraction 1− v a r p o s t ( gain ) / v a r p r i o r ( gain ), which measures how much the pilot itself adds to
+
+207
+
+the prior about the future gain.
+
+208
+
+Fig. 1 summarises the workflow. B-RPM was specified, implemented and committed to the
+
+209
+
+public repository before any version-2 forecast was inspected, with hypotheses HB1–HB4
+
+210
+
+fixed in advance (Supplementary Material, B-RPM addendum).
+
+10
+
+211
+212
+
+Fig. 1. Workflow of Bayesian regularisation-path matching. The unlabelled spectra fix the eigen-
+
+213
+
+spectrum and hence the observability horizon of the pilot; the pilot’s exact leave-one-group-out path is
+
+214
+
+the likelihood; previous calibrations of other materials supply the structural prior. Outputs are the
+
+215
+
+prior-free identification set, the posterior-predictive learning curve and the information fraction.
+
+216
+
+3. Materials and methods
+
+217
+
+3.1. Data sets
+
+218
+
+The study uses 38 calibration tasks from public sources (Table 1): six soil spectral libraries
+
+219
+
+from the Open Soil Spectral Library v1.3 [34] (ICRAF-ISRIC VisNIR and MIR, KSSL MIR
+
+220
+
+and VisNIR [35], AfSIS-1 MIR and a handheld NeoSpectra NIR set), each with organic
+
+221
+
+carbon (OC), clay, pH(H❑2O) and cation-exchange capacity (CEC) where available; dry-
+
+222
+
+matter content of 4021 mango fruits measured with a handheld Vis–SWNIR instrument
+
+223
+
+[36,37]; six properties of diesel fuels (Southwest Research Institute NIR set); the active-
+
+224
+
+ingredient assay of 655 tablets from the IDRC 2002 shoot-out; fat, moisture and protein of the
+
+225
+
+Tecator meat data [38]; and four constituents of a designed casein–glucose–lactate–moisture
+
+226
+
+(CGL) mixture set. OC and CEC were log-transformed (log ( 1+ y )) because of their skewness.
+
+227
+
+Libraries with restrictive licences (LUCAS; the Serbian OSSL subset) were excluded. KSSL
+
+228
+
+libraries were capped at 15,000 samples, sampled by whole sites.
+11
+
+229
+
+3.2. Pre-processing and leakage control
+
+230
+
+Reflectance was converted to absorbance, and all spectra were standard-normal-variate (SNV)
+
+231
+
+transformed [39] after wavelength sub-sampling to 100–220 variables (Table 1). Both
+
+232
+
+operations are sample-wise, so no information passes between calibration and test samples.
+
+233
+
+Replicate scans of the same physical sample were averaged before any split. This applies to
+
+234
+
+the two cheek scans of each mango fruit (fruit identity was reconstructed from metadata and
+
+235
+
+validated by spectral distance), to duplicate KSSL scans, and to the multi-instrument
+
+236
+
+NeoSpectra measurements, for which the instrument-averaged spectrum was used. Soil layers
+
+237
+
+from the same site or profile were assigned to the same group. Every split is group-disjoint,
+
+238
+
+and every cross-validation, inside pilots and inside ground-truth fits, leaves out whole groups
+
+239
+
+[40]. Unlabelled spectra used by RPM and B-RPM were taken only from the calibration pool,
+
+240
+
+never from the test set. Supplementary Note 3 documents the full leakage audit.
+
+241
+
+3.3. Ground-truth learning curves
+
+242
+
+For each task, a group-disjoint test set (25% of samples, at most 3000) was held out using a
+
+243
+
+seed derived from the task name; the remaining samples form the pool. Tasks with fewer than
+
+244
+
+1000 samples (fuel, tablets, meat, mixtures) were evaluated over ten independent group-
+
+245
+
+disjoint outer splits, so that their ground truth does not rest on one small test set. For
+
+246
+
+n ∈ {25 , 50 ,100 , 200 , 400 , 800 ,1600 , 3200 , 6400 } (up to the pool size), n pool samples were
+
+247
+
+drawn at random, and two calibrations were fitted. The first was ridge, with the penalty
+
+248
+
+chosen by exact LOGO cross-validation over a 53-point grid. The second was PLS1 (kernel
+
+249
+
+algorithm [41]), with 1–30 latent variables chosen by grouped 10-fold cross-validation. The
+
+250
+
+test MSE of each was recorded. The expected curve was estimated from 30 (n ≤ 400), 16 (
+
+251
+
+n ≤ 1600) or 8 repetitions.
+
+12
+
+252
+
+3.4. Pilot forecasting protocol
+
+253
+
+For pilot sizes n0 ∈ {25 , 50 , 100 , 200 }, pilots were drawn at random from the pool with
+
+254
+
+predefined seeds: 20 per task for the large libraries and 10 per outer split for the small data
+
+255
+
+sets. Each forecaster received only the pilot (spectra, reference values, group labels), the
+
+256
+
+unlabelled pool spectra and, where stated, information from other data sources. It forecast the
+
+257
+
+test RMSEP at every grid size n ≥ 2 n0. The level endpoint is the absolute log ratio
+
+258
+
+R M S E P / R M S E P ) ) against the ridge ground truth; the gain endpoint is the
+|log (^
+
+259
+
+absolute error of the forecast gain,
+
+260
+
+R M S E P ( n ) /^
+RMSEP
+|log (^
+
+261
+
+the noise of the pilot’s own error estimate. Both are averaged within tasks (over splits, pilots,
+
+262
+
+pilot sizes and horizons), so that every task counts once. Secondary endpoints are the signed
+
+263
+
+bias by extrapolation ratio, the coverage and width of 80% and 95% bands, the coverage and
+
+264
+
+width of the identification set, and the Brier score of the probabilistic decision “an eightfold
+
+265
+
+larger calibration set reduces RMSEP by at least 15%”.
+
+266
+
+3.5. Forecasters
+
+267
+
+All forecasters use the same ridge calibration and the same pilot.
+
+268
+
+t rue
+
+•
+
+pilot
+
+) − log ( R M S E Pt r u e ( n ) / R M S E Pt r u e ( n0 ) ) ), which removes
+
+B-RPM (Section 2.5), with the prior learned leave-one-source-out (LOSO) from the
+
+269
+
+large-sample fits of the other data sources (sources defined by sample provenance;
+
+270
+
+KSSL and NeoSpectra form one source), and B-RPM-LOFO, with the prior learned
+
+271
+
+from other application families only. Ablations: prior on r only (B-RPM-r), prior only
+
+272
+
+without the pilot path (B-RPM-0) and me f f =10 (B-RPM-m10).
+
+273
+
+•
+
+RPM (r=1; the pre-registered method of the first design, Section 2.3), and its post-
+
+274
+
+hoc variants with a transferred exponent (RPM-T) and noise floors (RPM-TD with the
+
+275
+
+Dicker estimator [31]; RPM-TP with a transferred lower bound).
+13
+
+276
+
+•
+
+IPL3, an inverse power law with asymptote, e ( m ) =a+b m− c , as used by Ali et al. [8]
+
+277
+
+following [9,10], fitted by weighted non-linear least squares to a within-pilot learning
+
+278
+
+curve (training on 25–85% of the pilot, 20 group-disjoint splits per fraction) plus the
+
+279
+
+full-pilot cross-validated error; IPL2, a pure power law; EXP3 and LOG2,
+
+280
+
+exponential and logarithmic curves.
+
+281
+
+•
+
+282
+283
+
+decay and the pilot’s regularisation path and anchored at the pilot error.
+•
+
+284
+285
+
+WEI, the scaling exponent of Wei et al. [25], estimated from the unlabelled eigen-
+
+FLAT, the pilot’s cross-validated error (no improvement), and DF-OLS, a classical
+fixed-complexity formula.
+
+•
+
+SLOPE-T, the pilot’s cross-validated error extrapolated with the median ground-truth
+
+286
+
+slope per doubling of n of the other data sources, and SLOPE-T-LOFO, with the
+
+287
+
+slope of other application families.
+
+288
+
+3.6. Design history, simulation and robustness
+
+289
+
+The study has three stages, all documented in a time-stamped experiment log. (1) The first
+
+290
+
+design (RPM, baselines, ablations) was pre-registered before any result was seen. (2) After
+
+291
+
+the first review cycle, the whole study was re-run with corrected soil groups, repeated outer
+
+292
+
+splits for small data sets, provenance-based sources, a κ -quadrature weighting of the path fit
+
+293
+
+and floor-free curve bands; first-version outputs are archived unchanged. (3) B-RPM, the
+
+294
+
+identification set and the hypotheses HB1–HB4 were specified and committed before any
+
+295
+
+version-2 forecast was inspected: HB1, B-RPM-LOFO has a lower gain error than SLOPE-T-
+
+296
+
+LOFO; HB2, B-RPM is non-inferior to FLAT on the level endpoint (margin 0.02); HB3, the
+
+297
+
+80% bands of B-RPM cover 70–90% in every family and pilot-size stratum; HB4, the
+
+298
+
+identification set contains the truth in at least 90% of cases. The leave-one-source-out
+
+14
+
+299
+
+recalibration of the B-RPM bands (Section 4.6) was added after HB3 had failed and is
+
+300
+
+labelled post hoc.
+
+301
+
+Simulation. Gaussian spectra with λ k =k
+
+302
+
+fractions 0.1 and 0.3 were simulated; the ground truth is the Monte-Carlo test error of LOO-
+
+303
+
+tuned ridge (30 repetitions, 4000 test samples), not the theory. B-RPM was given the real-data
+
+304
+
+prior, which is approximately correct for r=0.5 and wrong for r=2.
+
+305
+
+Robustness. Six representative tasks were rerun with raw-absorbance and Savitzky–Golay
+
+306
+
+first-derivative spectra [42], Kennard–Stone-selected pilots [43] and Gaussian noise added to
+
+307
+
+the reference values (variance 25% of v a r ( y )). Mango was also evaluated under a new
+
+308
+
+harvest season (calibration on seasons 1–3, test on season 4, with an i.i.d. reference split of the
+
+309
+
+same size) and with orchard populations held out.
+
+310
+
+3.7. Statistical analysis
+
+311
+
+The task is the unit of analysis. Paired comparisons use two-sided Wilcoxon signed-rank tests
+
+312
+
+on per-task means [44], with Holm correction over the comparisons of a table, and 95%
+
+313
+
+bootstrap confidence intervals of the mean paired difference (4000 resamples of tasks).
+
+314
+
+Because tasks share spectra within a source, every comparison is repeated at the level of the
+
+315
+
+eight data sources (means over the tasks of a source); both levels are reported.
+
+316
+
+3.8. Implementation and reproducibility
+
+317
+
+All methods were implemented in Python (NumPy, SciPy, pandas, scikit-learn). The closed-
+
+318
+
+form LOGO ridge path, the PLS1 implementation and the theory were unit-tested against
+
+319
+
+brute-force refits, scikit-learn and Monte-Carlo simulation. A single command (run_all.py)
+
+320
+
+downloads nothing silently, runs all experiments with deterministic seeds and regenerates
+
+321
+
+every table, figure and number from machine-readable outputs. Computations ran on a 4-core
+
+322
+
+CPU without a GPU.
+
+−1.6
+
+( p=150), alignment r ∈ {0.5 ,1 , 2 } and noise
+
+15
+
+323
+
+4. Results and discussion
+
+324
+
+Table 1. Calibration tasks. ICRAF, KSSL, AfSIS1 and Neospectra are soil spectral libraries;
+
+325
+
+Mango: fruit dry matter; Diesel: fuel properties; Tablets: pharmaceutical assay; Tecator: meat;
+
+326
+
+CGL: designed casein–glucose–lactate–moisture mixtures. N = samples after replicate
+
+327
+
+averaging (pool + group-disjoint test set); p = spectral variables after sub-sampling; max. n =
+
+328
+
+largest calibration size in the ground-truth curve.
+
+Library
+ICRAF-VisNIR
+ICRAF-MIR
+KSSL-MIR
+KSSL-VisNIR
+AfSIS1-MIR
+Neospectra-NIR
+Mango
+Diesel
+Tablets
+Tecator
+CGL
+
+Spectral range
+VisNIR 400–2480 nm
+MIR 4000–600 cm⁻¹
+MIR 4000–600 cm⁻¹
+VisNIR 400–2480 nm
+MIR 4000–600 cm⁻¹
+NIR 1350–2550 nm,
+handheld
+SWNIR 684–990 nm,
+handheld
+NIR 750–1550 nm
+NIR 600–1898 nm
+NIR 850–1050 nm
+NIR 1104–2495 nm
+
+Tasks
+4
+4
+4
+4
+3
+4
+
+N per task
+3,654–3,776
+3,652–3,774
+15,000–15,003
+15,000–15,011
+1,896–1,904
+2,096–2,106
+
+p
+208
+212
+212
+208
+212
+150
+
+Max. n
+(truth)
+1,600
+1,600
+6,400
+6,400
+800
+800
+
+dry matter
+
+1
+
+4,021
+
+94
+
+1,600
+
+6 fuel properties
+assay
+fat, moisture, protein
+4 constituents
+
+6
+1
+3
+4
+
+381–395
+655
+215
+231
+
+200
+216
+99
+116
+
+200
+400
+100
+100
+
+Properties
+OC, clay, pH, CEC
+OC, clay, pH, CEC
+OC, clay, pH, CEC
+OC, clay, pH, CEC
+OC, clay, pH
+OC, clay, pH, CEC
+
+329
+
+4.1. Calibration learning curves follow the deterministic-equivalent theory
+
+330
+
+Fig. 2a compares, for four representative tasks, the expected test RMSE of cross-validated
+
+331
+
+ridge and PLS calibrations with the deterministic-equivalent curve of Eq. (3). The curve was
+
+332
+
+fitted once to the cross-validation path of the full calibration pool (three parameters, r free)
+
+333
+
+and then evaluated at every calibration size. Across all 38 tasks, this single fit reproduced the
+
+334
+
+empirical ridge learning curves with a mean absolute log error of 0.130 (median task 0.105)
+
+335
+
+and the PLS curves with 0.153 (median 0.132); with r fixed at 1 the errors rose to 0.198 and
+
+336
+
+0.220 (Supplementary Table S2). The largest deviations occurred for CGL:lactate (0.40),
+
+337
+
+Tecator:fat (0.38), CGL:moisture (0.35): small fuel and designed-mixture sets, whose samples
+
+338
+
+are not a random draw from a population, which is a premise of the theory. The structural
+
+339
+
+assumption on which RPM rests — that the calibration size n and the penalty μ act on the
+
+340
+
+error only through the effective regularisation κ and the prefactor of Eq. (3) — was tested
+
+341
+
+directly. Empirical test errors measured at fixed penalties for calibration sizes from 50 to 6400
+16
+
+342
+
+collapse onto a single curve once plotted against κ ( n , μ ) and rescaled (Fig. 2b). The across-n
+
+343
+
+standard deviation of the rescaled log-errors was 0.037 (median over 38 tasks with at least
+
+344
+
+three calibration sizes), compared with 0.515 for the same errors plotted against the raw
+
+345
+
+penalty.
+
+346
+347
+
+Fig. 2. Validity of the deterministic-equivalent theory. (a) Expected test RMSE of LOGO-tuned ridge
+
+348
+
+and CV-tuned PLS calibrations (markers) and the theory fitted to the full-pool cross-validation path
+
+349
+
+(dotted). (b) κ-collapse: empirical test MSE at fixed penalty for different calibration sizes n (shades),
+
+350
+
+rescaled by the theory prefactor and plotted against the effective regularisation κ.
+
+351
+
+4.2. Analyte signal extends into weak spectral modes, and the noise floor
+
+352
+
+sets the slope
+
+353
+
+The large-sample fits also estimate the alignment exponent r, which describes how the analyte
+
+354
+
+signal is distributed over the eigenvalues of the spectral covariance ( s k ∝ λ k ). In all 38 tasks, r
+
+355
+
+was below 1 (median 0.55, interquartile range 0.40–0.66, range 0.32–0.88; Fig. 3). The
+
+356
+
+analyte signal therefore carries more power in low-variance spectral directions than an
+
+357
+
+isotropic coefficient prior (r=1) implies. The exponent was lowest for Vis/NIR soil and
+
+358
+
+SWNIR fruit spectra (median 0.38), whose broad, overlapping overtone and combination
+
+r
+
+17
+
+359
+
+bands and strong scattering leave the chemical information in subtle shape differences. It was
+
+360
+
+higher for MIR soil spectra (median 0.59), whose fundamental vibrations concentrate the
+
+361
+
+information in better-resolved, high-variance features. Because weak modes become learnable
+
+362
+
+only gradually, learning curves keep improving over a wide range of n.
+
+363
+364
+
+Fig. 3. Alignment exponent r estimated from the full calibration pool of each task (dots; bars =
+
+365
+
+medians), grouped by spectral region and sample type. Dashed line: the isotropic prior r=1 assumed
+
+366
+
+by RPM. Grey band: range of the leave-one-source-out priors used by RPM-T.
+
+367
+
+Learning curves were shallow. Fitting log R M S E against log 2 n over each ground-truth curve
+
+368
+
+gave a median slope of -0.097 per doubling of n (interquartile range -0.144 to -0.079), i.e. a
+
+369
+
+typical RMSE reduction of about 9.3% for every doubling of the calibration set. The medians
+
+370
+
+for the MIR (-0.107) and Vis/NIR (-0.083) soil libraries were nearly identical despite their
+
+371
+
+different alignment exponents. The steepest curves belonged to the designed CGL mixtures (-
+
+372
+
+0.516) and the meat data (-0.122), whose reference noise is small. In a post-hoc regression,
+
+373
+
+the large-sample theory parameters explained most of the between-task variation of the slope (
+
+374
+
+R 2 = 0.78; Supplementary Table S4). The irreducible-noise fraction σ / v a r ( y ) was the
+
+375
+
+dominant term (Spearman ρ = +0.54, p = 0.0005; Fig. 4): the closer a calibration is to its noise
+
+376
+
+floor, the less it gains from more samples. This explains why a learning curve cannot be read
+
+2
+
+18
+
+377
+
+from its first points. Its slope is set mainly by the noise floor, and the noise floor is precisely
+
+378
+
+what a small pilot cannot identify (Section 4.3).
+
+379
+380
+
+Fig. 4. Slope of the ground-truth learning curve (log RMSE per doubling of n) against the irreducible-
+
+381
+
+noise fraction of the large-sample fit (post hoc).
+
+382
+
+4.3. What a pilot set can identify
+
+383
+
+Proposition 1 predicts that a pilot leaves the gain from additional samples undetermined
+
+384
+
+unless prior information is added. The prior-free identification set makes this measurable (Fig.
+
+385
+
+5). For every pilot it contains all learning curves of the family s k ∝ ( λ k / λ1 ) that are consistent
+
+386
+
+with the pilot’s cross-validation path. Across all pilots and horizons the set contained the true
+
+387
+
+ridge learning curve in 91% of cases (task average; 88% at n/n0 =2 and 98% at n/n0 ≥ 32; Fig.
+
+388
+
+6a). In the controlled simulation, where the truth is a Monte-Carlo estimate rather than a fitted
+
+389
+
+curve, coverage was 99% overall and at least 98% in every scenario. The theory therefore
+
+390
+
+describes correctly what is compatible with a pilot. What a pilot can decide is a different
+
+391
+
+matter. The median ratio between the upper and lower RMSEP of the set was 3.4 at n/n0 =2,
+
+392
+
+15 at n/n0 =8 and 58 at n/n0 ≥ 32 (Fig. 6b). Long extrapolations from a pilot alone are thus not
+
+393
+
+merely inaccurate. They are undetermined, and any method that returns a narrow forecast
+
+394
+
+does so because it has imported an assumption.
+
+r
+
+19
+
+395
+396
+
+Fig. 5. Learning-curve forecasts from one 50-sample pilot for three tasks. Grey: prior-free
+
+397
+
+identification set (all curves consistent with the pilot’s cross-validation path, Section 2.4); blue: B-
+
+398
+
+RPM posterior mean and 80% band; dotted: no-improvement rule; dashed: inverse power law (IPL3);
+
+399
+
+black: true learning curve (independent test set).
+
+400
+
+The information fraction quantifies how much of the forecast comes from the pilot rather than
+
+401
+
+the prior (Fig. 6c). Its median was 0.17 for 25-sample pilots, 0.36 for 50, 0.83 for 100 and
+
+402
+
+0.95 for 200 samples. Below about 100 samples the gain forecast comes mainly from the
+
+403
+
+prior; above it, the pilot’s regularisation path pins down most of the gain. The fraction also
+
+404
+
+flags unreliable individual forecasts. In the lowest tertile of information fraction, B-RPM’s
+
+405
+
+mean absolute log error was 0.373, against 0.297 in the middle and 0.188 in the highest tertile
+
+406
+
+(Supplementary Table S12). This gives the analyst a per-pilot warning that is available before
+
+407
+
+any further reference analysis.
+
+20
+
+408
+409
+
+Fig. 6. Observability of learning curves. (a) Share of forecasts whose true RMSEP lies inside the
+
+410
+
+prior-free identification set; dashed line 90%. (b) Median width of the identification set (ratio of upper
+
+411
+
+to lower RMSEP). (c) Median information fraction of B-RPM (share of the prior variance of the gain
+
+412
+
+removed by the pilot) by pilot size.
+
+413
+
+4.4. Forecasting accuracy
+
+414
+
+In all paired comparisons below, differences are reference minus B-RPM, so positive values
+
+415
+
+favour B-RPM. Table 2 summarises all forecasters on the version-2 design (group-disjoint
+
+416
+
+splits; ten repeated outer splits for the small data sets). The pre-registered RPM (r=1)
+
+417
+
+remained more accurate than inverse-power-law extrapolation (mean absolute log error 0.284
+
+418
+
+vs 0.425) but not more accurate than the no-improvement rule (0.262), as in the first version
+
+419
+
+of the study. B-RPM reached 0.282. It was more accurate than IPL3 (difference +0.143, 95%
+
+420
+
+CI +0.088 to +0.196, better on 33 of 38 tasks, Holm-adjusted p = 0.001) and than the scaling-
+
+421
+
+exponent estimator of Wei et al. [25] (+0.117, 33 of 38 tasks), and as accurate as RPM
+
+422
+
+(+0.002) and the transferred slope (+0.004). It was slightly less accurate than the no-
+
+423
+
+improvement rule (-0.020, CI -0.038 to -0.003, Holm p = 0.222), so the pre-specified non-
+
+424
+
+inferiority margin of 0.02 (HB2) was not met. On the level endpoint, the pilot’s own cross-
+
+425
+
+validated error is very hard to beat, because the dominant error source is the noise in that
+
+426
+
+error, which no forecaster can remove (Section 4.6).
+
+21
+
+427
+
+Table 2. Accuracy of learning-curve forecasts (task-level means over pilots, pilot sizes 25–
+
+428
+
+200 and horizons n ≥ 2 n0). Level: |log ( ^
+R M S E P / R M S E P ) ); gain: error of the forecast gain
+
+429
+
+R M S E P ( n ) / R M S E P ( n0 ); bias: mean signed log error (> 0 pessimistic). LOSO/LOFO:
+
+430
+
+prior or slope transferred from other data sources / other application families.
+Level
+error
+0.282
+0.292
+0.284
+0.505
+0.425
+0.535
+0.399
+1.198
+0.262
+0.286
+0.392
+0.398
+0.344
+
+Method
+B-RPM (LOSO prior)
+B-RPM (LOFO prior)
+RPM, r = 1 (pre-registered)
+RPM, transferred r
+Inverse power law (IPL3) [8]
+Power law (IPL2)
+Scaling exponent [25]
+Fixed-complexity formula
+No improvement (pilot CV error)
+Transferred slope (LOSO)
+Transferred slope (LOFO)
+B-RPM prior only (ablation)
+B-RPM, prior on r only (ablation)
+
+Level error
+(source mean)
+0.304
+0.310
+0.326
+0.555
+0.440
+0.587
+0.446
+1.152
+0.277
+0.279
+0.341
+0.402
+0.378
+
+Gain
+error
+0.265
+0.273
+0.355
+0.453
+0.309
+0.371
+0.240
+1.077
+0.344
+0.188
+0.278
+0.408
+0.291
+
+Bias
+0.008
+0.001
+0.143
+-0.301
+-0.253
+-0.437
+-0.340
+-1.089
+0.139
+-0.125
+-0.248
+0.084
+-0.106
+
+431
+
+The methods differ much more in bias than in absolute error (Fig. 7). The no-improvement
+
+432
+
+rule was pessimistic by construction, and its bias grew from +0.001 at n/n0 =2 to +0.271 at
+
+433
+
+n/n0 ≥ 32. The transferred slope and IPL3 became increasingly optimistic (-0.326 and -0.665
+
+434
+
+at n/n0 ≥ 32). B-RPM was the only forecaster whose mean bias stayed within ±0.040 up to an
+
+435
+
+eightfold extrapolation (-0.134 at n/n0 ≥ 32; overall +0.008 vs +0.139 for FLAT, -0.125 for
+
+436
+
+SLOPE-T and +0.143 for RPM). For a planner this is the relevant property: an unbiased
+
+437
+
+forecast neither talks a laboratory out of a worthwhile extension of the calibration set nor
+
+438
+
+promises an improvement that will not come. For the gain itself, B-RPM improved on the no-
+
+439
+
+improvement rule (+0.079, 30 of 38 tasks, Holm p = 0.001) and on RPM (+0.090, 33 of 38
+
+440
+
+tasks, Holm p < 0.001), and the pilot path added information beyond the prior (+0.143 vs the
+
+441
+
+prior-only variant B-RPM-0). The transferred slope (LOSO) predicted gains better than B-
+
+442
+
+RPM (-0.077). Its advantage came from the soil family, whose 23 tasks have similar slopes
+
+443
+
+and supply most of each other’s priors, and it disappeared under cross-family transfer (Section
+
+444
+
+4.5).
+
+22
+
+445
+446
+
+Fig. 7. Mean signed log error by extrapolation ratio (task-level means; > 0 pessimistic, < 0
+
+447
+
+optimistic).
+
+448
+
+4.5. Transfer across application families
+
+449
+
+A planning rule is useful only if it works for a new application, for which no calibrations of
+
+450
+
+the same kind exist. We therefore repeated the comparison with priors and slopes taken from
+
+451
+
+other application families (leave-one-family-out, LOFO): soil tasks received a prior from
+
+452
+
+fruit, fuel, pharmaceutical, meat and mixture calibrations, and vice versa. The transferred
+
+453
+
+slope lost much of its accuracy: its mean absolute log error rose from 0.286 to 0.392, and
+
+454
+
+from 0.258 to 0.435 on the soil tasks (Fig. 8a). B-RPM was almost unaffected (0.282 to 0.292;
+
+455
+
+soil 0.214 to 0.230; Fig. 8b). Under LOFO transfer, B-RPM was more accurate than the
+
+456
+
+transferred slope by +0.101 (95% CI +0.048 to +0.158; better on 27 of 38 tasks, p = 0.001).
+
+457
+
+On the pre-specified gain endpoint (HB1), the two were equivalent (+0.006, p = 0.720), so
+
+458
+
+HB1 was not confirmed. The difference on the level endpoint lies in the bias. A slope
+
+459
+
+summarises the noise level, eigen-structure and alignment of the calibrations it was learned
+
+460
+
+from, and it carries them into the new task. B-RPM transfers only a weak prior on the
+
+461
+
+alignment exponent and the noise fraction. The noise fraction differed strongly between
+
+462
+
+families, but the pilot path constrains it, so the posterior moves away from a misplaced prior:
+
+463
+
+for the soil tasks, the cross-family prior was centred at a noise fraction of 0.04, the posterior
+23
+
+464
+
+median was 0.27, and the large-sample value was 0.20. The curve is then recomputed from
+
+465
+
+the new task’s own eigen-spectrum. A slope, by contrast, is applied as it is. Transferring
+
+466
+
+structure rather than curves is the reason B-RPM generalises.
+
+467
+468
+
+Fig. 8. Effect of transferring prior knowledge across application families. Mean absolute log error per
+
+469
+
+task (lines) when the slope (a) or the structural prior of B-RPM (b) comes from other data sources
+
+470
+
+(LOSO) or from other application families (LOFO). Thick line: mean over tasks.
+
+471
+
+4.6. Uncertainty and planning decisions
+
+472
+
+The posterior-predictive bands of B-RPM were too narrow. Nominal 80% and 95% bands
+
+473
+
+covered the truth in 55% and 73% of cases (task averages; median width factor 1.7), so HB3
+
+474
+
+was not met, and coverage was lowest for the designed mixtures (11%). The bands contain the
+
+475
+
+uncertainty of the pilot’s regularisation path but not the difference between a pilot’s cross-
+
+476
+
+validated error and the error of a calibration trained on it, which our earlier analysis identified
+
+477
+
+as the dominant source of level error. A post-hoc recalibration of the predictive spread,
+
+478
+
+estimated leave-one-source-out from the standardised errors of the other sources, restored
+
+479
+
+nominal coverage (79% and 95%; 80–85% across pilot sizes; soil 89%, mixtures 26%) at a
+
+480
+
+median width factor of 2.4. IPL3 reached similar coverage only with bands that spanned a
+
+481
+
+median factor of 13.8 (Supplementary Table S9). For the probabilistic decision ‘will an
+
+482
+
+eightfold larger calibration set reduce RMSEP by at least 15%?’, no method beat the base rate
+24
+
+483
+
+(Brier score 0.290 for B-RPM, 0.274 for FLAT, 0.294 for SLOPE-T and 0.247 for the
+
+484
+
+climatological forecast; Supplementary Table S11). This is consistent with Proposition 1.
+
+485
+
+Such decisions turn on precisely the gain that a 25–200-sample pilot cannot determine, and
+
+486
+
+they should be made with a staged design in which the second batch measures the gain.
+
+487
+
+4.7. Robustness, distribution shift and ablation
+
+488
+
+On six representative tasks, B-RPM was evaluated with raw-absorbance and first-derivative
+
+489
+
+spectra, Kennard–Stone-selected pilots and noisier reference values, and on mango under a
+
+490
+
+new-season and an orchard-population shift (Supplementary Table S33). With raw and first-
+
+491
+
+derivative spectra its mean absolute log errors were 0.289 and 0.319 (FLAT 0.215 and 0.272;
+
+492
+
+IPL3 0.467 and 0.398). With added reference noise they were 0.143 (FLAT 0.117). In these
+
+493
+
+scenarios B-RPM was therefore less accurate than the no-improvement rule, though more
+
+494
+
+accurate than curve extrapolation; on six tasks the pilot’s own error remains the most robust
+
+495
+
+single number. Kennard–Stone pilots made every anchored forecast pessimistic (B-RPM bias
+
+496
+
++0.084, FLAT +0.233), because a pilot that spans the extremes of the spectral space has a
+
+497
+
+larger cross-validated error than a random sample. Under the season shift, B-RPM became
+
+498
+
+clearly optimistic (bias -0.502, against -0.255 for FLAT and -1.040 for IPL3): it forecast the
+
+499
+
+improvement expected within the calibration seasons, which the new season did not deliver.
+
+500
+
+No method anticipated a shift, and pilots must be drawn at random from the population in
+
+501
+
+which the calibration will be used. In the controlled simulation (Supplementary Table S35),
+
+502
+
+B-RPM with the real-data prior (median r = 0.55) was the most accurate method when the
+
+503
+
+true alignment was close to that prior (r=0.5: 0.224 vs 0.408 for FLAT, 0.346 for RPM and
+
+504
+
+0.251 for IPL3; with a flat prior 0.400). When the prior was wrong (r=2), it lost to the no-
+
+505
+
+improvement rule (0.362 vs 0.095). This is the cost of importing information that Proposition
+
+506
+
+1 makes unavoidable. The ablations of the first version (Supplementary Table S32) showed
+
+507
+
+that freeing the alignment exponent without a prior is the most damaging choice (Section 2.4).
+25
+
+508
+
+4.8. Comparison with previous work and practical recommendations
+
+509
+
+Learning-curve extrapolation for sample-size planning in analytical spectroscopy [8] and in
+
+510
+
+classification more generally [9,10,26] has relied on the assumption that the curve’s shape can
+
+511
+
+be read from a pilot. Our results explain why this works for short extrapolations and fails for
+
+512
+
+long ones: the shape below the observability horizon is not in the pilot. The same reasoning
+
+513
+
+applies to the minimum-sample-size criteria transferred from clinical prediction modelling
+
+514
+
+[3,4], which control overfitting at a given size but do not predict the gain from more samples.
+
+515
+
+Recent work in this journal has emphasised validation design [45–47], replicate-based error
+
+516
+
+structure [48], calibration-set reduction [49], prediction uncertainty [50] and benchmarks of
+
+517
+
+modern regressors on many NIR data sets [51]. Its practical advice on multivariate calibration
+
+518
+
+[52] fits our observations. The reference-method error sets a floor, the floor sets the slope, and
+
+519
+
+learning curves for linear calibrations are shallow. The present work adds the planning side: a
+
+520
+
+statement of what the pilot can and cannot tell, and a forecaster whose prior information is
+
+521
+
+explicit, transferable and measurable.
+
+522
+
+We therefore recommend the following. (i) Do not extrapolate learning curves with power-
+
+523
+
+law, exponential or logarithmic fits to a small pilot. (ii) Report the identification set with any
+
+524
+
+forecast. If it spans more than the decision-relevant range, the pilot cannot settle the question,
+
+525
+
+and the analyst should collect a second batch before committing the full budget. (iii) Use
+
+526
+
+pilots of at least 100 samples when the gain matters; below that, the information fraction
+
+527
+
+shows that the forecast is mainly prior. (iv) Use B-RPM with a structural prior learned from
+
+528
+
+previous calibrations, including calibrations of other materials, and recalibrate its bands on
+
+529
+
+previous calibrations. Empirical slopes should be transferred only within an application
+
+530
+
+family. (v) Draw pilots at random from the target population.
+
+26
+
+531
+532
+
+5. Limitations
+1.
+
+Linear calibrations. The theory describes ridge regression and tracked PLS closely
+
+533
+
+(Section 4.1). Non-linear and local calibration methods may keep improving after
+
+534
+
+linear models saturate, and their observability limits are not covered.
+
+535
+
+2.
+
+Parametric family. The identification set and B-RPM use the power-law family
+r
+
+536
+
+s k ∝ λ k . Other families could give wider sets. The coverage of about 90% on real data
+
+537
+
+and 99% in simulation suggests that the family is adequate for these spectra, but it is
+
+538
+
+not guaranteed for other materials.
+
+539
+
+3.
+
+Pre-specified hypotheses not met. B-RPM’s raw bands under-covered (HB3). Its
+
+540
+
+level error was 0.02 above the no-improvement rule, so non-inferiority (HB2) was not
+
+541
+
+shown. Under cross-family transfer, its gain error equalled that of the transferred slope
+
+542
+
+(HB1). The recalibrated bands are post hoc.
+
+543
+
+4.
+
+Random sampling from a stable population. Kennard–Stone pilots and genuine
+
+544
+
+shifts bias every anchored forecast (Section 4.7). In the robustness scenarios, B-RPM
+
+545
+
+was less accurate than the no-improvement rule, and under a season shift it was
+
+546
+
+optimistic.
+
+547
+
+5.
+
+Data sets. 23 of the 38 tasks are soil calibrations. The fruit, fuel, pharmaceutical, meat
+
+548
+
+and mixture sets are smaller and allow only short extrapolations, and the designed
+
+549
+
+mixtures violate the random-sampling premise of the theory.
+
+550
+
+6. Conclusions
+
+551
+
+A small pilot set determines a calibration’s error curve only above an observability horizon
+
+552
+
+set by its size and the eigen-spectrum of the spectra. Below the horizon, analyte signal and
+
+553
+
+irreducible noise cannot be told apart, so the gain from more reference samples must come
+27
+
+554
+
+from prior knowledge. This explains the long-standing optimism of power-law extrapolation
+
+555
+
+and the surprising strength of the no-improvement rule. The identification set and the
+
+556
+
+information fraction make the limit visible for every pilot. B-RPM turns the unavoidable prior
+
+557
+
+into an explicit, transferable one; its forecasts were the least biased and generalised across
+
+558
+
+application families. For planning, the practical consequence is a staged design: a pilot of at
+
+559
+
+least 100 samples, a B-RPM forecast with its identification set, and a second batch whenever
+
+560
+
+the set is wider than the decision requires.
+
+561
+
+CRediT authorship contribution statement
+
+562
+
+[Author 1]: Conceptualization, Methodology, Software, Formal analysis, Investigation, Data
+
+563
+
+curation, Visualization, Writing – original draft. [Author 2]: Supervision, Validation, Writing
+
+564
+
+– review & editing. (Placeholders — to be completed by the authors.)
+
+565
+
+Declaration of competing interest
+
+566
+
+The authors declare that they have no known competing financial interests or personal
+
+567
+
+relationships that could have appeared to influence the work reported in this paper.
+
+568
+
+Data availability
+
+569
+
+All data are public. The Open Soil Spectral Library v1.3 libraries are available from the OSSL
+
+570
+
+public bucket. The mango data are at Mendeley Data (doi:10.17632/46htwnp833). The diesel,
+
+571
+
+IDRC-2002 tablet and CGL data are in the Eigenvector Research archive, and the Tecator
+
+572
+
+data are OpenML data set 505. The complete code, configuration files, per-pilot raw results,
+
+573
+
+statistics, tables and figures are provided as Supplementary Material and will be deposited in a
+
+574
+
+public repository upon acceptance. A single script (run_all.py) reproduces every number in
+
+575
+
+this article.
+28
+
+576
+
+Declaration of generative AI and AI-assisted technologies in the
+
+577
+
+writing process
+
+578
+
+During the preparation of this work the authors used an AI assistant (Claude, Anthropic) for
+
+579
+
+literature screening, code development and drafting of the manuscript text. The authors
+
+580
+
+reviewed and edited all content, verified every reference against Crossref, DataCite or arXiv,
+
+581
+
+and take full responsibility for the content of the publication. (Authors: confirm or amend this
+
+582
+
+statement according to the actual use.)
+
+583
+
+Acknowledgements
+
+584
+
+The authors thank the providers of the Open Soil Spectral Library (Woodwell Climate
+
+585
+
+Research Center, USDA-NRCS Kellogg Soil Survey Laboratory, ICRAF/ISRIC, the Africa
+
+586
+
+Soil Information Service), N. Anderson, K. Walsh, P. Subedi and J. Walsh for the mango
+
+587
+
+data, Southwest Research Institute and Eigenvector Research for the diesel and shoot-out
+
+588
+
+data, and the IDRC shoot-out organisers. (Funding: [to be completed].)
+
+589
+
+References
+
+590
+
+[1] S. Wold, M. Sjöström, L. Eriksson, PLS-regression: a basic tool of chemometrics,
+
+591
+
+Chemometrics and Intelligent Laboratory Systems 58 (2001), 109-130.
+
+592
+
+https://doi.org/10.1016/S0169-7439(01)00155-1.
+
+593
+
+[2] F. Westad, F. Marini, Validation of chemometric models – A tutorial, Analytica Chimica
+
+594
+
+Acta 893 (2015), 14-24. https://doi.org/10.1016/j.aca.2015.06.056.
+
+595
+
+[3] R. D. Riley, J. Ensor, K. I. E. Snell, F. E. Harrell, G. P. Martin, J. B. Reitsma, et al.,
+
+596
+
+Calculating the sample size required for developing a clinical prediction model, BMJ (2020),
+
+597
+
+m441. https://doi.org/10.1136/bmj.m441.
+29
+
+598
+
+[4] M. Konstantinidis, E. A. Lalla, S. J. Gonzalez, J. Manrique, G. Lopez-Reyes, A. Barlow,
+
+599
+
+et al., Minimum Sample Size Calculation for Multivariable Regression of Continuous
+
+600
+
+Outcomes in Chemometrics for Astrobiology and Planetary Science, arXiv:2510.01210
+
+601
+
+(2025).
+
+602
+
+[5] W. Ng, B. Minasny, W. d. S. Mendes, J. A. M. Demattê, The influence of training sample
+
+603
+
+size on the accuracy of deep learning models for the prediction of soil properties with near-
+
+604
+
+infrared spectroscopy data, SOIL 6 (2020), 565-578. https://doi.org/10.5194/soil-6-565-2020.
+
+605
+
+[6] G. Debaene, J. Niedźwiecki, A. Pecio, A. Żurek, Effect of the number of calibration
+
+606
+
+samples on the prediction of several soil properties at the farm-scale, Geoderma 214-215
+
+607
+
+(2014), 114-125. https://doi.org/10.1016/j.geoderma.2013.09.022.
+
+608
+
+[7] F. Lucà, M. Conforti, A. Castrignanò, G. Matteucci, G. Buttafuoco, Effect of calibration
+
+609
+
+set size on prediction at local scale of soil carbon by Vis-NIR spectroscopy, Geoderma 288
+
+610
+
+(2017), 175-183. https://doi.org/10.1016/j.geoderma.2016.11.015.
+
+611
+
+[8] N. Ali, S. Girnus, P. Rösch, J. Popp, T. Bocklitz, Sample-Size Planning for Multivariate
+
+612
+
+Data: A Raman-Spectroscopy-Based Example, Analytical Chemistry 90 (2018), 12485-
+
+613
+
+12492. https://doi.org/10.1021/acs.analchem.8b02167.
+
+614
+
+[9] S. Mukherjee, P. Tamayo, S. Rogers, R. Rifkin, A. Engle, C. Campbell, et al., Estimating
+
+615
+
+Dataset Size Requirements for Classifying DNA Microarray Data, Journal of Computational
+
+616
+
+Biology 10 (2003), 119-142. https://doi.org/10.1089/106652703321825928.
+
+617
+
+[10] R. L. Figueroa, Q. Zeng-Treitler, S. Kandula, L. H. Ngo, Predicting sample size required
+
+618
+
+for classification performance, BMC Medical Informatics and Decision Making 12 (2012), 8.
+
+619
+
+https://doi.org/10.1186/1472-6947-12-8.
+
+30
+
+620
+
+[11] T. Viering, M. Loog, The Shape of Learning Curves: A Review, IEEE Transactions on
+
+621
+
+Pattern Analysis and Machine Intelligence 45 (2023), 7799-7819.
+
+622
+
+https://doi.org/10.1109/TPAMI.2022.3220744.
+
+623
+
+[12] Steven Adriaensen, Herilalaina Rakotoarison, Samuel Müller, Frank Hutter, Efficient
+
+624
+
+Bayesian Learning Curve Extrapolation using Prior-Data Fitted Networks, arXiv:2310.20447
+
+625
+
+(2023).
+
+626
+
+[13] Joel Hestness, Sharan Narang, Newsha Ardalani, Gregory Diamos, Heewoo Jun, Hassan
+
+627
+
+Kianinejad, et al., Deep Learning Scaling is Predictable, Empirically, arXiv:1712.00409
+
+628
+
+(2017).
+
+629
+
+[14] Jared Kaplan, Sam McCandlish, Tom Henighan, Tom B. Brown, Benjamin Chess,
+
+630
+
+Rewon Child, et al., Scaling Laws for Neural Language Models, arXiv:2001.08361 (2020).
+
+631
+
+[15] E. Dobriban, S. Wager, High-dimensional asymptotics of prediction: Ridge regression
+
+632
+
+and classification, The Annals of Statistics 46 (2018), 247-279. https://doi.org/10.1214/17-
+
+633
+
+AOS1549.
+
+634
+
+[16] T. Hastie, A. Montanari, S. Rosset, R. J. Tibshirani, Surprises in high-dimensional
+
+635
+
+ridgeless least squares interpolation, The Annals of Statistics 50 (2022), 949-986.
+
+636
+
+https://doi.org/10.1214/21-AOS2133.
+
+637
+
+[17] F. Bach, High-Dimensional Analysis of Double Descent for Linear Regression with
+
+638
+
+Random Projections, SIAM Journal on Mathematics of Data Science 6 (2024), 26-50.
+
+639
+
+https://doi.org/10.1137/23M1558781.
+
+640
+
+[18] Alexander Atanasov, Jacob A. Zavatone-Veth, Cengiz Pehlevan, Scaling and
+
+641
+
+renormalization in high-dimensional regression, arXiv:2405.00592 (2024).
+
+642
+
+[19] Blake Bordelon, Abdulkadir Canatar, Cengiz Pehlevan, Spectrum Dependent Learning
+
+643
+
+Curves in Kernel Regression and Wide Neural Networks, arXiv:2002.02561 (2020).
+31
+
+644
+
+[20] A. Canatar, B. Bordelon, C. Pehlevan, Spectral bias and task-model alignment explain
+
+645
+
+generalization in kernel regression and infinitely wide neural networks, Nature
+
+646
+
+Communications 12 (2021), 2914. https://doi.org/10.1038/s41467-021-23103-1.
+
+647
+
+[21] S. Spigler, M. Geiger, M. Wyart, Asymptotic learning curves of kernel methods:
+
+648
+
+empirical data versus teacher–student paradigm, Journal of Statistical Mechanics: Theory and
+
+649
+
+Experiment 2020 (2020), 124001. https://doi.org/10.1088/1742-5468/abc61d.
+
+650
+
+[22] B. Loureiro, C. Gerbelot, H. Cui, S. Goldt, F. Krzakala, M. Mézard, et al., Learning
+
+651
+
+curves of generic features maps for realistic datasets with a teacher-student model*, Journal of
+
+652
+
+Statistical Mechanics: Theory and Experiment 2022 (2022), 114001.
+
+653
+
+https://doi.org/10.1088/1742-5468/ac9825.
+
+654
+
+[23] P. Craven, G. Wahba, Smoothing noisy data with spline functions, Numerische
+
+655
+
+Mathematik 31 (1978), 377-403. https://doi.org/10.1007/BF01404567.
+
+656
+
+[24] Arthur Jacot, Berfin Şimşek, Francesco Spadaro, Clément Hongler, Franck Gabriel,
+
+657
+
+Kernel Alignment Risk Estimator: Risk Prediction from Training Data, arXiv:2006.09796
+
+658
+
+(2020).
+
+659
+
+[25] Alexander Wei, Wei Hu, Jacob Steinhardt, More Than a Toy: Random Matrix Models
+
+660
+
+Predict How Real-World Neural Representations Generalize, arXiv:2203.06176 (2022).
+
+661
+
+[26] C. Beleites, U. Neugebauer, T. Bocklitz, C. Krafft, J. Popp, Sample size planning for
+
+662
+
+classification models, Analytica Chimica Acta 760 (2013), 25-33.
+
+663
+
+https://doi.org/10.1016/j.aca.2012.11.007.
+
+664
+
+[27] l. E. Frank, J. H. Friedman, A Statistical View of Some Chemometrics Regression Tools,
+
+665
+
+Technometrics 35 (1993), 109-135. https://doi.org/10.1080/00401706.1993.10485033.
+
+32
+
+666
+
+[28] A. E. Hoerl, R. W. Kennard, Ridge Regression: Biased Estimation for Nonorthogonal
+
+667
+
+Problems, Technometrics 12 (1970), 55-67.
+
+668
+
+https://doi.org/10.1080/00401706.1970.10488634.
+
+669
+
+[29] R. D. Cook, L. Forzani, Partial least squares prediction in high-dimensional regression,
+
+670
+
+The Annals of Statistics 47 (2019), 884-908. https://doi.org/10.1214/18-aos1681.
+
+671
+
+[30] E. Tamer, Partial Identification in Econometrics, Annual Review of Economics 2 (2010),
+
+672
+
+167-195. https://doi.org/10.1146/annurev.economics.050708.143401.
+
+673
+
+[31] L. H. Dicker, Variance estimation in high-dimensional linear models, Biometrika 101
+
+674
+
+(2014), 269-284. https://doi.org/10.1093/biomet/ast065.
+
+675
+
+[32] L. Janson, R. F. Barber, E. Candès, EigenPrism: Inference for High Dimensional Signal-
+
+676
+
+to-Noise Ratios, Journal of the Royal Statistical Society Series B: Statistical Methodology 79
+
+677
+
+(2017), 1037-1065. https://doi.org/10.1111/rssb.12203.
+
+678
+
+[33] D. B. Rubin, The Bayesian Bootstrap, The Annals of Statistics 9 (1981), 130-134.
+
+679
+
+https://doi.org/10.1214/aos/1176345338.
+
+680
+
+[34] J. L. Safanelli, T. Hengl, L. L. Parente, R. Minarik, D. E. Bloom, K. Todd-Brown, et al.,
+
+681
+
+Open Soil Spectral Library (OSSL): Building reproducible soil calibration models through
+
+682
+
+open development and community engagement, PLOS ONE 20 (2025), e0296545.
+
+683
+
+https://doi.org/10.1371/journal.pone.0296545.
+
+684
+
+[35] J. Sanderman, K. Savage, S. R. Dangal, Mid‐infrared spectroscopy for prediction of soil
+
+685
+
+health indicators in the United States, Soil Science Society of America Journal 84 (2020),
+
+686
+
+251-261. https://doi.org/10.1002/saj2.20009.
+
+687
+
+[36] N. Anderson, K. Walsh, P. Subedi, C. Hayes, Achieving robustness across season,
+
+688
+
+location and cultivar for a NIRS model for intact mango fruit dry matter content, Postharvest
+
+33
+
+689
+
+Biology and Technology 168 (2020), 111202.
+
+690
+
+https://doi.org/10.1016/j.postharvbio.2020.111202.
+
+691
+
+[37] N. Anderson, K. Walsh, P. Subedi, J. Walsh, Mango DMC and NIR spectra, Mendeley
+
+692
+
+Data (2026). https://doi.org/10.17632/46htwnp833.6.
+
+693
+
+[38] C. Borggaard, H. H. Thodberg, Optimal minimal neural interpretation of spectra,
+
+694
+
+Analytical Chemistry 64 (1992), 545-551. https://doi.org/10.1021/ac00029a018.
+
+695
+
+[39] R. J. Barnes, M. S. Dhanoa, S. J. Lister, Standard Normal Variate Transformation and
+
+696
+
+De-Trending of Near-Infrared Diffuse Reflectance Spectra, Applied Spectroscopy 43 (1989),
+
+697
+
+772-777. https://doi.org/10.1366/0003702894202201.
+
+698
+
+[40] S. Kapoor, A. Narayanan, Leakage and the reproducibility crisis in machine-learning-
+
+699
+
+based science, Patterns 4 (2023), 100804. https://doi.org/10.1016/j.patter.2023.100804.
+
+700
+
+[41] B. S. Dayal, J. F. MacGregor, Improved PLS algorithms, Journal of Chemometrics 11
+
+701
+
+(1997), 73-85. https://doi.org/10.1002/(SICI)1099-128X(199701)11:1<73::AID-
+
+702
+
+CEM435>3.0.CO;2-#.
+
+703
+
+[42] A. Savitzky, M. J. E. Golay, Smoothing and Differentiation of Data by Simplified Least
+
+704
+
+Squares Procedures., Analytical Chemistry 36 (1964), 1627-1639.
+
+705
+
+https://doi.org/10.1021/ac60214a047.
+
+706
+
+[43] R. W. Kennard, L. A. Stone, Computer Aided Design of Experiments, Technometrics 11
+
+707
+
+(1969), 137-148. https://doi.org/10.1080/00401706.1969.10490666.
+
+708
+
+[44] F. Wilcoxon, Individual Comparisons by Ranking Methods, Biometrics Bulletin 1
+
+709
+
+(1945), 80. https://doi.org/10.2307/3001968.
+
+710
+
+[45] E. Lopez, G. Gorla, J. Etxebarria-Elezgarai, J. M. Amigo, A. Seifert, The importance of
+
+711
+
+choosing a proper validation strategy in predictive models. Part 2: Recipes for (avoiding)
+34
+
+712
+
+overfitting-A tutorial, Analytica Chimica Acta 1384 (2026), 344838.
+
+713
+
+https://doi.org/10.1016/j.aca.2025.344838.
+
+714
+
+[46] A. P. Holman, D. Kurouski, Cross-study validation and guidance for resampling
+
+715
+
+approaches for partial least squares discriminant analysis in spectral machine learning,
+
+716
+
+Analytica Chimica Acta 1414 (2026), 345655. https://doi.org/10.1016/j.aca.2026.345655.
+
+717
+
+[47] Z. Al-Shaebi, M. Akdeniz, S. I. Yerlitas Tastan, P. Sagiroğlu, M. A. Atalay, G. Erturk
+
+718
+
+Zararsiz, et al., Impact of dataset partitioning on the reliability of SERS–machine learning
+
+719
+
+models for antimicrobial resistance classification, Analytica Chimica Acta 1423 (2026),
+
+720
+
+346185. https://doi.org/10.1016/j.aca.2026.346185.
+
+721
+
+[48] J. Riu, G. Gorla, M. Monti, M. Campeny, J. Quesada, B. Giussani, Measurement
+
+722
+
+replicates under the lens: evaluating NIR spectroscopic error quality through multivariate
+
+723
+
+error analysis, Analytica Chimica Acta 1419 (2026), 345885.
+
+724
+
+https://doi.org/10.1016/j.aca.2026.345885.
+
+725
+
+[49] J. P. Andries, Y. V. Heyden, Calibration set reduction by iterative alternating reduction
+
+726
+
+of predictive variables and calibration samples subsets, Analytica Chimica Acta 1429 (2026),
+
+727
+
+346468. https://doi.org/10.1016/j.aca.2026.346468.
+
+728
+
+[50] F. A. Chiappini, M. R. Alcaraz, L. Forzani, A bootstrap-assisted methodology for the
+
+729
+
+estimation of prediction uncertainty in multilayer perceptron-based calibration, Analytica
+
+730
+
+Chimica Acta 1353 (2025), 343954. https://doi.org/10.1016/j.aca.2025.343954.
+
+731
+
+[51] R. Reiter, D. Cornet, F. Michel, L. Rouan, G. Beurier, Using tabular foundation models
+
+732
+
+for robust calibration of near-infrared chemical sensing data, Analytica Chimica Acta 1431
+
+733
+
+(2026), 346549. https://doi.org/10.1016/j.aca.2026.346549.
+
+35
+
+734
+
+[52] A. C. Olivieri, Old advice on multivariate calibration: still in force, but not always
+
+735
+
+followed. A tutorial, Analytica Chimica Acta 1396 (2026), 345155.
+
+736
+
+https://doi.org/10.1016/j.aca.2026.345155.
+
+36
+
+

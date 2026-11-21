@@ -88,3 +88,61 @@ def run_simulation(paths, mode="full", jobs=4):
     df.to_csv(out, index=False)
     print(f"simulation done in {time.time() - t0:.0f}s")
     return df
+
+
+# ----------------------------------------------------------------------------------------------------------------
+# B-RPM and identification set in the controlled simulation (session 3). The prior is the real-data prior (all
+# 38 large-sample fits): it is approximately right for r = 0.5 and wrong for r = 1 and r = 2, so the simulation
+# shows both the benefit of a correct structural prior and the cost of a wrong one; the identification set is
+# prior-free and should contain the Monte-Carlo truth in every scenario.
+def _scenario_bayes(p, r, noise_frac, n0_list, n_pilots, seed, prior, reps=30):
+    from src.models.ridge import ridge_cv_path
+    from src.models.bayes_rpm import fit_forecast_brpm
+    lam, A, beta, sigma2 = _make(p, r, noise_frac, seed)
+    rng = np.random.default_rng(seed + 1)
+    Xt, yt = _draw(A, beta, sigma2, 4000, rng)
+    mus = DEFAULT_MU_REL * lam.max()
+    horizons_all = sorted({m * n0 for n0 in n0_list for m in (4, 16)})
+    truth = {}
+    for n in horizons_all:
+        errs = []
+        for _ in range(reps):
+            X, y = _draw(A, beta, sigma2, n, rng)
+            errs.append(np.mean((RidgeCV(mus).fit(X, y).predict(Xt) - yt) ** 2))
+        truth[n] = float(np.mean(errs))
+    rows = []
+    for n0 in n0_list:
+        hz = np.array([4 * n0, 16 * n0])
+        for s in range(n_pilots):
+            prng = np.random.default_rng(seed * 1000 + n0 * 10 + s)      # identical pilots to _scenario
+            X0, y0 = _draw(A, beta, sigma2, n0, prng)
+            e, v = ridge_cv_path(X0, y0, mus, return_var=True); j = int(np.argmin(e))
+            for nm, pr in (("B-RPM", prior), ("B-RPM-flat", dict(prior, s_r=np.inf, s_e=np.inf))):
+                f = fit_forecast_brpm(lam, e, n0 - 1, hz, pr, v[j])
+                for i, n in enumerate(hz):
+                    lt = 0.5 * np.log(truth[n])
+                    rows.append({"p": p, "r": r, "noise_frac": noise_frac, "n0": n0, "pilot": s, "method": nm, "n": int(n),
+                                 "ratio": n / n0, "err": float(f["point_logrmse"][i] - lt),
+                                 "cov80": bool(f["bands"][0.8][0][i] <= lt <= f["bands"][0.8][1][i]),
+                                 "id_cov": bool(f["id_lo"][i] <= lt <= f["id_hi"][i]),
+                                 "id_width": float(np.exp(f["id_hi"][i] - f["id_lo"][i])), "info": float(f["info_gain"][i])})
+    return rows
+
+
+def run_simulation_bayes(paths, mode="full", jobs=4):
+    from experiments.bayes import family_of_source
+    from experiments.refinement import alignment_table
+    from src.models.bayes_rpm import prior_from_table
+    out = os.path.join(paths["results"], "simulation_bayes_raw.csv")
+    if os.path.exists(out):
+        return pd.read_csv(out)
+    tab = alignment_table(paths["raw_out"]); tab["family"] = [family_of_source(s) for s in tab.source]
+    prior = prior_from_table(tab)
+    n0_list = (30, 60, 120) if mode == "full" else (40,)
+    n_pilots = 30 if mode == "full" else 4
+    scen = [(150, r, nf) for r in (0.5, 1.0, 2.0) for nf in (0.1, 0.3)] if mode == "full" else [(100, 1.0, 0.3)]
+    res = Parallel(n_jobs=jobs, verbose=5)(delayed(_scenario_bayes)(p, r, nf, n0_list, n_pilots, 17 + i, prior)
+                                           for i, (p, r, nf) in enumerate(scen))
+    df = pd.DataFrame([row for rr in res for row in rr]); df["prior"] = json.dumps(prior)
+    df.to_csv(out, index=False)
+    return df

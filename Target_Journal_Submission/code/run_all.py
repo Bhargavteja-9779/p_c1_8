@@ -117,6 +117,8 @@ def main():
     if a.stage in ("all", "bayes"):
         from experiments.bayes import run_bayes
         run_bayes(cfg, paths, a.mode, a.jobs)
+        from experiments.simulation import run_simulation_bayes
+        run_simulation_bayes(paths, a.mode, a.jobs)
         log.write(json.dumps({"stage": "bayes", "done": True}) + "\n"); log.flush()
     if a.stage in ("all", "analysis"):
         from experiments.analysis import run_analysis

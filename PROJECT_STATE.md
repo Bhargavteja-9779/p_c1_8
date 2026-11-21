@@ -50,3 +50,19 @@ Candidate verified ACA references to add if reviewers ask for positioning (Cross
  Riu et al. 2026 ACA 1419:345885; Al-Shaebi et al. 2026 ACA 1423:346185; Fan et al. 2025 ACA 1379:344728.
 After cycle 10: Phases 34-42 (consistency + reproducibility audits incl. quick-mode rerun, final DOCX/PDF, package manifest,
 REVIEW/final_audit.md, rejection-risk report, READY/NOT READY decision).
+
+
+## 6. Session 3 (2026-11-21) — NOVELTY UPGRADE (user: avoid desk rejection; check recent ACA papers)
+Diagnosis: v1 headline "theory-based forecaster no better than FLAT" = desk-reject risk (R9, novelty scan
+`journal_selection/recent_aca_novelty_scan_2026-11.md`). New contribution set:
+ 1. **Proposition 1 (observability horizon / non-identifiability of the gain)** + identification-set corollary —
+    `manuscript/build/theory_observability.md` (to be merged into Section 2).
+ 2. **B-RPM** (Bayesian path matching with transferred structural prior on r, eta) — `code/src/models/bayes_rpm.py`,
+    stage `bayes` (`experiments/bayes.py`), pre-specified in `supplementary/BRPM_preregistration_addendum.md` (HB1–HB4)
+    before any v2 result was inspected. Evaluation: `python3 -m experiments.bayes_analysis` (from code/) -> results/bayes_numbers.json, tables/TB*.
+ 3. Must-cite / baselines from scan: Ali 2018; Konstantinidis et al. arXiv 2510.01210 (Riley-type minimum n for
+    chemometric regression); Beleites 2013 ACA; Breure 2025 Geoderma; Wei-Hu-Steinhardt 2022; Dicker 2014; Janson 2017.
+Run order (session 3): main (running, started 20:57 UTC) -> refinement -> bayes -> simulation -> ablation_t -> robustness -> analysis
+ -> bayes_analysis -> rewrite manuscript around Prop. 1 + B-RPM (title/abstract/highlights/cover letter) -> rebuild -> commit/push.
+Commands: cd Target_Journal_Submission/code && nohup python3 run_all.py --mode full --stage <stage> --jobs 4 &  (stages resumable)
+Self-resume: send_later check-ins trig_01FerzTSvpTtyk1mRNXyPzG1 (01:56Z), trig_01AdNmGQopf3B1SayMSXe9L2 (07:56Z); add more as needed.

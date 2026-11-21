@@ -152,7 +152,46 @@ def run_bayes_analysis(paths):
         tm = g.groupby("task")[["c80", "c95"]].mean().mean()
         cov.append({"method": m, "stratum": "all", "value": "all", "cov80": tm.c80, "cov95": tm.c95,
                     "median_width_factor80": float(g.wf80.median()), "n_tasks": g.task.nunique()})
+    # POST HOC (labelled as such): leave-one-source-out recalibration of the B-RPM predictive spread. The standardised
+    # error z = err / sd_pred (sd_pred from the 80 % band) of all OTHER sources gives the inflation factor
+    # c = q_a(|z|) / z_a for each nominal level a; no information from the forecast source is used.
+    for m in ["B-RPM", "B-RPM-LOFO"]:
+        g = ev[(ev.method == m) & ev.lo80.notna()].copy()
+        sd = (g.hi80 - g.lo80) / (2 * norm.ppf(0.9)); z = (g.err / sd).abs()
+        for a, nm in ((0.8, "80"), (0.95, "95")):
+            za = norm.ppf(0.5 + a / 2)
+            c = pd.Series({s_: float(z[g.source != s_].quantile(a)) / za for s_ in g.source.unique()})
+            g["c" + nm] = (g.err.abs() <= g.source.map(c) * za * sd)
+        g["wf80"] = np.exp(2 * g.source.map(pd.Series({s_: float(z[g.source != s_].quantile(0.8)) for s_ in g.source.unique()})) * sd)
+        for key in ("fam", "n0"):
+            for v, gg in g.groupby(key):
+                tm = gg.groupby("task")[["c80", "c95"]].mean().mean()
+                cov.append({"method": m + "-cal (post hoc)", "stratum": key, "value": v, "cov80": tm.c80, "cov95": tm.c95,
+                            "median_width_factor80": float(gg.wf80.median()), "n_tasks": gg.task.nunique()})
+        tm = g.groupby("task")[["c80", "c95"]].mean().mean()
+        cov.append({"method": m + "-cal (post hoc)", "stratum": "all", "value": "all", "cov80": tm.c80, "cov95": tm.c95,
+                    "median_width_factor80": float(g.wf80.median()), "n_tasks": g.task.nunique()})
     TB4 = pd.DataFrame(cov); num["TB4_coverage"] = TB4.to_dict("records")
+    # information fraction as a reliability diagnostic (B-RPM)
+    b = ev[ev.method == "B-RPM"].copy()
+    b["info_tertile"] = pd.qcut(b.info_gain.clip(-1, 1), 3, labels=["low", "mid", "high"])
+    TB7 = b.groupby("info_tertile", observed=True).agg(level_mae=("abs_err", "mean"), gain_mae=("gain_abs_err", "mean"),
+                                                       info_median=("info_gain", "median"), n=("abs_err", "size")).reset_index()
+    TB7b = b.groupby("n0").agg(info_median=("info_gain", "median")).reset_index()
+    num["TB7_info_reliability"] = TB7.astype({"info_tertile": str}).to_dict("records"); num["TB7_info_by_n0"] = TB7b.to_dict("records")
+    # signed bias by extrapolation ratio
+    rb2 = pd.cut(ev.ratio, [1.5, 3, 6, 12, 24, 1e9], labels=["2", "4", "8", "16", ">=32"])
+    TB8 = ev.assign(rb=rb2).groupby(["rb", "task", "method"], observed=True).err.mean().groupby(["rb", "method"], observed=True).mean().unstack()
+    num["TB8_bias_by_ratio"] = TB8.reset_index().astype({"rb": str}).to_dict("records")
+    # level endpoint under leave-one-family-out transfer (structural prior vs transferred slope)
+    for ref, m in (("SLOPE-T-LOFO", "B-RPM-LOFO"), ("FLAT", "B-RPM-LOFO")):
+        r_t = paired(lvl[m].values, lvl[ref].values)
+        Ts = lvl[[ref, m]].groupby(src).mean(); r_s = paired(Ts[m].values, Ts[ref].values)
+        out.append({"endpoint": "level", "method": m, "reference": ref, "task_mean_improvement": r_t["mean_diff"],
+                    "task_ci_lo": r_t["lo"], "task_ci_hi": r_t["hi"], "task_p": r_t["p"], "task_wins": r_t["wins"], "n_tasks": r_t["n"],
+                    "source_mean_improvement": r_s["mean_diff"], "source_p": r_s["p"], "source_wins": r_s["wins"], "n_sources": r_s["n"]})
+    TB2 = pd.DataFrame(out); TB2["task_p_holm"] = holm(TB2.task_p.fillna(1).values)
+    num["TB2_paired"] = TB2.to_dict("records")
     # HB4: identification set
     g = ev[(ev.method == "B-RPM") & ev.id_lo.notna()]
     g = g.assign(cid=(g.truth_ridge_logrmse >= g.id_lo) & (g.truth_ridge_logrmse <= g.id_hi), wid=np.exp(g.id_hi - g.id_lo))
@@ -191,7 +230,7 @@ def run_bayes_analysis(paths):
     os.makedirs(tabs, exist_ok=True)
     for nm, t in (("TB1_brpm_summary", TB1), ("TB2_brpm_paired", TB2), ("TB3_brpm_by_family", TB3.reset_index()),
                   ("TB4_brpm_coverage", TB4), ("TB5_idset", pd.concat([TB5.astype({"ratio": str}), TB5b.assign(by="n0")])),
-                  ("TB6_decision", TB6)):
+                  ("TB6_decision", TB6), ("TB7_info_reliability", TB7), ("TB8_bias_by_ratio", TB8.reset_index())):
         t.to_csv(os.path.join(tabs, nm + ".csv"), index=False)
     json.dump(num, open(os.path.join(paths["results"], "bayes_numbers.json"), "w"), indent=1, default=float)
     return num

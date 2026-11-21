@@ -1548,5 +1548,8 @@
   }
  ],
  "brpm_r_post_median": 0.593981579366738,
- "brpm_eta_post_median": 0.16227225713361687
+ "brpm_eta_post_median": 0.16227225713361687,
+ "lofo_soil_eta_post_median": 0.2662652042783719,
+ "lofo_soil_eta_prior_median": 0.0394176680539774,
+ "soil_eta_large_sample_median": 0.1996403840973873
 }

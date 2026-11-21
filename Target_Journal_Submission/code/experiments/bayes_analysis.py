@@ -227,6 +227,12 @@ def run_bayes_analysis(paths):
     # posterior summaries
     pb = ev[ev.method == "B-RPM"].groupby("task")[["r_post_mean", "eta_post_mean", "r_post_sd"]].mean()
     num["brpm_r_post_median"] = float(pb.r_post_mean.median()); num["brpm_eta_post_median"] = float(pb.eta_post_mean.median())
+    # LOFO prior vs posterior noise fraction for the soil tasks (mechanism of structural transfer)
+    al = pd.read_csv(os.path.join(paths["results"], "alignment_exponents.csv"))
+    soil = ev.fam == "soil"
+    num["lofo_soil_eta_post_median"] = float(ev[soil & (ev.method == "B-RPM-LOFO")].groupby("task").eta_post_mean.mean().median())
+    num["lofo_soil_eta_prior_median"] = float(al[al.family != "soil"].noise_frac_full_pool.median())
+    num["soil_eta_large_sample_median"] = float(al[al.family == "soil"].noise_frac_full_pool.median())
     os.makedirs(tabs, exist_ok=True)
     for nm, t in (("TB1_brpm_summary", TB1), ("TB2_brpm_paired", TB2), ("TB3_brpm_by_family", TB3.reset_index()),
                   ("TB4_brpm_coverage", TB4), ("TB5_idset", pd.concat([TB5.astype({"ratio": str}), TB5b.assign(by="n0")])),

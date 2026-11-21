@@ -56,6 +56,8 @@ def bayes_context(ROOT):
         c[f"info_{n0}"] = _f(iq.loc[n0, "info_fraction_median"], 2); c[f"idw_{n0}"] = f"{iq.loc[n0, 'median_width_factor']:.1f}"
     num = json.load(open(os.path.join(ROOT, "results", "bayes_numbers.json")))
     c["id_cov_all"] = f"{100 * num['idset_coverage_task_mean']:.0f}%"
+    c["lofo_eta_post"] = _f(num["lofo_soil_eta_post_median"], 2); c["lofo_eta_prior"] = _f(num["lofo_soil_eta_prior_median"], 2)
+    c["soil_eta_ls"] = _f(num["soil_eta_large_sample_median"], 2)
     c["b_r_post"] = _f(num["brpm_r_post_median"], 2); c["b_eta_post"] = _f(num["brpm_eta_post_median"], 2)
     rel = T("TB7_info_reliability").set_index("info_tertile")
     for q in ("low", "mid", "high"):
@@ -129,7 +131,7 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
     s.append(
         "The information fraction quantifies how much of the forecast comes from the pilot rather than the prior (Fig. 6c). Its median was "
         "{{info_25}} for 25-sample pilots, {{info_50}} for 50, {{info_100}} for 100 and {{info_200}} for 200 samples. Below about 100 samples the "
-        "gain forecast is dominated by the prior; above it, the pilot's regularisation path pins down most of the gain. The fraction also flags "
+        "gain forecast comes mainly from the prior; above it, the pilot's regularisation path pins down most of the gain. The fraction also flags "
         "unreliable individual forecasts. In the lowest tertile of information fraction, B-RPM's mean absolute log error was {{rel_low}}, against "
         "{{rel_mid}} in the middle and {{rel_high}} in the highest tertile (Supplementary Table [[ST:TB7_info_reliability]]). This gives the analyst a "
         "per-pilot warning that is available before any further reference analysis.")
@@ -137,7 +139,7 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
     # 4.4 -----------------------------------------------------------------------------------------------------
     s.append("## 4.4. Forecasting accuracy")
     s.append(
-        "Table 2 summarises all forecasters on the version-2 design (group-disjoint splits; ten repeated outer splits for the small data sets). "
+        "In all paired comparisons below, differences are reference minus B-RPM, so positive values favour B-RPM. Table 2 summarises all forecasters on the version-2 design (group-disjoint splits; ten repeated outer splits for the small data sets). "
         "The pre-registered RPM ($r=1$) remained more accurate than inverse-power-law extrapolation (mean absolute log error {{v2_rpm}} vs "
         "{{v2_ipl3}}) but not more accurate than the no-improvement rule ({{v2_flat}}), as in the first version of the study. B-RPM reached "
         "{{b_lvl_B_RPM}}. It was more accurate than IPL3 (difference {{bp_d_level_B_RPM_vs_IPL3}}, 95% CI {{bp_ci_level_B_RPM_vs_IPL3}}, "
@@ -147,7 +149,7 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "({{bp_d_level_B_RPM_vs_FLAT}}, CI {{bp_ci_level_B_RPM_vs_FLAT}}, Holm p {{bp_ph_level_B_RPM_vs_FLAT}}), so the pre-specified "
         "non-inferiority margin of 0.02 (HB2) was not met. On the level endpoint, the pilot's own cross-validated error is very hard to beat, "
         "because the dominant error source is the noise in that error, which no forecaster can remove (Section 4.6).")
-    s.append(table_md(_table2(TAB), "**Table 2.** Accuracy of learning-curve forecasts (task-level means over pilots, pilot sizes 25–200 and horizons $n\\ge2n_0$). Level: $|\\log(\\widehat{\\mathrm{RMSEP}}/\\mathrm{RMSEP})|$; gain: error of the forecast gain $\\mathrm{RMSEP}(n)/\\mathrm{RMSEP}(n_0)$; bias: mean signed log error (> 0 pessimistic). LOSO/LOFO: prior or slope transferred from other data sources / other application families.", "tab2", floatfmt=3))
+    s.append(table_md(_table2(TAB), "Accuracy of learning-curve forecasts (task-level means over pilots, pilot sizes 25–200 and horizons $n\\ge2n_0$). Level: $|\\log(\\widehat{\\mathrm{RMSEP}}/\\mathrm{RMSEP})|$; gain: error of the forecast gain $\\mathrm{RMSEP}(n)/\\mathrm{RMSEP}(n_0)$; bias: mean signed log error (> 0 pessimistic). LOSO/LOFO: prior or slope transferred from other data sources / other application families.", "Table 2", floatfmt=3))
     s.append(
         "The methods differ much more in *bias* than in absolute error (Fig. 7). The no-improvement rule was pessimistic by construction, and its "
         "bias grew from {{bias2_FLAT}} at $n/n_0=2$ to {{bias32_FLAT}} at $n/n_0\\ge32$. The transferred slope and IPL3 became increasingly "
@@ -157,8 +159,9 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "neither talks a laboratory out of a worthwhile extension of the calibration set nor promises an improvement that will not come. "
         "For the gain itself, B-RPM improved on the no-improvement rule ({{bp_d_gain_B_RPM_vs_FLAT}}, {{bp_w_gain_B_RPM_vs_FLAT}} tasks, Holm p "
         "{{bp_ph_gain_B_RPM_vs_FLAT}}) and on RPM ({{bp_d_gain_B_RPM_vs_RPM}}, {{bp_w_gain_B_RPM_vs_RPM}} tasks, Holm p {{bp_ph_gain_B_RPM_vs_RPM}}), "
-        "and the pilot path added information beyond the prior ({{bp_d_gain_B_RPM_vs_B_RPM_0}} vs the prior-only variant B-RPM-0). Within the "
-        "soil family, whose slopes are similar, the transferred slope predicted gains better than B-RPM ({{bp_d_gain_B_RPM_vs_SLOPE_T}}).")
+        "and the pilot path added information beyond the prior ({{bp_d_gain_B_RPM_vs_B_RPM_0}} vs the prior-only variant B-RPM-0). The transferred slope "
+        "(LOSO) predicted gains better than B-RPM ({{bp_d_gain_B_RPM_vs_SLOPE_T}}). Its advantage came from the soil family, whose 23 tasks "
+        "have similar slopes and supply most of each other's priors, and it disappeared under cross-family transfer (Section 4.5).")
     s.append(f"![**Fig. 7.** Mean signed log error by extrapolation ratio (task-level means; > 0 pessimistic, < 0 optimistic).]({fig('Fig6_bias_by_horizon')}){{width=9cm}}")
     # 4.5 -----------------------------------------------------------------------------------------------------
     s.append("## 4.5. Transfer across application families")
@@ -173,9 +176,11 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "{{bp_w_level_B_RPM_LOFO_vs_SLOPE_T_LOFO}} tasks, p {{bp_p_level_B_RPM_LOFO_vs_SLOPE_T_LOFO}}). On the pre-specified gain endpoint "
         "(HB1), the two were equivalent ({{bp_d_gain_B_RPM_LOFO_vs_SLOPE_T_LOFO}}, p {{bp_p_gain_B_RPM_LOFO_vs_SLOPE_T_LOFO}}), so HB1 was not "
         "confirmed. The difference on the level endpoint lies in the bias. A slope summarises the noise level, eigen-structure and alignment of "
-        "the calibrations it was learned from, and it carries them into the new task. B-RPM transfers only the alignment exponent and the noise "
-        "fraction, which varied much less between families than the slopes did, and it recomputes the curve from the new task's own unlabelled "
-        "spectra and pilot path. Structural transfer is the reason it generalises.")
+        "the calibrations it was learned from, and it carries them into the new task. B-RPM transfers only a weak prior on the alignment exponent and the noise "
+        "fraction. The noise fraction differed strongly between families, but the pilot path constrains it, so the posterior moves away from a "
+        "misplaced prior: for the soil tasks, the cross-family prior was centred at a noise fraction of {{lofo_eta_prior}}, the posterior median "
+        "was {{lofo_eta_post}}, and the large-sample value was {{soil_eta_ls}}. The curve is then recomputed from the new task's own eigen-spectrum. A slope, by contrast, is applied as it is. "
+        "Transferring structure rather than curves is the reason B-RPM generalises.")
     s.append(f"![**Fig. 8.** Effect of transferring prior knowledge across application families. Mean absolute log error per task (lines) when the slope (a) or the structural prior of B-RPM (b) comes from other data sources (LOSO) or from other application families (LOFO). Thick line: mean over tasks.]({fig('Fig7_cross_family_transfer')}){{width=15cm}}")
     # 4.6 -----------------------------------------------------------------------------------------------------
     s.append("## 4.6. Uncertainty and planning decisions")
@@ -249,31 +254,29 @@ def _table2(TAB):
 
 
 ABSTRACT_BACKGROUND = (
-    "Multivariate calibrations of NIR and MIR spectra need costly reference analyses. Analysts must decide early, from a small pilot set, "
-    "whether more samples will improve the prediction error enough to justify the cost. Learning-curve extrapolation is used for this decision, "
-    "but it is unknown what part of a learning curve a pilot set can determine at all.")
+    "Multivariate calibrations of NIR and MIR spectra need costly reference analyses, and analysts must decide from a small pilot set "
+    "whether more samples will pay off. Learning-curve extrapolation is used for this decision, but it is unknown which part of a learning "
+    "curve a pilot can determine.")
 ABSTRACT_RESULTS = (
-    "Using the deterministic-equivalent (random-matrix) risk of ridge regression, which reproduced ridge and PLS learning curves of "
-    "{{n_tasks}} public calibration tasks (mean absolute log error {{tv_ridge_mean}} and {{tv_pls_mean}}), we prove that a pilot observes the "
-    "calibration's bias function only above an effective-regularisation horizon. Analyte signal below that horizon is indistinguishable from "
-    "noise, so the gain from more samples is not identifiable from a pilot alone. The computable identification set of learning curves "
-    "consistent with a pilot contained the true curve in {{id_cov_all}} of cases ({{sim_id_cov}} in simulation), but it spanned a factor of "
-    "{{id_w_8}} in RMSEP at eightfold extrapolation. Pilots below about 100 samples carried little information about future gains (median "
-    "information fraction {{info_50}} at 50 vs {{info_200}} at 200 samples). Bayesian regularisation-path matching (B-RPM), which combines the "
-    "pilot's exact cross-validation path with the task's unlabelled spectra and a transferable prior on alignment and noise, was the only "
-    "forecaster that was unbiased across extrapolation ratios (bias {{b_bias_B_RPM}}). Its error was unchanged when the prior came from a "
-    "different application family ({{b_lvl_B_RPM_LOFO}}), whereas a transferred slope degraded to {{b_lvl_SLOPE_T_LOFO}} (p "
-    "{{bp_p_level_B_RPM_LOFO_vs_SLOPE_T_LOFO}}).")
+    "The deterministic-equivalent (random-matrix) risk of ridge regression reproduced ridge and PLS learning curves of {{n_tasks}} public "
+    "calibration tasks (mean absolute log error {{tv_ridge_mean}} and {{tv_pls_mean}}). From it we prove that a pilot observes the "
+    "calibration's bias function only above an effective-regularisation horizon. Analyte signal below the horizon is indistinguishable from "
+    "noise, so the gain from more samples is not identifiable from a pilot alone. A computable identification set of curves consistent with "
+    "the pilot contained the true curve in {{id_cov_all}} of cases ({{sim_id_cov}} in simulation) but spanned a factor of {{id_w_8}} in "
+    "RMSEP at eightfold extrapolation; below about 100 samples, gain forecasts came mainly from prior assumptions. Bayesian "
+    "regularisation-path matching (B-RPM) combines the pilot's exact cross-validation path, the task's unlabelled spectra and a transferable "
+    "prior on signal alignment and noise. It was the least biased forecaster (mean bias {{b_bias_B_RPM}}; within ±{{bias_brpm_maxabs_le8}} "
+    "up to eightfold extrapolation) and kept its accuracy when the prior came from a different application family ({{b_lvl_B_RPM_LOFO}}), "
+    "whereas a transferred learning-curve slope degraded to {{b_lvl_SLOPE_T_LOFO}} (p {{bp_p_level_B_RPM_LOFO_vs_SLOPE_T_LOFO}}).")
 ABSTRACT_SIGNIFICANCE = (
-    "Every learning-curve forecast from a pilot imports prior information. B-RPM makes that information explicit and transferable, and the "
-    "identification set tells the analyst when a pilot cannot settle the sample-size question, so that a second batch is needed before the "
-    "full reference budget is committed.")
+    "Every pilot-based learning-curve forecast imports prior information. B-RPM makes it explicit and transferable, and the identification "
+    "set shows when a pilot cannot settle the sample-size question and a second batch is needed.")
 
 HIGHLIGHTS = [
     "A pilot set observes a calibration's error curve only above a computable horizon.",
     "The gain from more reference samples is not identifiable from a pilot alone.",
     "A prior-free identification set contained the true learning curve in ~9 of 10 cases.",
-    "Bayesian path matching (B-RPM) gave unbiased forecasts at all extrapolation ratios.",
+    "Bayesian path matching (B-RPM) gave the least biased learning-curve forecasts.",
     "Structural priors transferred across application families; empirical slopes did not.",
 ]
 
@@ -282,7 +285,7 @@ CONCLUSION = (
     "the spectra. Below the horizon, analyte signal and irreducible noise cannot be told apart, so the gain from more reference samples must "
     "come from prior knowledge. This explains the long-standing optimism of power-law extrapolation and the surprising strength of the "
     "no-improvement rule. The identification set and the information fraction make the limit visible for every pilot. B-RPM turns the "
-    "unavoidable prior into an explicit, transferable one and gave unbiased forecasts that generalised across application families. For "
+    "unavoidable prior into an explicit, transferable one; its forecasts were the least biased and generalised across application families. For "
     "planning, the practical consequence is a staged design: a pilot of at least 100 samples, a B-RPM forecast with its identification set, "
     "and a second batch whenever the set is wider than the decision requires.")
 
@@ -297,7 +300,7 @@ COVER_LETTER = [
     "from more samples is not identifiable without prior information; (ii) a computable, prior-free identification set and an information "
     "fraction that tell the analyst, for every pilot, whether the sample-size question can be settled; and (iii) Bayesian regularisation-path "
     "matching (B-RPM), the first forecaster to use a transferable structural prior together with the task's unlabelled spectra. B-RPM was the "
-    "only method that was unbiased at every extrapolation ratio, and unlike a transferred empirical slope it kept its accuracy when the prior "
+    "least biased method up to eightfold extrapolation, and unlike a transferred empirical slope it kept its accuracy when the prior "
     "came from a different application family.",
     "The work connects to current themes in Analytica Chimica Acta: validation design and leakage, the error structure of reference values "
     "and replicates, and calibration-set size. The study follows a pre-registered design. The new method and its hypotheses were fixed before "

@@ -85,3 +85,26 @@ Remaining for the USER: author names/affiliations, CRediT, funding, AI-use state
 Known limitations that need new data: multi-source non-soil families for a real cross-family test; full-resolution spectra.
 Deliverables: manuscript/Final_Manuscript.{docx,pdf}, manuscript/figures_submission/Figure_1..8, manuscript/Graphical_Abstract.png,
 manuscript/Highlights.*, manuscript/cover_letter.*, supplementary/Supplementary_Material.*.
+
+## 9. Session 4 (2026-11-22) — "go wild" strengthening; RESUME HERE
+User instructions: first author P N Bhargav Teja, second author placeholder; no funding; no competing interests; code
+"available on request"; maximise novelty; real-world framing allowed. (Author/declaration edits DONE in content.py/closing.md.)
+DONE this session:
+ - Campaign-planning case study: code/experiments/campaign.py -> tables/TB12_campaign_planning.csv, TB12b_campaign_tests.csv;
+   figure Fig9_campaign_planning (fig_campaign in experiments/figures_bayes.py). KEY RESULT: with priors from OTHER application
+   families, decision-calibrated B-RPM delivers 72%/88% success at requested 80%/90% vs 28%/40% for slope planning
+   (+45 points, 23/24 tasks, p<0.001); point forecasters only differ in implicit risk attitude.
+ - 6-task full-resolution run (experiments/fullres.py -> results/fullres_summary.csv, results/raw/fullres): B-RPM 0.249 vs
+   FLAT 0.287, RPM 0.333, IPL3 0.463; hidden-signal shares larger at native resolution.
+ - Pre-spec addendum 2 committed (supplementary/FULLRES_preregistration_addendum.md, hypothesis HC1 on 32 held-out tasks).
+RUNNING / TO RESUME:
+ 1. Native-resolution confirmation study: cd Target_Journal_Submission/code && RPM_FULLRES=1 nohup python3 -m experiments.fullres_all 4 &
+    (resumable; outputs results/fullres_all/raw/{truth_*,forecasts_rob_fullall_*}.csv). Check: ps aux | grep fullres_all
+ 2. Then write analysis for HC1: B-RPM vs FLAT/RPM/IPL3/SLOPE-T (SLOPE-T from full-res truth slopes, LOSO) on the 32 tasks
+    excluding KSSL-MIR:OC, ICRAF-MIR:clay, KSSL-VisNIR:clay, Neospectra-NIR:pH, Diesel:bp50, Tablets:assay; Wilcoxon + source level.
+    Report honestly whichever way it goes; if confirmed, make native resolution the headline accuracy result.
+ 3. Manuscript: add Section "Real-world case study: planning a calibration campaign" (TB12, Fig 9; cite conformal risk control,
+    Angelopoulos et al. arXiv 2208.02814 — verify), native-resolution results section + table, related-work capability table
+    (Ali 2018, Figueroa 2012, Beleites 2013, Riley 2020/Konstantinidis 2025, Wei 2022, Adriaensen 2023, this work);
+    update abstract/highlights/cover letter/GA; add TB12/TB12b/fullres tables to supp_index; rebuild all; commit/push.
+ 4. Optional: external datasets (agent was stopped; nothing found yet).

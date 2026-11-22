@@ -121,10 +121,42 @@ def fig_transfer(df, paths):
 
 def make_bayes_figures(paths):
     df = load_all(paths["raw_out"]); df, _ = add_slope(df, paths["raw_out"]); df = add_gain(df)
-    fig_idset_examples(df, paths); fig_observability(paths); fig_bias(paths); fig_transfer(df, paths)
+    fig_idset_examples(df, paths); fig_observability(paths); fig_bias(paths); fig_transfer(df, paths); fig_campaign(paths)
 
 
 if __name__ == "__main__":
     root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
     make_bayes_figures({"raw_out": os.path.join(root, "results", "raw"), "tables": os.path.join(root, "tables"),
                         "figures": os.path.join(root, "figures"), "results": os.path.join(root, "results")})
+
+
+def fig_campaign(paths):
+    """Planning a calibration campaign: success rate vs samples bought (relative to the oracle) for all policies."""
+    t = pd.read_csv(os.path.join(paths["tables"], "TB12_campaign_planning.csv")).set_index("policy")
+    fig, axs = plt.subplots(1, 2, figsize=(8.2, 3.1), sharey=True)
+    pts = {"FIXED": ("Buy maximum", INK, "s"), "ONE:FLAT": ("No improvement", AQUA, "^"), "ONE:RPM": ("RPM (r = 1)", GREY, "v"),
+           "ONE:IPL3": ("Power law (IPL3)", ORANGE, "s"), "ONE:WEI": ("Scaling exponent", "#7a5195", "P"),
+           "ONE:SLOPE-T": ("Transferred slope", YEL, "D"), "ONE:B-RPM": ("B-RPM (point)", BLUE, "o")}
+    ax = axs[0]
+    for k, (lab, c, mk) in pts.items():
+        if k in t.index:
+            ax.scatter(t.loc[k, "cost_over_oracle"], t.loc[k, "success_rate"], color=c, marker=mk, s=40, label=lab, zorder=3)
+    ax.set_title("(a) Point forecasts: an implicit risk attitude"); ax.set_xlabel("Samples bought / oracle"); ax.set_ylabel("Target met (share)")
+    ax.legend(fontsize=6.3, loc="lower right"); ax.set_ylim(0, 1.05)
+    ax = axs[1]
+    for m, c, mk, lab in (("B-RPM", BLUE, "o", "B-RPM, prior from other sources"), ("B-RPM-LOFO", BLUE, "s", "B-RPM, prior from other families"),
+                          ("SLOPE-T", YEL, "D", "Slope from other sources"), ("SLOPE-T-LOFO", YEL, "X", "Slope from other families")):
+        xs, ys = [], []
+        for q in (80, 90):
+            k = f"CAL{q}:{m}"
+            if k in t.index:
+                xs.append(t.loc[k, "cost_over_oracle"]); ys.append(t.loc[k, "success_rate"])
+        ax.plot(xs, ys, color=c, marker=mk, ls="-" if "LOFO" not in m else "--", label=lab)
+        for xx, yy, q in zip(xs, ys, (80, 90)):
+            ax.annotate(f"{q}%", (xx, yy), textcoords="offset points", xytext=(4, -9), fontsize=6.5, color=INK2)
+    for q in (0.8, 0.9):
+        ax.axhline(q, color=MUTED, lw=0.8, ls=":")
+    ax.scatter(t.loc["FIXED", "cost_over_oracle"], 1.0, color=INK, marker="s", s=40)
+    ax.set_title("(b) Decision-calibrated planning (requested 80% / 90%)"); ax.set_xlabel("Samples bought / oracle")
+    ax.legend(fontsize=6.3, loc="lower right")
+    fig.tight_layout(); _save(fig, paths, "Fig9_campaign_planning")

@@ -76,3 +76,12 @@ NEXT (optional polish): trim main text to ~7000 words (Sections 4.1-4.2 and Meth
 author/declaration placeholders must be filled by the user.
 Rebuild: cd Target_Journal_Submission/code && python3 run_all.py --mode full --stage analysis (runs bayes_analysis + figures);
          cd ../manuscript/build && python3 build_manuscript.py && python3 build_supplementary.py && python3 build_letters.py
+
+## 8. Status at end of session 3 (2026-11-22)
+Editor re-screen after cycle-2 fixes: desk-reject probability 0.38 (from 0.45); all of its "no new data" items addressed afterwards
+(unsupported gain-vs-power-law claim removed, soil scope of transfer stated, pre-specified wording, new title/highlights,
+staged-cost caveat, compatible-set naming, supplement cleanup, hidden-signal illustration Fig 6a/TB11). Main text ~7,050 words.
+Remaining for the USER: author names/affiliations, CRediT, funding, AI-use statement confirmation, code deposit (DOI) on acceptance.
+Known limitations that need new data: multi-source non-soil families for a real cross-family test; full-resolution spectra.
+Deliverables: manuscript/Final_Manuscript.{docx,pdf}, manuscript/figures_submission/Figure_1..8, manuscript/Graphical_Abstract.png,
+manuscript/Highlights.*, manuscript/cover_letter.*, supplementary/Supplementary_Material.*.

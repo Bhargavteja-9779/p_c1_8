@@ -390,24 +390,25 @@ ABSTRACT_RESULTS = (
     "The deterministic-equivalent (random-matrix) risk of ridge regression reproduced ridge and PLS learning curves of {{n_tasks}} public "
     "NIR/MIR calibration tasks (mean absolute log error {{tv_ridge_mean}} and {{tv_pls_mean}}). From it we prove that a pilot observes the "
     "calibration's bias function only above an effective-regularisation horizon. Analyte signal below the horizon is indistinguishable "
-    "from noise, so the gain from more samples cannot be identified from a pilot alone. A computable compatible set of curves "
-    "consistent with the pilot contained the true RMSEP in {{id_cov_all}} of forecasts (whole curves {{id_curve_cov}}; {{sim_id_cov}} in "
-    "simulation) but spanned a factor of "
-    "{{id_w_8}} in RMSEP at eightfold extrapolation. Bayesian regularisation-path matching (B-RPM) makes the unavoidable prior explicit. "
-    "It forecast gains better than the no-improvement rule and RPM ($r=1$), and for soil tasks it kept its accuracy with a prior from "
-    "other application families ({{b_lvl_B_RPM_LOFO}} vs {{b_lvl_SLOPE_T_LOFO}} for a transferred slope over all tasks). On the RMSEP level, however, the pilot's "
-    "own cross-validated error stayed best ({{b_lvl_FLAT}} vs {{b_lvl_B_RPM}}), and three of four pre-specified hypotheses failed. A "
-    "second batch raised the accuracy of reachability decisions by {{sd_gain_range}} percentage points for every method.")
+    "from noise in the pilot's error path, so the gain from more samples cannot be read from the pilot alone. At the horizon of a "
+    "25-sample pilot, a median {{hid_25}} of the apparent error floor was learnable signal. A computable compatible set of learning curves "
+    "contained the true RMSEP in {{id_cov_all}} of forecasts. Bayesian regularisation-path matching (B-RPM) makes the unavoidable prior "
+    "explicit and transferable. On the RMSEP level the pilot's own cross-validated error remained hard to beat ({{b_lvl_FLAT}} vs "
+    "{{b_lvl_B_RPM}}), and three of four pre-specified hypotheses failed. In a campaign-planning case study, however, decision-calibrated "
+    "B-RPM delivered {{cp_ok_CAL80_B_RPM_LOFO}} and {{cp_ok_CAL90_B_RPM_LOFO}} success at requested 80% and 90% when its prior came from "
+    "other application families. A transferred learning-curve slope delivered {{cp_ok_CAL80_SLOPE_T_LOFO}} and "
+    "{{cp_ok_CAL90_SLOPE_T_LOFO}} (p {{ct_p_80_B_RPM_LOFO_success}}).")
 ABSTRACT_SIGNIFICANCE = (
-    "Every pilot-based learning-curve forecast rests on prior information that the pilot cannot supply. Sample-size decisions that depend "
-    "on the future gain should be staged, and forecasts should state their prior and their compatible set.")
+    "Every pilot-based learning-curve forecast rests on prior information that the pilot cannot supply. Stating that prior explicitly, as "
+    "B-RPM does, lets analysts plan calibration campaigns at a stated risk, including for new applications without previous calibrations "
+    "of the same kind.")
 
 HIGHLIGHTS = [
     "A pilot set observes a calibration's error curve only above a computable horizon.",
+    "In 25-sample pilots, a median {{hid_25}} of the apparent error floor is learnable signal.",
     "The gain from more reference samples cannot be identified from a pilot alone.",
-    "A prior-free compatible set contained the true learning curve in ~9 of 10 cases.",
     "Bayesian path matching (B-RPM) makes the prior behind every forecast explicit.",
-    "No forecaster beat the pilot's own cross-validated error on the RMSEP level.",
+    "B-RPM met stated planning risks with priors taken from other application families.",
 ]
 
 CONCLUSION = (
@@ -416,9 +417,10 @@ CONCLUSION = (
     "must come from prior knowledge. This explains the optimism of power-law extrapolation and the strength of the no-improvement rule. The "
     "compatible set makes the limit visible for every pilot. B-RPM turns the unavoidable prior into an explicit one; it predicted gains "
     "better than the no-improvement rule and, unlike a transferred slope, kept its accuracy with a prior from other application families "
-    "(tested on the soil tasks), but it did not beat the pilot's own error on the RMSEP level. For planning, the practical consequence is a staged design. Use "
-    "the pilot's error as the current estimate and a structural forecast with its compatible set as a guide, and take a second batch "
-    "before committing the full reference budget.")
+    "(tested on the soil tasks), but it did not beat the pilot's own error on the RMSEP level. For planning, the practical consequence is to plan at a stated "
+    "risk. Use the pilot's error as the current estimate, use a decision-calibrated structural forecast to choose the calibration size, "
+    "and take a second batch when the compatible set is wider than the decision allows. In our case study this kept its promised success "
+    "rates even when the prior came from other application families, which a transferred empirical slope did not.")
 
 COVER_LETTER = [
     "Every multivariate calibration project faces the same early decision: will more reference analyses reduce the prediction error enough "
@@ -431,8 +433,10 @@ COVER_LETTER = [
     "matching (B-RPM), a forecaster that combines a transferable structural prior with the task's unlabelled spectra and the pilot's exact cross-validation path. B-RPM "
     "predicted gains better than the no-improvement rule and, unlike a transferred empirical slope, kept its accuracy on the soil tasks when "
     "its prior came from other application families. We report openly that the pilot's own cross-validated error remained the best estimate of the "
-    "RMSEP level and that three of four pre-specified hypotheses were not confirmed. The positive practical result is that a second "
-    "batch improves sample-size decisions more than any choice of forecaster.",
+    "RMSEP level and that three of four pre-specified hypotheses were not confirmed. The positive practical result is a "
+    "campaign-planning case study. With its prior taken from other application families, decision-calibrated B-RPM met the requested "
+    "80% and 90% success rates closely ({{cp_ok_CAL80_B_RPM_LOFO}} and {{cp_ok_CAL90_B_RPM_LOFO}}), whereas a transferred empirical "
+    "slope delivered {{cp_ok_CAL80_SLOPE_T_LOFO}} and {{cp_ok_CAL90_SLOPE_T_LOFO}}.",
     "The work connects to current themes in Analytica Chimica Acta: validation design and leakage, the error structure of reference values "
     "and replicates, and calibration-set size. The study follows a time-stamped, pre-specified design. The new method and its hypotheses were fixed before "
     "the results were seen, negative outcomes are reported, all data are public, and the complete code (one-command rerun) will be made available on request.",

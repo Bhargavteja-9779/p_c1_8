@@ -1,0 +1,43 @@
+[Corresponding author name]
+[Department, Institution]
+[Address]
+[E-mail]
+
+[Date]
+
+The Editors
+Analytica Chimica Acta
+
+Dear Editors,
+We submit the manuscript entitled “What a pilot set can tell about a calibration learning curve:
+an observability limit and Bayesian regularisation-path matching for sample-size planning in
+spectroscopy” for consideration as a Research Paper in Analytica Chimica Acta.
+Every multivariate calibration project faces the same early decision: will more reference analyses
+reduce the prediction error enough to justify their cost? Learning-curve extrapolation from a pilot
+set has been the standard answer since Ali et al. (Anal. Chem. 2018). Our manuscript shows, with
+a proof and a leakage-free benchmark on 38 public NIR/MIR calibration tasks, which part of a
+learning curve a pilot can determine and which part it cannot.
+The methodological contributions are: (i) Proposition 1, which locates the observability horizon
+of a pilot set and shows that the gain from more samples is not identifiable without prior
+information; (ii) a computable, prior-free compatible set and an information fraction that tell the
+analyst, for every pilot, whether the sample-size question can be settled; and (iii) Bayesian
+regularisation-path matching (B-RPM), a forecaster that combines a transferable structural prior
+with the task's unlabelled spectra and the pilot's exact cross-validation path. B-RPM predicted
+gains better than power-law extrapolation and, unlike a transferred empirical slope, kept its
+accuracy when its prior came from a different application family. We report openly that the
+pilot's own cross-validated error remained the best estimate of the RMSEP level and that three of
+four pre-specified hypotheses were not confirmed. The positive practical result is that a second
+batch improves sample-size decisions more than any choice of forecaster.
+The work connects to current themes in Analytica Chimica Acta: validation design and leakage,
+the error structure of reference values and replicates, and calibration-set size. The study follows a
+
+pre-registered design. The new method and its hypotheses were fixed before the results were
+seen, negative outcomes are reported, all data are public, and the complete code (one-command
+rerun) will be deposited in a public repository on acceptance and is available to referees on
+request.
+The manuscript has not been published and is not under consideration elsewhere. All authors
+approved the submission and declare no competing interests.
+Yours sincerely,
+[Corresponding author name], on behalf of all authors
+
+

@@ -340,7 +340,7 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "forecast gains better than FLAT ({{nt_d_ho_gain_FLAT}}, better on {{nt_w_ho_gain_FLAT}} held-out tasks, p {{nt_p_ho_gain_FLAT}}) "
         "and than RPM ({{nt_d_ho_gain_RPM}}, {{nt_w_ho_gain_RPM}}, p {{nt_p_ho_gain_RPM}}). It was more accurate than IPL3 on the level "
         "endpoint ({{nt_d_ho_level_IPL3}}, {{nt_w_ho_level_IPL3}}, p {{nt_p_ho_level_IPL3}}), and the transferred slope again predicted "
-        "gains best ({{nrg_ho_SLOPE_T}} vs {{nrg_ho_B_RPM}}). With 200-sample pilots B-RPM was the most accurate method "
+        "gains best ({{nrg_ho_SLOPE_T}} vs {{nrg_ho_B_RPM}}). With 200-sample pilots B-RPM had the lowest mean error (exploratory, untested) "
         "({{nr200_brpm}} vs {{nr200_flat}} for FLAT; Supplementary Tables [[ST:TC1_native_resolution_summary]]–"
         "[[ST:TC4_native_resolution_by_n0]]). The structural quantities on which the paper rests were stable. The median alignment exponent "
         "was {{nr_r_med}} at native resolution and {{sub_r_med}} after sub-sampling. As expected from the higher horizon of a given pilot "

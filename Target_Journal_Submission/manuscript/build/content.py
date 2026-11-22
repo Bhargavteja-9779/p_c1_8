@@ -9,7 +9,7 @@ import pandas as pd
 from context_builder import build_context
 import docx_utils
 
-TITLE = ("What a pilot set can tell about a calibration learning curve: an observability limit and Bayesian regularisation-path matching for sample-size planning in spectroscopy")
+TITLE = ("What can a pilot set tell about a calibration learning curve? An observability limit for sample-size planning in spectroscopy")
 SHORT_TITLE = "Forecasting calibration learning curves"
 KEYWORDS = ["Multivariate calibration", "Sample-size planning", "Learning curve", "Identifiability", "Bayesian forecasting",
             "Near-infrared spectroscopy"]

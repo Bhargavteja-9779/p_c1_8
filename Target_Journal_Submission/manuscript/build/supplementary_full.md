@@ -1,6 +1,6 @@
 # Supplementary Material
 
-**What a pilot set can tell about a calibration learning curve: an observability limit and Bayesian regularisation-path matching for sample-size planning in spectroscopy**
+**What can a pilot set tell about a calibration learning curve? An observability limit for sample-size planning in spectroscopy**
 
 All tables and figures below are generated automatically by `run_all.py` from the per-pilot raw results.
 
@@ -38,15 +38,15 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | – | 0.929 | 5.377 | 0.826 | 2900 | n0 | 100.000 |
 | – | 0.911 | 1.727 | 0.953 | 1720 | n0 | 200.000 |
 
-**Table S3.** Mean signed log error by extrapolation ratio for all forecasters (pooled over tasks).
+**Table S3.** Mean signed log error by extrapolation ratio for all forecasters (pooled over tasks). Key forecasters shown; all forecasters are in the machine-readable table files.
 
-| rb | B-RPM | B-RPM-0 | B-RPM-LOFO | B-RPM-m10 | B-RPM-r | DFOLS | FLAT | IPL2 | IPL3 | RPM | RPM-T | RPM-TD | RPM-TP | RPM-w | SLOPE-T | SLOPE-T-LOFO | WEI |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2 | -0.006 | 0.070 | -0.018 | -0.038 | -0.055 | -0.982 | 0.001 | -0.193 | -0.108 | 0.049 | -0.111 | 0.570 | 0.130 | 0.044 | -0.101 | -0.141 | -0.235 |
-| 4 | 0.040 | 0.111 | 0.031 | -0.012 | -0.063 | -1.068 | 0.141 | -0.332 | -0.180 | 0.149 | -0.198 | 0.529 | 0.123 | 0.143 | -0.063 | -0.143 | -0.337 |
-| 8 | -0.031 | -0.066 | -0.036 | -0.077 | -0.175 | -1.081 | 0.184 | -0.462 | -0.274 | 0.145 | -0.357 | -0.039 | -0.164 | 0.138 | -0.130 | -0.279 | -0.308 |
-| 16 | -0.114 | -0.194 | -0.111 | -0.138 | -0.259 | -0.856 | 0.192 | -0.675 | -0.381 | 0.103 | -0.581 | -0.194 | -0.177 | 0.093 | -0.244 | -0.489 | -0.360 |
-| >=32 | -0.134 | -0.217 | -0.146 | -0.172 | -0.326 | -1.177 | 0.271 | -0.998 | -0.665 | 0.169 | -0.637 | -0.218 | -0.185 | 0.156 | -0.326 | -0.673 | -0.414 |
+| rb | B-RPM | B-RPM-LOFO | RPM | IPL3 | WEI | FLAT | SLOPE-T | SLOPE-T-LOFO |
+|---|---|---|---|---|---|---|---|---|
+| 2 | -0.006 | -0.018 | 0.049 | -0.108 | -0.235 | 0.001 | -0.101 | -0.141 |
+| 4 | 0.040 | 0.031 | 0.149 | -0.180 | -0.337 | 0.141 | -0.063 | -0.143 |
+| 8 | -0.031 | -0.036 | 0.145 | -0.274 | -0.308 | 0.184 | -0.130 | -0.279 |
+| 16 | -0.114 | -0.111 | 0.103 | -0.381 | -0.360 | 0.192 | -0.244 | -0.489 |
+| >=32 | -0.134 | -0.146 | 0.169 | -0.665 | -0.414 | 0.271 | -0.326 | -0.673 |
 
 **Table S4.** Reachability decisions split into reachable and unreachable targets.
 
@@ -173,6 +173,22 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | KSSL-VisNIR:pH | free | 0.115 | 0.151 | 0.342 | 0.333 |
 | Mango:DM | fixed1 | 0.186 | 0.182 | 1.000 | 0.320 |
 | Mango:DM | free | 0.079 | 0.078 | 0.317 | 0.166 |
+| Neospectra-NIR:CEC | fixed1 | 0.110 | 0.145 | 1.000 | 0.469 |
+| Neospectra-NIR:CEC | free | 0.073 | 0.102 | 0.461 | 0.436 |
+| Neospectra-NIR:OC | fixed1 | 0.084 | 0.108 | 1.000 | 0.311 |
+| Neospectra-NIR:OC | free | 0.041 | 0.038 | 0.462 | 0.268 |
+| Neospectra-NIR:clay | fixed1 | 0.132 | 0.146 | 1.000 | 0.541 |
+| Neospectra-NIR:clay | free | 0.078 | 0.081 | 0.379 | 0.480 |
+| Neospectra-NIR:pH | fixed1 | 0.218 | 0.239 | 1.000 | 0.367 |
+| Neospectra-NIR:pH | free | 0.157 | 0.178 | 0.382 | 0.319 |
+| Tablets:assay | fixed1 | 0.110 | 0.126 | 1.000 | 0.043 |
+| Tablets:assay | free | 0.091 | 0.102 | 0.879 | 0.042 |
+| Tecator:fat | fixed1 | 0.389 | 0.437 | 1.000 | 0.017 |
+| Tecator:fat | free | 0.378 | 0.426 | 0.630 | 0.015 |
+| Tecator:moisture | fixed1 | 0.088 | 0.103 | 1.000 | 0.049 |
+| Tecator:moisture | free | 0.081 | 0.093 | 0.769 | 0.047 |
+| Tecator:protein | fixed1 | 0.273 | 0.323 | 1.000 | 0.060 |
+| Tecator:protein | free | 0.224 | 0.274 | 0.406 | 0.034 |
 
 **Table S7.** POST HOC: regression of the ground-truth learning-curve slope (log RMSE per doubling of n) on large-sample theory parameters, and Spearman correlations.
 
@@ -206,22 +222,22 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | SLOPE-T | 38 | 0.286 | 0.284 | -0.125 | 0.188 | 0.116 | 0.279 | 0.195 |
 | SLOPE-T-LOFO | 38 | 0.392 | 0.398 | -0.248 | 0.278 | 0.255 | 0.341 | 0.246 |
 
-**Table S9.** Level and gain error by application family for all forecasters.
+**Table S9.** Level and gain error by application family for all forecasters. Key forecasters shown; all forecasters are in the machine-readable table files.
 
-| level 0 | level 1 | B-RPM | B-RPM-0 | B-RPM-LOFO | B-RPM-m10 | B-RPM-r | DFOLS | FLAT | IPL2 | IPL3 | RPM | RPM-T | RPM-TD | RPM-TP | RPM-w | SLOPE-T | SLOPE-T-LOFO | WEI |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| level | fruit | 0.219 | 0.140 | 0.219 | 0.399 | 0.422 | 0.372 | 0.168 | 1.038 | 0.679 | 0.350 | 0.264 | 0.392 | 0.264 | 0.400 | 0.209 | 0.209 | 0.365 |
-| level | fuel | 0.350 | 0.465 | 0.350 | 0.354 | 0.374 | 1.986 | 0.361 | 0.512 | 0.459 | 0.405 | 0.684 | 0.752 | 0.457 | 0.414 | 0.330 | 0.330 | 0.433 |
-| level | meat | 0.270 | 0.225 | 0.270 | 0.295 | 0.323 | 0.963 | 0.261 | 0.557 | 0.390 | 0.275 | 0.288 | 0.922 | 0.288 | 0.281 | 0.304 | 0.304 | 0.681 |
-| level | mixture | 0.569 | 1.338 | 0.569 | 0.447 | 0.443 | 1.891 | 0.474 | 0.383 | 0.360 | 0.603 | 0.489 | 3.403 | 1.960 | 0.570 | 0.375 | 0.375 | 0.491 |
-| level | pharma | 0.387 | 0.295 | 0.387 | 0.433 | 0.507 | 1.268 | 0.356 | 0.715 | 0.445 | 0.430 | 1.312 | 1.383 | 0.769 | 0.459 | 0.313 | 0.313 | 0.661 |
-| level | soil | 0.214 | 0.255 | 0.230 | 0.243 | 0.311 | 0.935 | 0.199 | 0.535 | 0.420 | 0.189 | 0.464 | 0.482 | 0.293 | 0.192 | 0.258 | 0.435 | 0.327 |
-| gain | fruit | 0.231 | 0.276 | 0.231 | 0.321 | 0.357 | 0.295 | 0.269 | 0.954 | 0.611 | 0.491 | 0.405 | 0.533 | 0.405 | 0.541 | 0.161 | 0.161 | 0.275 |
-| gain | fuel | 0.360 | 0.578 | 0.360 | 0.284 | 0.277 | 1.779 | 0.404 | 0.325 | 0.307 | 0.505 | 0.572 | 0.842 | 0.347 | 0.500 | 0.285 | 0.285 | 0.215 |
-| gain | meat | 0.268 | 0.436 | 0.268 | 0.218 | 0.196 | 0.687 | 0.247 | 0.311 | 0.231 | 0.332 | 0.268 | 1.179 | 0.268 | 0.336 | 0.164 | 0.164 | 0.345 |
-| gain | mixture | 0.777 | 1.551 | 0.777 | 0.653 | 0.650 | 1.817 | 0.659 | 0.333 | 0.372 | 0.805 | 0.368 | 3.609 | 2.173 | 0.766 | 0.540 | 0.540 | 0.268 |
-| gain | pharma | 0.122 | 0.332 | 0.122 | 0.162 | 0.263 | 0.996 | 0.273 | 0.468 | 0.254 | 0.172 | 1.040 | 1.289 | 0.498 | 0.200 | 0.101 | 0.101 | 0.440 |
-| gain | soil | 0.158 | 0.171 | 0.171 | 0.186 | 0.244 | 0.853 | 0.292 | 0.369 | 0.299 | 0.243 | 0.438 | 0.533 | 0.267 | 0.245 | 0.109 | 0.259 | 0.217 |
+| level 0 | level 1 | B-RPM | B-RPM-LOFO | RPM | IPL3 | WEI | FLAT | SLOPE-T | SLOPE-T-LOFO |
+|---|---|---|---|---|---|---|---|---|---|
+| level | fruit | 0.219 | 0.219 | 0.350 | 0.679 | 0.365 | 0.168 | 0.209 | 0.209 |
+| level | fuel | 0.350 | 0.350 | 0.405 | 0.459 | 0.433 | 0.361 | 0.330 | 0.330 |
+| level | meat | 0.270 | 0.270 | 0.275 | 0.390 | 0.681 | 0.261 | 0.304 | 0.304 |
+| level | mixture | 0.569 | 0.569 | 0.603 | 0.360 | 0.491 | 0.474 | 0.375 | 0.375 |
+| level | pharma | 0.387 | 0.387 | 0.430 | 0.445 | 0.661 | 0.356 | 0.313 | 0.313 |
+| level | soil | 0.214 | 0.230 | 0.189 | 0.420 | 0.327 | 0.199 | 0.258 | 0.435 |
+| gain | fruit | 0.231 | 0.231 | 0.491 | 0.611 | 0.275 | 0.269 | 0.161 | 0.161 |
+| gain | fuel | 0.360 | 0.360 | 0.505 | 0.307 | 0.215 | 0.404 | 0.285 | 0.285 |
+| gain | meat | 0.268 | 0.268 | 0.332 | 0.231 | 0.345 | 0.247 | 0.164 | 0.164 |
+| gain | mixture | 0.777 | 0.777 | 0.805 | 0.372 | 0.268 | 0.659 | 0.540 | 0.540 |
+| gain | pharma | 0.122 | 0.122 | 0.172 | 0.254 | 0.440 | 0.273 | 0.101 | 0.101 |
+| gain | soil | 0.158 | 0.171 | 0.243 | 0.299 | 0.217 | 0.292 | 0.109 | 0.259 |
 
 **Table S10.** Coverage and median width factor of 80% and 95% bands by family and pilot size, including the post-hoc leave-one-source-out recalibration of B-RPM.
 
@@ -287,6 +303,12 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | B-RPM-LOFO-cal (post hoc) | fam | meat | 0.798 | 0.932 | 2.437 | 3 |
 | B-RPM-LOFO-cal (post hoc) | fam | mixture | 0.279 | 0.849 | 2.356 | 4 |
 | B-RPM-LOFO-cal (post hoc) | fam | pharma | 0.779 | 0.973 | 3.726 | 1 |
+| B-RPM-LOFO-cal (post hoc) | fam | soil | 0.881 | 0.971 | 2.008 | 23 |
+| B-RPM-LOFO-cal (post hoc) | n0 | 25 | 0.815 | 0.952 | 3.149 | 38 |
+| B-RPM-LOFO-cal (post hoc) | n0 | 50 | 0.805 | 0.959 | 2.312 | 38 |
+| B-RPM-LOFO-cal (post hoc) | n0 | 100 | 0.848 | 0.947 | 1.781 | 31 |
+| B-RPM-LOFO-cal (post hoc) | n0 | 200 | 0.801 | 0.946 | 1.469 | 25 |
+| B-RPM-LOFO-cal (post hoc) | all | all | 0.794 | 0.947 | 2.375 | 38 |
 
 **Table S11.** Brier score of the probabilistic decision 'an eightfold larger calibration set reduces RMSEP by at least 15%'.
 
@@ -300,15 +322,15 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | RPM | 0.306 | 0.448 | 0.240 | 0.247 |
 | IPL3 | 0.277 | 0.448 | 0.487 | 0.247 |
 
-**Table S12.** Mean absolute per-task bias by extrapolation ratio (does not allow opposite task biases to cancel).
+**Table S12.** Mean absolute per-task bias by extrapolation ratio (does not allow opposite task biases to cancel). Key forecasters shown; all forecasters are in the machine-readable table files.
 
-| rb | B-RPM | B-RPM-0 | B-RPM-LOFO | B-RPM-m10 | B-RPM-r | DFOLS | FLAT | IPL2 | IPL3 | RPM | RPM-T | RPM-TD | RPM-TP | RPM-w | SLOPE-T | SLOPE-T-LOFO | WEI |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2 | 0.139 | 0.327 | 0.151 | 0.124 | 0.143 | 0.982 | 0.107 | 0.193 | 0.124 | 0.147 | 0.135 | 0.585 | 0.293 | 0.150 | 0.156 | 0.196 | 0.235 |
-| 4 | 0.193 | 0.382 | 0.203 | 0.174 | 0.219 | 1.068 | 0.179 | 0.337 | 0.205 | 0.197 | 0.237 | 0.561 | 0.354 | 0.194 | 0.221 | 0.300 | 0.337 |
-| 8 | 0.147 | 0.283 | 0.157 | 0.141 | 0.224 | 1.081 | 0.187 | 0.462 | 0.278 | 0.162 | 0.420 | 0.241 | 0.227 | 0.162 | 0.228 | 0.372 | 0.308 |
-| 16 | 0.143 | 0.255 | 0.149 | 0.163 | 0.292 | 0.856 | 0.192 | 0.675 | 0.381 | 0.131 | 0.683 | 0.486 | 0.278 | 0.140 | 0.251 | 0.489 | 0.361 |
-| >=32 | 0.171 | 0.269 | 0.191 | 0.202 | 0.364 | 1.181 | 0.271 | 0.998 | 0.665 | 0.182 | 0.782 | 0.651 | 0.330 | 0.190 | 0.337 | 0.673 | 0.418 |
+| rb | B-RPM | B-RPM-LOFO | RPM | IPL3 | WEI | FLAT | SLOPE-T | SLOPE-T-LOFO |
+|---|---|---|---|---|---|---|---|---|
+| 2 | 0.139 | 0.151 | 0.147 | 0.124 | 0.235 | 0.107 | 0.156 | 0.196 |
+| 4 | 0.193 | 0.203 | 0.197 | 0.205 | 0.337 | 0.179 | 0.221 | 0.300 |
+| 8 | 0.147 | 0.157 | 0.162 | 0.278 | 0.308 | 0.187 | 0.228 | 0.372 |
+| 16 | 0.143 | 0.149 | 0.131 | 0.381 | 0.361 | 0.192 | 0.251 | 0.489 |
+| >=32 | 0.171 | 0.191 | 0.182 | 0.665 | 0.418 | 0.271 | 0.337 | 0.673 |
 
 **Table S13.** B-RPM level error by tertile of the information fraction within each pilot size.
 
@@ -504,7 +526,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 
 ![**Figure S5.** Data-set overview: number of samples and eigen-decay exponent by family.](/home/user/p_c1_8/Target_Journal_Submission/figures/Fig11_dataset_overview.png){width=15cm}
 
-# Supplementary Note 1: Pre-registered experimental design
+# Supplementary Note 1: Pre-specified protocol of the first design (time-stamped)
 
 
 _Frozen: 2026-11-15, before executing `run_all.py --mode full`. Any later deviation is logged in `EXPERIMENT_LOG.md` with its reason._
@@ -550,7 +572,7 @@ Soil (Open Soil Spectral Library v1.3): ICRAF-ISRIC VisNIR and MIR, KSSL MIR and
 - Stratified summaries by n0, extrapolation ratio and family. No seeds are selected after seeing results; all pilots are reported.
 
 
-# Supplementary Note 2: Pre-specification addendum for B-RPM (hypotheses HB1–HB4)
+# Supplementary Note 2: Pre-specification addendum for B-RPM (hypotheses HB1–HB4), reproduced verbatim as committed; 'version 2' refers to the final re-analysis reported in the article and 'identification set' to the compatible set
 
 
 _Written 2026-11-21 ~21:00 UTC (session 3; committed in git commit "Add B-RPM ..."), before any version-2 forecast result was inspected. The version-2 main
@@ -602,48 +624,4 @@ propagates prior and pilot uncertainty into a posterior-predictive forecast.
 | Hyper-parameter selection on test data | Ridge penalty / PLS components | Selected by LOGO / grouped CV inside the training set only | `src/models/ridge.py` |
 | Seed selection | Choosing favourable pilots | Pilot seeds derived deterministically from task name (SHA-256) and pilot index; all pilots reported | `task_seed()` |
 | Design informed by evaluation data | Default r = 1 chosen in exploratory work on ICRAF-VisNIR | Disclosed; sensitivity analysis S0 excludes ICRAF-VisNIR tasks | Sensitivity tables excluding ICRAF-VisNIR |
-
-
-# Supplementary Note 4: Literature matrix and novelty map
-
-
-All references were verified against Crossref / DataCite / arXiv (`manuscript/refs/verified_refs.json`).
-
-## 1. Literature matrix
-
-| Paper (year, venue) | Problem | Data | Method | Evaluation | What it does NOT address |
-|---|---|---|---|---|---|
-| Ali et al. (2018, *Anal. Chem.*) | Sample-size planning for multivariate (Raman) data | Raman spectra, classification tasks | Empirical learning curves (sub-sampling) + inverse-power-law fit; effect-size considerations | Extrapolated classifier performance on Raman data | Regression calibration; no theory linking curve shape to spectral covariance; no use of unlabelled spectra; no systematic multi-dataset validation of forecast accuracy/coverage |
-| Mukherjee et al. (2003, *J. Comput. Biol.*) | Data-set size for microarray classifiers | Microarray data | Inverse power law (IPL) fit to sub-sampled error rates, significance by permutation | Few data sets | Regression; spectroscopy; extrapolation accuracy far beyond the pilot |
-| Figueroa et al. (2012, *BMC Med. Inform. Decis. Mak.*) | Predicting sample size for classification | Clinical text/NLP | Weighted non-linear IPL fit with confidence intervals | Annotated corpora | Same as above; intervals derived from curve-fit covariance only |
-| Viering & Loog (2023, *IEEE TPAMI*) | Review of learning-curve shapes | — | Survey: power laws, exponentials, non-monotone curves | — | Notes that well-behaved parametric shapes are not guaranteed; no domain method |
-| Adriaensen et al. (2023, NeurIPS; arXiv:2310.20447) | Bayesian learning-curve extrapolation (epochs) | AutoML benchmarks | Prior-data fitted network (LC-PFN) | Hyper-parameter optimisation curves | Sample-size curves; spectroscopy |
-| Riley et al. (2020, *BMJ*) | Minimum sample size for clinical prediction models | Clinical regressions | Closed-form criteria (shrinkage, R², optimism) for low-dimensional models | Simulation/worked examples | p ≫ n spectral calibration; data-dependent curve forecasting |
-| Ng et al. (2020, *SOIL*); Kuang & Mouazen (2014, *Geoderma*) | Effect of calibration-set size in soil spectroscopy | Soil VisNIR/NIR libraries | Empirical accuracy vs sample size for PLSR, Cubist, CNN | Single libraries | No forecasting method; curves only observed after the fact |
-| Bouckaert et al. (2011, *Chemom. Intell. Lab. Syst.*); Faber & Kowalski (1997, *J. Chemom.*) | Prediction uncertainty in multivariate calibration | NIR data | Interval methods; error propagation | Coverage and width | Uncertainty at a fixed calibration size, not as a function of n |
-| Dobriban & Wager (2018, *Ann. Stat.*); Hastie et al. (2022, *Ann. Stat.*) | Asymptotic risk of ridge regression | Theory + simulations | Random-matrix (Marchenko–Pastur) deterministic equivalents | Theory, synthetic data | Practical estimation of the target-power spectrum from small labelled pilots; chemometrics |
-| Bordelon et al. (2020, ICML); Canatar et al. (2021, *Nat. Commun.*); Simon et al. (2021, arXiv) | Spectrum-dependent learning curves; task–model alignment | Kernel regression on images | Learning curves from kernel eigenvalues and target coefficients (omniscient: full data used) | Synthetic + MNIST/CIFAR | Forecasting from a small pilot; analytical chemistry |
-| Spigler et al. (2020, *J. Stat. Mech.*) | Exponent of learning curves on real data | MNIST, CIFAR | Relates curve exponent to decay of target coefficients (kernel PCA on full data) | Image data | Practical pilot-based forecasting |
-| Jacot et al. (2020, NeurIPS, KARE); Wei, Hu & Steinhardt (2022, ICML); Craven & Wahba (1978, GCV) | Risk estimation from training data | Images, Higgs | KARE/GCV estimators of risk *at the current n and penalty* | Image data | Extrapolation of risk to larger n |
-| Atanasov et al. (2024, arXiv) | Unified deterministic-equivalence view | Theory | S-transform renormalisation of the ridge | Theory | Applications to calibration planning |
-| Talanta (2026) group-conformal NIR intervals (doi:10.1016/j.talanta.2026.130941) | Prediction intervals under new seasons/instruments/regions | NIR | Group-conformal calibration using PLS diagnostics | Coverage under shift | Sample-size planning / learning-curve forecasting |
-
-## 2. Gap analysis
-- **What exists:** (i) empirical learning-curve extrapolation with parametric shapes (IPL), introduced to chemometrics for Raman classification (Ali et al. 2018); (ii) observations that calibration accuracy saturates with sample size in soil spectroscopy; (iii) random-matrix theory that predicts ridge learning curves *if the population covariance and the target's coefficients are known*.
-- **What fails / is missing:** parametric curve shapes fitted to a small pilot are unconstrained in the extrapolation region and, as our experiments show, tend to be optimistic; the theory has not been turned into a *practical* forecaster that uses only a small labelled pilot plus cheap unlabelled spectra; no study has quantified forecast accuracy, uncertainty calibration and decision quality across many spectroscopic calibration problems.
-- **Why it matters:** reference analyses (wet chemistry, oven drying, chromatographic assays) dominate the cost of building NIR/MIR calibrations; analysts must decide how many samples to send for reference analysis and whether a target RMSEP is achievable at all.
-- **What this work adds:** regularisation-path matching (RPM) — a forecaster that maps the pilot's exact leave-one-group-out errors along the ridge path onto the theory's effective-regularisation axis (identifying the observable part of the bias function N(κ)), fits a two-parameter model with the eigen-spectrum taken from unlabelled spectra, and extrapolates to any n with bootstrap uncertainty; plus a leakage-controlled, multi-domain benchmark (38 tasks) and an identifiability analysis.
-- **How verified:** E0 simulation with Monte-Carlo truth; E1 theory validity; E2–E5 forecast accuracy, coverage and decisions vs six baselines with task-level paired tests; E6 ablations; E7 robustness (pre-processing, PLS truth, Kennard–Stone pilots, season and population shift, reference noise).
-
-## 3. Novelty map
-| Existing work | Contribution | Proposed work — genuinely different element |
-|---|---|---|
-| Ali et al. 2018 | IPL extrapolation of empirical learning curves for Raman classification | Theory-constrained forecast for regression calibration; extrapolation governed by the measured eigen-spectrum, not by an assumed curve shape |
-| Mukherjee 2003 / Figueroa 2012 | Parametric curve fitting, curve-fit confidence intervals | Uses the whole regularisation path at fixed n0 instead of sub-samples of the pilot; Bayesian-bootstrap bands |
-| Dobriban & Wager 2018; Hastie et al. 2022 | Asymptotic ridge risk given Σ and β | Practical estimation from a small pilot; regularisation-path ↔ κ mapping; identifiability analysis; validation on 38 real calibration tasks |
-| Canatar et al. 2021; Bordelon et al. 2020 | Omniscient spectrum-dependent learning curves | Non-omniscient forecaster; unlabelled spectra for the spectrum; chemical interpretation (alignment, noise floor) |
-| KARE / GCV (Jacot 2020; Wei 2022) | Risk at the current n | Risk at future n (extrapolation) |
-| Soil sample-size studies (Ng 2020; Kuang 2014) | Observed size effects | Predictive, pre-hoc planning tool |
-
-**Closest prior art and residual risk.** No published work was found that forecasts calibration learning curves from a pilot by fitting deterministic-equivalent ridge risk to the cross-validation regularisation path. The individual ingredients (ridge risk theory, LOO/GCV, learning-curve extrapolation) are known; a reviewer may therefore judge the contribution as a principled combination. The paper addresses this by (a) demonstrating where the combination adds predictive value and where it does not (negative results reported), (b) analysing identifiability, and (c) providing a decision-oriented evaluation.
 

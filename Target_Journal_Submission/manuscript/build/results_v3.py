@@ -170,7 +170,7 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
     s.append("## 4.4. Forecasting accuracy")
     s.append(
         "In all paired comparisons below, differences are reference minus B-RPM, so positive values favour B-RPM. Table 2 summarises all forecasters (group-disjoint splits; ten repeated outer splits for the small data sets). "
-        "The pre-registered RPM ($r=1$) remained more accurate than inverse-power-law extrapolation (mean absolute log error {{v2_rpm}} vs "
+        "The pre-specified RPM ($r=1$) remained more accurate than inverse-power-law extrapolation (mean absolute log error {{v2_rpm}} vs "
         "{{v2_ipl3}}) but not more accurate than the no-improvement rule ({{v2_flat}}). B-RPM reached "
         "{{b_lvl_B_RPM}}. It was more accurate than IPL3 (difference {{bp_d_level_B_RPM_vs_IPL3}}, 95% CI {{bp_ci_level_B_RPM_vs_IPL3}}, "
         "better on {{bp_w_level_B_RPM_vs_IPL3}} tasks, Holm-adjusted p {{bp_ph_level_B_RPM_vs_IPL3}}) and than the scaling-exponent estimator of "
@@ -219,7 +219,7 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "fraction. The noise fraction differed strongly between families, but the pilot path constrains it, so the posterior moves away from a "
         "misplaced prior: for the soil tasks, the cross-family prior was centred at a noise fraction of {{lofo_eta_prior}}, the posterior median "
         "was {{lofo_eta_post}}, and the large-sample value was {{soil_eta_ls}}. The curve is then recomputed from the new task's own eigen-spectrum. A slope, by contrast, is applied as it is. "
-        "Transferring structure rather than curves is the reason B-RPM generalises.")
+        "Transferring structure rather than curves is the likely reason for the difference.")
     s.append(f"![**Fig. 8.** Effect of transferring prior knowledge across application families. Mean absolute log error per task (lines) when the slope (a) or the structural prior of B-RPM (b) comes from other data sources (LOSO) or from other application families (LOFO). Thick line: mean over tasks.]({fig('Fig7_cross_family_transfer')}){{width=15cm}}")
     # 4.6 -----------------------------------------------------------------------------------------------------
     s.append("## 4.6. Uncertainty and planning decisions")
@@ -268,7 +268,7 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "[[ST:T0b_simulation_by_n0]]), B-RPM with the real-data prior (median $r$ = {{sim_prior_r}}) was the most accurate method when the true "
         "alignment was close to that prior ($r=0.5$: {{sim_b_05}} vs {{sim_FLAT_05}} for FLAT, {{sim_RPM_05}} for RPM and {{sim_IPL3_05}} for "
         "IPL3; with a flat prior {{sim_bf_05}}). When the prior was wrong ($r=2$), it lost to the no-improvement rule ({{sim_b_2}} vs "
-        "{{sim_FLAT_2}}). This is the cost of importing information that Proposition 1 makes unavoidable. The pre-registered ablations "
+        "{{sim_FLAT_2}}). This is the cost of importing information that Proposition 1 makes unavoidable. The pre-specified ablations "
         "(Supplementary Table [[ST:T7_ablation]]) showed that freeing the alignment exponent without a prior is the most damaging choice "
         "(Section 2.4).")
     # 4.8 -----------------------------------------------------------------------------------------------------
@@ -299,7 +299,7 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
 def _table2(TAB):
     t = pd.read_csv(os.path.join(TAB, "TB1_brpm_summary.csv"))
     keep = ["B-RPM", "B-RPM-LOFO", "RPM", "RPM-T", "IPL3", "IPL2", "WEI", "DFOLS", "FLAT", "SLOPE-T", "SLOPE-T-LOFO", "B-RPM-0", "B-RPM-r"]
-    lab = {"B-RPM": "B-RPM (LOSO prior)", "B-RPM-LOFO": "B-RPM (LOFO prior)", "RPM": "RPM, r = 1 (pre-registered)",
+    lab = {"B-RPM": "B-RPM (LOSO prior)", "B-RPM-LOFO": "B-RPM (LOFO prior)", "RPM": "RPM, r = 1 (pre-specified)",
            "RPM-T": "RPM, transferred r", "IPL3": "Inverse power law (IPL3) [@ali2018]", "IPL2": "Power law (IPL2)",
            "WEI": "Scaling exponent [@wei2022]", "DFOLS": "Fixed-complexity formula", "FLAT": "No improvement (pilot CV error)",
            "SLOPE-T": "Transferred slope (LOSO)", "SLOPE-T-LOFO": "Transferred slope (LOFO)", "B-RPM-0": "B-RPM prior only (ablation)",
@@ -322,8 +322,8 @@ ABSTRACT_RESULTS = (
     "consistent with the pilot contained the true RMSEP in {{id_cov_all}} of forecasts (whole curves {{id_curve_cov}}; {{sim_id_cov}} in "
     "simulation) but spanned a factor of "
     "{{id_w_8}} in RMSEP at eightfold extrapolation. Bayesian regularisation-path matching (B-RPM) makes the unavoidable prior explicit. "
-    "It forecast gains better than the no-improvement rule and power-law extrapolation and kept its accuracy with a prior from another "
-    "application family ({{b_lvl_B_RPM_LOFO}} vs {{b_lvl_SLOPE_T_LOFO}} for a transferred slope). On the RMSEP level, however, the pilot's "
+    "It forecast gains better than the no-improvement rule and RPM ($r=1$), and for soil tasks it kept its accuracy with a prior from "
+    "other application families ({{b_lvl_B_RPM_LOFO}} vs {{b_lvl_SLOPE_T_LOFO}} for a transferred slope over all tasks). On the RMSEP level, however, the pilot's "
     "own cross-validated error stayed best ({{b_lvl_FLAT}} vs {{b_lvl_B_RPM}}), and three of four pre-specified hypotheses failed. A "
     "second batch raised the accuracy of reachability decisions by {{sd_gain_range}} percentage points for every method.")
 ABSTRACT_SIGNIFICANCE = (
@@ -334,8 +334,8 @@ HIGHLIGHTS = [
     "A pilot set observes a calibration's error curve only above a computable horizon.",
     "The gain from more reference samples cannot be identified from a pilot alone.",
     "A prior-free compatible set contained the true learning curve in ~9 of 10 cases.",
-    "Bayesian path matching (B-RPM) states its prior and transfers across materials.",
-    "A second batch improved sample-size decisions more than any choice of forecaster.",
+    "Bayesian path matching (B-RPM) makes the prior behind every forecast explicit.",
+    "No forecaster beat the pilot's own cross-validated error on the RMSEP level.",
 ]
 
 CONCLUSION = (
@@ -343,8 +343,8 @@ CONCLUSION = (
     "of the spectra. Below the horizon, analyte signal and irreducible noise cannot be told apart, so the gain from more reference samples "
     "must come from prior knowledge. This explains the optimism of power-law extrapolation and the strength of the no-improvement rule. The "
     "compatible set makes the limit visible for every pilot. B-RPM turns the unavoidable prior into an explicit one; it predicted gains "
-    "better than power-law extrapolation and the no-improvement rule and, unlike a transferred slope, kept its accuracy across application "
-    "families, but it did not beat the pilot's own error on the RMSEP level. For planning, the practical consequence is a staged design. Use "
+    "better than the no-improvement rule and, unlike a transferred slope, kept its accuracy with a prior from other application families "
+    "(tested on the soil tasks), but it did not beat the pilot's own error on the RMSEP level. For planning, the practical consequence is a staged design. Use "
     "the pilot's error as the current estimate and a structural forecast with its compatible set as a guide, and take a second batch "
     "before committing the full reference budget.")
 
@@ -357,12 +357,12 @@ COVER_LETTER = [
     "from more samples is not identifiable without prior information; (ii) a computable, prior-free compatible set and an information "
     "fraction that tell the analyst, for every pilot, whether the sample-size question can be settled; and (iii) Bayesian regularisation-path "
     "matching (B-RPM), a forecaster that combines a transferable structural prior with the task's unlabelled spectra and the pilot's exact cross-validation path. B-RPM "
-    "predicted gains better than power-law extrapolation and, unlike a transferred empirical slope, kept its accuracy when its prior came "
-    "from a different application family. We report openly that the pilot's own cross-validated error remained the best estimate of the "
+    "predicted gains better than the no-improvement rule and, unlike a transferred empirical slope, kept its accuracy on the soil tasks when "
+    "its prior came from other application families. We report openly that the pilot's own cross-validated error remained the best estimate of the "
     "RMSEP level and that three of four pre-specified hypotheses were not confirmed. The positive practical result is that a second "
     "batch improves sample-size decisions more than any choice of forecaster.",
     "The work connects to current themes in Analytica Chimica Acta: validation design and leakage, the error structure of reference values "
-    "and replicates, and calibration-set size. The study follows a pre-registered design. The new method and its hypotheses were fixed before "
+    "and replicates, and calibration-set size. The study follows a time-stamped, pre-specified design. The new method and its hypotheses were fixed before "
     "the results were seen, negative outcomes are reported, all data are public, and the complete code (one-command rerun) will be deposited in a public repository on acceptance and is available to referees on request.",
     "The manuscript has not been published and is not under consideration elsewhere. All authors approved the submission and declare no "
     "competing interests.",

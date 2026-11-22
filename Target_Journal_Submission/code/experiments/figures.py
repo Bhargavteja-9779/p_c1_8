@@ -40,7 +40,7 @@ def fig_workflow(paths):
              (0.1, 1.55, "Labelled pilot\n($n_0$ reference values)", "exact LOGO error\nalong ridge path $e(\\mu)$"),
              (0.1, 0.2, "Previous calibrations\n(other materials)", "prior on alignment $r$\nand noise fraction $\\eta$"),
              (3.75, 1.55, "Bayesian path\nmatching", "posterior over $(r,\\eta)$\n(likelihood: pilot path)"),
-             (7.15, 2.55, "Prior-free\nidentification set", "all curves consistent\nwith the pilot"),
+             (7.15, 2.55, "Prior-free\ncompatible set", "all curves consistent\nwith the pilot"),
              (7.15, 0.55, "Posterior-predictive\nRMSEP($n$)", "deterministic-equivalent risk\n+ information fraction")]
     for x, y, t, s_ in boxes:
         ax.add_patch(plt.Rectangle((x, y), 2.9, 1.05, fc="#f4f6fb", ec=MUTED, lw=0.8))

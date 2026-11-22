@@ -37,10 +37,10 @@ FIGS = [
     ("Fig9_error_analysis", "Per-task RPM error against theory misfit, fitted noise fraction and eigen-decay exponent."),
     ("Fig11_dataset_overview", "Data-set overview: number of samples and eigen-decay exponent by family."),
 ]
-NOTES = [("EXPERIMENT_DESIGN_preregistration.md", "Pre-registered experimental design"),
-         ("BRPM_preregistration_addendum.md", "Pre-specification addendum for B-RPM (hypotheses HB1–HB4)"),
-         ("DATA_LEAKAGE_AUDIT.md", "Data-leakage audit"),
-         ("LITERATURE_MATRIX_AND_NOVELTY_MAP.md", "Literature matrix and novelty map")]
+NOTES = [("EXPERIMENT_DESIGN_preregistration.md", "Pre-specified protocol of the first design (time-stamped)"),
+         ("BRPM_preregistration_addendum.md", "Pre-specification addendum for B-RPM (hypotheses HB1–HB4), reproduced verbatim as committed; 'version 2' refers to the final re-analysis reported in the article and 'identification set' to the compatible set"),
+         ("DATA_LEAKAGE_AUDIT.md", "Data-leakage audit")
+]
 
 _IDX = {"ST": {n: i for i, (n, _) in enumerate(TABLES, 1)},
         "SF": {n: i for i, (n, _) in enumerate(FIGS, 1)},

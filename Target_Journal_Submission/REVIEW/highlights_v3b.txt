@@ -1,14 +1,0 @@
-Highlights
-
-
-
-
-
-
-A pilot set observes a calibration's error curve only above a computable horizon.
-The gain from more reference samples cannot be identified from a pilot alone.
-A prior-free compatible set contained the true learning curve in ~9 of 10 cases.
-Bayesian path matching (B-RPM) states its prior and transfers across materials.
-A second batch improved sample-size decisions more than any choice of forecaster.
-
-

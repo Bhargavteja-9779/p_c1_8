@@ -1,10 +1,10 @@
 # Pre-specification addendum: Bayesian regularisation-path matching (B-RPM)
 
-_Written 2026-11-21 ~21:00 UTC (session 3; committed in git commit "Add B-RPM ..."), before any version-2 forecast result was inspected. The version-2 main
-stage was running at that time; only version-1 results (archived, `archive/v1_pre_review/`) had been seen._
+_Written and committed on 2026-11-21, before any version-2 forecast result was inspected. The version-2 main
+stage was running at that time; only version-1 results (archived unchanged) had been seen._
 
 ## Rationale
-Version-1 results and review cycle 1 showed that (i) no pilot-only forecaster beat the no-improvement rule (FLAT) on
+Version-1 results and their internal audit showed that (i) no pilot-only forecaster beat the no-improvement rule (FLAT) on
 the registered level endpoint, (ii) a transferred empirical slope (SLOPE-T) predicted gains well within the soil
 family but failed when transferred across application families, and (iii) RPM with a transferred alignment exponent
 failed through noise-floor collapse. The observability argument (manuscript Proposition 1) implies that the gain

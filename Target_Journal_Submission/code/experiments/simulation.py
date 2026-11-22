@@ -91,7 +91,7 @@ def run_simulation(paths, mode="full", jobs=4):
 
 
 # ----------------------------------------------------------------------------------------------------------------
-# B-RPM and identification set in the controlled simulation (session 3). The prior is the real-data prior (all
+# B-RPM and identification set in the controlled simulation. The prior is the real-data prior (all
 # 38 large-sample fits): it is approximately right for r = 0.5 and wrong for r = 1 and r = 2, so the simulation
 # shows both the benefit of a correct structural prior and the cost of a wrong one; the identification set is
 # prior-free and should contain the Monte-Carlo truth in every scenario.

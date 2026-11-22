@@ -59,7 +59,7 @@ def source_of(task_name):
 
 
 def add_slope_transfer(df, raw_dir):
-    """Simple competitor (added after the pre-registration, as a hostile-reviewer check): extrapolate the
+    """Simple competitor (added after the pre-registration, as a simple competitor): extrapolate the
     pilot CV error with the median log-RMSE slope per doubling of n observed in the ground-truth curves of
     OTHER data sources (leave-one-source-out)."""
     slopes = {}

@@ -34,6 +34,8 @@ def highlights(lines, path):
     d.add_heading("Highlights", level=1)
     for l in lines:
         d.add_paragraph(l, style="List Bullet")
+    from docx_utils import set_metadata
+    set_metadata(d, "Highlights")
     d.save(path)
 
 
@@ -52,6 +54,8 @@ def cover_letter(paragraphs, title, path):
         d.add_paragraph(para).paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     d.add_paragraph("Yours sincerely,")
     d.add_paragraph("P N Bhargav Teja (corresponding author), on behalf of all authors")
+    from docx_utils import set_metadata
+    set_metadata(d, "Cover letter")
     d.save(path)
 
 

@@ -1,6 +1,6 @@
 # Pre-specification addendum 2: native-resolution confirmation study
 
-_Written and committed 2026-11-22 (session 4) after inspecting the six-task full-resolution robustness run
+_Written and committed on 2026-11-22 after inspecting the six-task full-resolution robustness run
 (KSSL-MIR:OC, ICRAF-MIR:clay, KSSL-VisNIR:clay, Neospectra-NIR:pH, Diesel:bp50, Tablets:assay) and BEFORE running any
 other task at full resolution._
 

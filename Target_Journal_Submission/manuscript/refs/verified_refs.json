@@ -91,7 +91,7 @@
   ],
   "year": 2020,
   "journal": "BMJ",
-  "volume": null,
+  "volume": "368",
   "issue": null,
   "pages": "m441",
   "type": "journal-article",
@@ -204,7 +204,7 @@
  "loureiro2022": {
   "doi": "10.1088/1742-5468/ac9825",
   "verified": true,
-  "title": "Learning curves of generic features maps for realistic datasets with a teacher-student model*",
+  "title": "Learning curves of generic features maps for realistic datasets with a teacher-student model",
   "authors": [
    "Loureiro, Bruno",
    "Gerbelot, Cédric",
@@ -289,7 +289,7 @@
   "verified": true,
   "title": "A Statistical View of Some Chemometrics Regression Tools",
   "authors": [
-   "Frank, lldiko E.",
+   "Frank, Ildiko E.",
    "Friedman, Jerome H."
   ],
   "year": 1993,
@@ -353,9 +353,9 @@
  "savitzky1964": {
   "doi": "10.1021/ac60214a047",
   "verified": true,
-  "title": "Smoothing and Differentiation of Data by Simplified Least Squares Procedures.",
+  "title": "Smoothing and Differentiation of Data by Simplified Least Squares Procedures",
   "authors": [
-   "Savitzky, Abraham.",
+   "Savitzky, Abraham",
    "Golay, M. J. E."
   ],
   "year": 1964,
@@ -623,7 +623,7 @@
   "journal": "Biometrics Bulletin",
   "volume": "1",
   "issue": "6",
-  "pages": "80",
+  "pages": "80-83",
   "type": "journal-article",
   "publisher": "JSTOR"
  },
@@ -703,7 +703,9 @@
    "Abdulkadir Canatar",
    "Cengiz Pehlevan"
   ],
-  "year": 2020
+  "year": 2020,
+  "venue": "Proceedings of the 37th International Conference on Machine Learning, PMLR 119",
+  "venue_year": 2020
  },
  "simon2023": {
   "arxiv": "2110.03922",
@@ -728,7 +730,9 @@
    "Clément Hongler",
    "Franck Gabriel"
   ],
-  "year": 2020
+  "year": 2020,
+  "venue": "Advances in Neural Information Processing Systems 33",
+  "venue_year": 2020
  },
  "wei2022": {
   "arxiv": "2203.06176",
@@ -739,7 +743,9 @@
    "Wei Hu",
    "Jacob Steinhardt"
   ],
-  "year": 2022
+  "year": 2022,
+  "venue": "Proceedings of the 39th International Conference on Machine Learning, PMLR 162",
+  "venue_year": 2022
  },
  "atanasov2024": {
   "arxiv": "2405.00592",
@@ -762,7 +768,9 @@
    "Samuel Müller",
    "Frank Hutter"
   ],
-  "year": 2023
+  "year": 2023,
+  "venue": "Advances in Neural Information Processing Systems 36",
+  "venue_year": 2023
  },
  "hestness2017": {
   "arxiv": "1712.00409",
@@ -893,7 +901,7 @@
   "title": "Calibration set reduction by iterative alternating reduction of predictive variables and calibration samples subsets",
   "authors": [
    "Andries, Jan P.M.",
-   "Heyden, Yvan Vander"
+   "Vander Heyden, Yvan"
   ],
   "year": 2026,
   "journal": "Analytica Chimica Acta",
@@ -1076,7 +1084,9 @@
    "T. Schuster"
   ],
   "year": 2022,
-  "note": "ICLR 2024"
+  "note": "ICLR 2024",
+  "venue": "The Twelfth International Conference on Learning Representations, ICLR",
+  "venue_year": 2024
  },
  "angelopoulos2023": {
   "doi": "10.1561/9781638281597",

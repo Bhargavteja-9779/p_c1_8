@@ -5,10 +5,10 @@ RPM-w  : inverse-variance-weighted path fit (specified while the main run was ex
 RPM-T  : alignment exponent r fixed at the leave-one-source-out median of the large-sample fits (post hoc).
 RPM-wT : weighted + transferred (post hoc).
 RPM-TD : RPM-T with the noise variance bounded below by the method-of-moments estimate of Dicker (2014) computed
-         from the pilot and the unlabelled pool covariance (added in review cycle 1 to test whether a statistical
+         from the pilot and the unlabelled pool covariance (added in version 2 to test whether a statistical
          noise-floor estimate removes the noise-floor collapse of RPM-T).
 RPM-TP : RPM-T with a weak transferred floor sigma2 >= q05 * var(y_pool), q05 = 5th percentile of the
-         large-sample noise fractions of the other sources (review cycle 1, R2-C01-06).
+         large-sample noise fractions of the other sources (internal audit of version 1).
 Sources are defined by sample provenance: ICRAF VisNIR/MIR = one source (same soils); KSSL and Neospectra = one
 source (Neospectra soils are KSSL archive samples).
 """

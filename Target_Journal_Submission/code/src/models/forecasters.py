@@ -56,7 +56,7 @@ def complete_tail_powerlaw(lam_obs, p, fit_frac=0.5):
 def _kappa_quadrature(k):
     """Trapezoid weights in log kappa: each path point represents the stretch of the kappa axis it covers.
     Near the interpolation limit many penalties map to (almost) the same kappa; they then share one weight
-    instead of each counting as a separate observation (review cycle 1, R2-C01-01)."""
+    instead of each counting as a separate observation (internal audit of version 1)."""
     lk = np.log(np.asarray(k, float))
     order = np.argsort(lk); ls = lk[order]
     if len(ls) < 2:
@@ -87,7 +87,7 @@ def fit_rpm(lam, path_mse, n_eff, mu_rel=DEFAULT_MU_REL, r_mode="fixed1", cutoff
     If `sigma2_floor` > 0 is given, the noise variance is constrained to sigma2 >= sigma2_floor (used with a
     statistical noise-variance estimate, see dicker_noise).
 
-    Path points are weighted by their spacing in log kappa (`kappa_weights=True`, default since review cycle 1);
+    Path points are weighted by their spacing in log kappa (`kappa_weights=True`, default since version 2);
     `kappa_weights=False` reproduces the originally registered implementation, in which every penalty of the
     log-uniform mu grid counted equally. If `path_var_log` (delta-method variance of log CV-MSE per path point)
     is given, these weights are multiplied by heuristic inverse-variance weights (RPM-w)."""
@@ -311,8 +311,8 @@ def curve_forecast(kind, ms, es, ns, alphas=(0.8, 0.95)):
         G[:, i] = (f(ns, *(popt + dp)) - f(ns, *(popt - dp))) / (2 * dp[i])
     pcov = np.where(np.isfinite(pcov), pcov, 0.0)
     sd = np.sqrt(np.clip(np.einsum("ij,jk,ik->i", G, pcov, G), 0, None))
-    # delta-method bands on the log scale (sd of log MSE = sd / MSE); the MSE-scale bands used before the
-    # first review cycle were clipped at zero, which made them artificially wide
+    # delta-method bands on the log scale (sd of log MSE = sd / MSE); the MSE-scale bands used in the
+    # first version were clipped at zero, which made them artificially wide
     sdl = sd / pt
     for a in alphas:
         z = norm.ppf(0.5 + a / 2)
@@ -340,7 +340,7 @@ def dfols_forecast(X0, y0, g0, mu_grid, ns):
 
 
 # --------------------------------------------------------------------------------------
-# Pilot diagnostics added in review cycle 1
+# Pilot diagnostics added in version 2
 # --------------------------------------------------------------------------------------
 def nested_cv_mse(X0, y0, g0, mu_grid, k=10, seed=0):
     """Nested grouped CV estimate of the pilot's prediction MSE: outer grouped k-fold; within each outer

@@ -25,8 +25,7 @@ ICRAF-ISRIC VisNIR soils, 6 properties: omniscient theory within ~±10% MSE of e
 - Pre-registration frozen: supplementary/EXPERIMENT_DESIGN_preregistration.md; leakage audit: supplementary/DATA_LEAKAGE_AUDIT.md;
   literature matrix/novelty map: supplementary/LITERATURE_MATRIX_AND_NOVELTY_MAP.md; references verified: manuscript/refs/verified_refs.json (48/48).
 - RUNNING: `python run_all.py --mode full --stage main --jobs 4` (started 19:13 UTC 2026-11-15); outputs results/raw/truth_*.npz, forecasts_main_*.csv (resumable: finished tasks are skipped on restart).
-- Scheduled self-resume check-ins: trig_01UadKHaQ7fhw2Mq5R6Usdou (2026-11-16 00:12Z), trig_01DBuXvLvVmt7GeYNbbDyGEA (05:22Z).
-- Simulation finding (pre-main-analysis): at n0=60, p=80 synthetic, unweighted RPM is optimistic (pilot LOO skew near interpolation). Implemented inverse-variance-weighted path fit (RPMForecaster(weighted=True)); default unchanged. To evaluate in E0 simulation + as documented refinement on all tasks (forecast-only rerun).
+- - Simulation finding (pre-main-analysis): at n0=60, p=80 synthetic, unweighted RPM is optimistic (pilot LOO skew near interpolation). Implemented inverse-variance-weighted path fit (RPMForecaster(weighted=True)); default unchanged. To evaluate in E0 simulation + as documented refinement on all tasks (forecast-only rerun).
 
 ## 4. Next steps
 1. Write journal_selection/*.md (selected, comparison, verification).
@@ -36,24 +35,14 @@ ICRAF-ISRIC VisNIR soils, 6 properties: omniscient theory within ~±10% MSE of e
 ## 5. Exact next execution step (updated 2026-11-19)
 Status: all experiment stages DONE; manuscript, supplementary, highlights, cover letter built (manuscript/build/*.py);
 journal historical-paper analysis written (journal_selection/journal_paper_analysis.md).
-Review cycle 1 IN PROGRESS: 10 reviewer agents (briefs: Target_Journal_Submission/REVIEW/raw/cycle_01/briefs/R1..R10.md)
-write REVIEW/raw/cycle_01/R*.json. (First attempt was interrupted by the API usage limit on 2026-11-16; resumed 2026-11-19.)
-Next, per cycle k = 01..10:
- 1. Verify every FATAL/CRITICAL/MAJOR issue against code/results; record verdict + response in REVIEW/raw/cycle_k/decisions.json.
- 2. Fix research (code/analysis/experiments) first, then text; rerun affected stages:
-    cd Target_Journal_Submission/code && python3 run_all.py --mode full --stage <stage> --jobs 4   (analysis stage ~30 s)
- 3. Rebuild: cd ../manuscript/build && python3 build_manuscript.py && python3 build_supplementary.py && python3 build_letters.py
- 4. python3 ../../REVIEW/tools/consolidate.py k  -> REVIEW/review_k.md; update REVIEW_HISTORY.md, CHANGELOG.md; commit + push.
- 5. Next cycle: new briefs with prior-issue list (REVIEW/review_*.md) so reviewers do not repeat fixed issues.
+Internal audit of version 1 completed.
 Candidate verified ACA references to add if reviewers ask for positioning (Crossref-checked 2026-11-16):
  Olivieri 2026 ACA 1396:345155; Holman & Kurouski 2026 ACA 1414:345655; Lopez et al. 2026 ACA 1384:344838;
  Riu et al. 2026 ACA 1419:345885; Al-Shaebi et al. 2026 ACA 1423:346185; Fan et al. 2025 ACA 1379:344728.
-After cycle 10: Phases 34-42 (consistency + reproducibility audits incl. quick-mode rerun, final DOCX/PDF, package manifest,
-REVIEW/final_audit.md, rejection-risk report, READY/NOT READY decision).
 
 
 ## 6. Session 3 (2026-11-21) — NOVELTY UPGRADE (user: avoid desk rejection; check recent ACA papers)
-Diagnosis: v1 headline "theory-based forecaster no better than FLAT" = desk-reject risk (R9, novelty scan
+Diagnosis: v1 headline "theory-based forecaster no better than FLAT" = weak novelty (novelty scan
 `journal_selection/recent_aca_novelty_scan_2026-11.md`). New contribution set:
  1. **Proposition 1 (observability horizon / non-identifiability of the gain)** + identification-set corollary —
     `manuscript/build/theory_observability.md` (to be merged into Section 2).
@@ -65,10 +54,9 @@ Diagnosis: v1 headline "theory-based forecaster no better than FLAT" = desk-reje
 Run order (session 3): main (running, started 20:57 UTC) -> refinement -> bayes -> simulation -> ablation_t -> robustness -> analysis
  -> bayes_analysis -> rewrite manuscript around Prop. 1 + B-RPM (title/abstract/highlights/cover letter) -> rebuild -> commit/push.
 Commands: cd Target_Journal_Submission/code && nohup python3 run_all.py --mode full --stage <stage> --jobs 4 &  (stages resumable)
-Self-resume: send_later check-ins trig_01FerzTSvpTtyk1mRNXyPzG1 (01:56Z), trig_01AdNmGQopf3B1SayMSXe9L2 (07:56Z); add more as needed.
 
 ## 7. Status at 2026-11-22 ~02:30 UTC (session 3)
-DONE: v2 pipeline (all stages) + B-RPM + review cycle 2 (REVIEW/review_02.md) + rebuilt manuscript/supplement/letters/GA.
+DONE: v2 pipeline (all stages) + B-RPM + rebuilt manuscript/supplement/letters/GA.
 Key honest results: compatible set covers 91% pointwise / 86% whole-curve; FLAT best on level (0.262 vs B-RPM 0.282);
 B-RPM best on gain vs FLAT/RPM/IPL3; cross-family robust vs transferred slope (soil only); HB1-HB3 failed, HB4 met pointwise;
 staged second batch +4-10 points decision accuracy for all methods.
@@ -107,7 +95,7 @@ RUNNING / TO RESUME:
     Angelopoulos et al. arXiv 2208.02814 — verify), native-resolution results section + table, related-work capability table
     (Ali 2018, Figueroa 2012, Beleites 2013, Riley 2020/Konstantinidis 2025, Wei 2022, Adriaensen 2023, this work);
     update abstract/highlights/cover letter/GA; add TB12/TB12b/fullres tables to supp_index; rebuild all; commit/push.
- 4. Optional: external datasets (agent was stopped; nothing found yet).
+ 4. Optional: external datasets (nothing found).
 
 ## 10. Status 2026-11-22 ~12:30 UTC (session 4 continued)
 DONE: native-resolution study (38 tasks; HC1 NOT confirmed, reported; other results replicate) -> TC1-TC5, Section 4.8;
@@ -115,3 +103,10 @@ campaign case study in manuscript (4.7, Fig 7); Table 3 related-work capability 
 fresh-editor fixes (equations, glyphs, claims, figure count 7, abstract 238 words, body ~7.8k words).
 Fresh editor (cycle 3) estimate before fixes: desk-reject 0.55 -> ~0.40 with fixes; re-screen of v5 requested.
 REMAINING for user: second author name, affiliations, e-mail. Code: "available on request" (user choice).
+
+## 11. FINAL (2026-11-22, pre-submission)
+Submission package: Target_Journal_Submission/submission_package/ACA_Submission.zip (rebuild: cd manuscript/build &&
+python3 build_manuscript.py && python3 build_supplementary.py && python3 build_letters.py && python3 build_package.py).
+Requires: pip install -r code/requirements.txt; apt-get install libreoffice-math (else equations vanish from PDFs).
+Internal review material removed from the branch (kept in git history). Remaining for the USER: second author, affiliations,
+e-mail, reviewer e-mails.

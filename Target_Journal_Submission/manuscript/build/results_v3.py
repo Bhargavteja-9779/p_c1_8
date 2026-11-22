@@ -231,7 +231,7 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "and the transferred slope ({{bp_d_level_B_RPM_vs_SLOPE_T}}). It was slightly less accurate than the no-improvement rule "
         "({{bp_d_level_B_RPM_vs_FLAT}}, CI {{bp_ci_level_B_RPM_vs_FLAT}}, Holm p {{bp_ph_level_B_RPM_vs_FLAT}}), so the pre-specified "
         "non-inferiority margin of 0.02 (HB2) was not met. On the level endpoint, the pilot's own cross-validated error is very hard to beat, "
-        "because the dominant error source is the noise in that error, which no forecaster can remove (Section 4.6).")
+        "because the dominant error source is the noise in that error, which no forecaster can remove.")
     s.append(table_md(_table2(TAB), "Accuracy of learning-curve forecasts (task-level means over pilots, pilot sizes 25–200 and horizons $n\\ge2n_0$). Level: $|\\log(\\widehat{\\mathrm{RMSEP}}/\\mathrm{RMSEP})|$; gain: error of the forecast gain $\\mathrm{RMSEP}(n)/\\mathrm{RMSEP}(n_0)$; bias: mean signed log error (> 0 pessimistic). LOSO/LOFO: prior or slope transferred from other data sources / other application families.", "Table 2", floatfmt=3))
     s.append(
         "The methods differ more in *bias* than in absolute error (Fig. 5). Pooled over tasks, the no-improvement rule was pessimistic, with "
@@ -280,8 +280,8 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "The posterior-predictive bands of B-RPM were too narrow. Nominal 80% and 95% bands covered the truth in {{bc80_B_RPM}} and "
         "{{bc95_B_RPM}} of cases (task averages; median width factor {{bcw_B_RPM}}), so HB3 was not met, and coverage was lowest for the designed "
         "mixtures ({{bcov_mix80}}). The bands contain the uncertainty of the pilot's regularisation path but not the difference between a "
-        "pilot's cross-validated error and the error of a calibration trained on it, which our earlier analysis identified as the dominant "
-        "source of level error. A post-hoc recalibration of the predictive spread, estimated leave-one-source-out from the standardised errors "
+        "pilot's cross-validated error and the error of a calibration trained on it, which is the dominant "
+        "source of level error (Section 4.4). A post-hoc recalibration of the predictive spread, estimated leave-one-source-out from the standardised errors "
         "of the other sources, restored nominal coverage ({{bc80_B_RPM_cal}} and {{bc95_B_RPM_cal}}; {{bcal_n0_range}} across pilot sizes; "
         "soil {{bcal_soil80}}, mixtures {{bcal_mix80}}) at a median width factor of {{bcw_B_RPM_cal}}. IPL3 reached similar coverage only with "
         "bands that spanned a median factor of {{bcw_IPL3}} (Supplementary Table [[ST:TB4_brpm_coverage]]). For the probabilistic decision "
@@ -302,7 +302,7 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "ones, we therefore simulated the decision a laboratory actually faces. "
         "A target RMSEP $T$ must be reached at the lowest number of reference analyses, and the largest affordable calibration is $N_{\\max}$ "
         "(the largest ground-truth size of the task, at least 800; {{cp_ntasks}} tasks). Targets were set 5% and 15% above the true RMSEP at "
-        "$N_{\\max}$, so they are reachable. The oracle buys the smallest grid size $n^{*}$ whose true RMSEP meets $T$. From a 50-sample "
+        "$N_{\\max}$, so they are reachable. The oracle buys the smallest grid size $n^{∗}$ whose true RMSEP meets $T$. From a 50-sample "
         "pilot, each forecaster buys the smallest size whose forecast meets $T$ (Supplementary Table [[ST:TB12_campaign_planning]]). Point "
         "forecasts did not differ in skill so much as in implicit risk attitude (Fig. 7a). The transferred slope and IPL3 bought "
         "{{cp_over_ONE_SLOPE_T}} and {{cp_over_ONE_IPL3}} times the oracle size and met the target in only {{cp_ok_ONE_SLOPE_T}} and "
@@ -344,8 +344,8 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "forecast gains better than FLAT ({{nt_d_ho_gain_FLAT}}, better on {{nt_w_ho_gain_FLAT}} held-out tasks, p {{nt_p_ho_gain_FLAT}}) "
         "and than RPM ({{nt_d_ho_gain_RPM}}, {{nt_w_ho_gain_RPM}}, p {{nt_p_ho_gain_RPM}}). It was more accurate than IPL3 on the level "
         "endpoint ({{nt_d_ho_level_IPL3}}, {{nt_w_ho_level_IPL3}}, p {{nt_p_ho_level_IPL3}}), and the transferred slope again predicted "
-        "gains best ({{nrg_ho_SLOPE_T}} vs {{nrg_ho_B_RPM}}). With 200-sample pilots B-RPM had the lowest mean error (exploratory, untested) "
-        "({{nr200_brpm}} vs {{nr200_flat}} for FLAT; Supplementary Tables [[ST:TC1_native_resolution_summary]]–"
+        "gains best ({{nrg_ho_SLOPE_T}} vs {{nrg_ho_B_RPM}}). With 200-sample pilots B-RPM had the lowest mean error "
+        "({{nr200_brpm}} vs {{nr200_flat}} for FLAT; exploratory and untested; Supplementary Tables [[ST:TC1_native_resolution_summary]]–"
         "[[ST:TC4_native_resolution_by_n0]]). The structural quantities on which the paper rests were stable. The median alignment exponent "
         "was {{nr_r_med}} at native resolution and {{sub_r_med}} after sub-sampling. As expected from the higher horizon of a given pilot "
         "when $p$ is larger, more learnable signal was hidden in the pilot's error floor: a median {{nhid_25}}, {{nhid_50}} and {{nhid_100}} "
@@ -470,7 +470,7 @@ COVER_LETTER = [
     "matching (B-RPM), a forecaster that combines a transferable structural prior with the task's unlabelled spectra and the pilot's exact cross-validation path. B-RPM "
     "predicted gains better than the no-improvement rule and, unlike a transferred empirical slope, kept its accuracy on the soil tasks when "
     "its prior came from other application families. We report openly that the pilot's own cross-validated error remained the best estimate of the "
-    "RMSEP level and that three of four pre-specified hypotheses were not confirmed. The positive practical result is a "
+    "RMSEP level and that four of five pre-specified confirmatory hypotheses failed. The positive practical result is a "
     "campaign-planning case study. With its prior taken from other application families, decision-calibrated B-RPM came close to the "
     "requested 80% and 90% success rates ({{cp_ok_CAL80_B_RPM_LOFO}} and {{cp_ok_CAL90_B_RPM_LOFO}}), whereas a transferred empirical "
     "slope delivered {{cp_ok_CAL80_SLOPE_T_LOFO}} and {{cp_ok_CAL90_SLOPE_T_LOFO}}.",
@@ -478,7 +478,7 @@ COVER_LETTER = [
     "and replicates, and calibration-set size. The study follows a time-stamped, pre-specified design. The new method and its hypotheses were fixed before "
     "the results were seen, negative outcomes are reported, all data are public, and the complete code (one-command rerun) will be made available on request.",
     "The manuscript has not been published and is not under consideration elsewhere. All authors approved the submission and declare no "
-    "competing interests.",
+    "competing interests. The use of generative AI tools during the preparation of the work is declared in the manuscript.",
 ]
 
 LIMITATIONS = """# 5. Limitations

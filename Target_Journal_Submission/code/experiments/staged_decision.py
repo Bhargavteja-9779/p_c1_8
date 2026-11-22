@@ -1,4 +1,4 @@
-"""Decision value of the planning workflow (added in review cycle 2; uses existing forecasts only).
+"""Decision value of the planning workflow (added in version 2; uses existing forecasts only).
 
 Scenario: the analyst has an absolute RMSEP target T and a budget of N reference samples (N = 400 or 800). Is T
 reachable at N? Targets are set 15 % above and 15 % below the true RMSEP at N (one reachable and one unreachable

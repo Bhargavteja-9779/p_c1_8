@@ -358,7 +358,7 @@ def results_markdown(ctx, TAB_, FIG, table_md):
         "its error equals the true improvement between $n_0$ and $n$. It is therefore accurate whenever learning curves are shallow relative to the sampling "
         "error of a small pilot, which Section 4.2 shows to be the typical case. "
         "SLOPE-T, which extrapolates the pilot's cross-validated error with the median slope of the learning curves of the *other* data sources "
-        "(leave-one-source-out; added after pre-registration as a hostile-reviewer check), was the most accurate method overall ({{mae_SLOPE_T}}, bias "
+        "(leave-one-source-out; added after pre-registration as a simple competitor), was the most accurate method overall ({{mae_SLOPE_T}}, bias "
         "{{bias_SLOPE_T}}). It was significantly better than the pre-registered RPM (Holm p {{st_SLOPE_T_p}}; better on {{st_SLOPE_T_losses}} of {{n_tasks}} "
         "tasks) but not significantly different from RPM-w (Holm p {{stS_RPM_w_p}}) or FLAT (Holm p {{stS_FLAT_p}}; Supplementary Table [[ST:T3c_posthoc_stats_slopeT_reference]]). "
         "The same three methods led at short and long extrapolations alike. For 16-fold or larger extrapolations ({{strat_long_ntasks}} tasks), the mean task "
@@ -400,8 +400,8 @@ def results_markdown(ctx, TAB_, FIG, table_md):
         "{{confw80_SLOPE_T}}–{{confw80_RPM_w}} when only a small pilot is available.")
     s.append(f"![**Fig. 8.** Empirical vs nominal coverage of the forecast bands: RPM Bayesian-bootstrap bands, IPL3 delta-method bands and (post hoc) SLOPE-T bands calibrated leave-one-source-out.]({fig('Fig6_interval_coverage')}){{width=8cm}}")
     s.append(
-        "The pre-registered decision metric asked each method for the calibration size at which the RMSE actually achieved at $n^{*}=4n_0$ or $16n_0$ "
-        "would be reached. RPM placed $\\hat n$ within a factor of two of $n^{*}$ in {{dec_4n0_RPM}} and {{dec_16n0_RPM}} of the pilots, IPL3 in "
+        "The pre-registered decision metric asked each method for the calibration size at which the RMSE actually achieved at $n^{∗}=4n_0$ or $16n_0$ "
+        "would be reached. RPM placed $\\hat n$ within a factor of two of $n^{∗}$ in {{dec_4n0_RPM}} and {{dec_16n0_RPM}} of the pilots, IPL3 in "
         "{{dec_4n0_IPL3}} and {{dec_16n0_IPL3}}, SLOPE-T in {{dec_4n0_SLOPE_T}} and {{dec_16n0_SLOPE_T}}; FLAT, which never forecasts improvement, "
         "succeeded in none (Supplementary Table [[ST:T6_sample_size_decisions]], Fig. [[SF:Fig10_sample_size_decisions]]). No method is reliable here, for a structural reason. With slopes of about "
         "{{slope_pct_per_doubling}} per doubling, a factor-two error in $n$ corresponds to a smaller change in RMSE than the sampling error of a small "

@@ -1,4 +1,4 @@
-"""Full-resolution robustness experiment (session 4): the main study sub-samples spectra to 94-216 variables. Here six
+"""Full-resolution robustness experiment: the main study sub-samples spectra to 94-216 variables. Here six
 representative tasks are re-run with spectra at (near-)native resolution (MIR 4 cm-1, VisNIR/NIR 2 nm, diesel and tablets
 undecimated): ground truth, pilots (n0 = 25, 50, 100; 10 pilots), FLAT, RPM, IPL3 and B-RPM (LOSO prior from the main
 study), the compatible set and the hidden-signal share at the observability horizon.

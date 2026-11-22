@@ -1,14 +1,0 @@
-Highlights
-
-
-
-
-
-
-A pilot set observes a calibration's error curve only above a computable horizon.
-In 25-sample pilots, a median 22% of the apparent error floor is learnable signal.
-The gain from more reference samples cannot be identified from a pilot alone.
-Bayesian path matching (B-RPM) makes the prior behind every forecast explicit.
-B-RPM met stated planning risks with priors taken from other application families.
-
-

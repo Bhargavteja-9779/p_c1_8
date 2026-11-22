@@ -1,5 +1,5 @@
 # How many reference samples does a spectroscopic calibration need?
-### Code for: *Forecasting multivariate-calibration learning curves from small pilot sets by regularisation-path matching*
+### Code for: *What can a pilot set tell about a calibration learning curve? An observability limit for sample-size planning in spectroscopy*
 
 This repository reproduces every number, table and figure of the manuscript from public data.
 All computations run on a CPU (no GPU is needed); hardware is detected and logged automatically.
@@ -36,7 +36,15 @@ python run_all.py --mode full --stage main         # ground truth + pilot foreca
 python run_all.py --mode full --stage simulation   # E0 controlled simulation (Monte-Carlo truth)
 python run_all.py --mode full --stage refinement   # RPM-w (weighted path fit) on identical pilots
 python run_all.py --mode full --stage robustness   # E7 robustness / shift experiments
+python run_all.py --mode full --stage bayes        # B-RPM (LOSO/LOFO priors), compatible set, B-RPM simulation
 python run_all.py --mode full --stage analysis     # statistics, tables, figures, numbers.json
+```
+Additional analyses reported in the article (run from this directory after the stages above):
+```bash
+python -m experiments.campaign                     # campaign-planning case study (Section 4.7)
+RPM_FULLRES=1 python -m experiments.fullres_all 4  # native-resolution confirmation study (Section 4.8)
+python -m experiments.fullres_analysis             # HC1 analysis and native-resolution tables
+python -m experiments.graphical_abstract           # graphical abstract
 ```
 Outputs (relative to the submission root): `results/raw/` (per-task truth `*.npz`, per-pilot forecasts `*.csv`),
 `results/raw_results.csv`, `results/metrics.json`, `results/statistics.json`, `results/numbers.json`,
@@ -58,17 +66,20 @@ sample-wise pre-processing; RPM consistency on synthetic data; curve-fit baselin
    N(κ) = σ² + τ² Σ_k (λ_k/λ_1)(κ/(λ_k+κ))² on κ ≥ κ_min(n₀).
 4. Fit (τ², σ²) to the path in log space (RPM-w: inverse-variance weighted).
 5. Forecast RMSE(n) = sqrt(min_μ (1+1/n) N(κ(n,μ)) / (1 − df₂(κ)/n)); Bayesian-bootstrap bands.
+6. B-RPM (`src/models/bayes_rpm.py`): Gaussian prior on the alignment exponent r and logit noise fraction η transferred from
+   other data sources or application families; likelihood from the pilot's exact LOGO path; posterior-predictive
+   learning curve, prior-free compatible set and information fraction.
 
 ## 6. Structure
 ```
 config/            full.yaml, quick.yaml (all experimental settings)
 src/data/          dataset loaders (replicate averaging, leakage-control groups)
 src/preprocessing/ sample-wise SNV / Savitzky–Golay
-src/models/        theory.py (deterministic equivalents), ridge.py (exact LOGO ridge, PLS1), forecasters.py (RPM + baselines)
+src/models/        theory.py (deterministic equivalents), ridge.py (exact LOGO ridge, PLS1), forecasters.py (RPM + baselines), bayes_rpm.py (B-RPM)
 src/training/      ground-truth learning curves, group-disjoint splits
 src/evaluation/    forecasting experiment engine
 src/statistics/    Wilcoxon + Holm, bootstrap CIs, rank-biserial
-experiments/       simulation (E0), refinement (RPM-w), robustness (E7), analysis + figures
+experiments/       simulation (E0), refinement (RPM-w), robustness (E7), bayes (B-RPM), campaign, fullres*, analysis + figures
 scripts/           data download
 tests/             unit tests
 ```

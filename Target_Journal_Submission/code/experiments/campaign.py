@@ -1,4 +1,4 @@
-"""Real-world case study (session 4): planning a calibration campaign with a target RMSEP.
+"""Real-world case study: planning a calibration campaign with a target RMSEP.
 
 A laboratory must reach a target RMSEP T and wants to buy as few reference analyses as possible; the largest affordable
 calibration is N_max (the largest truth-grid size of the task, >= 800). Targets: T = (1 + tau) x true RMSEP at N_max,

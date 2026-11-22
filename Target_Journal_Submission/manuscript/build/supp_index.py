@@ -48,7 +48,7 @@ FIGS = [
     ("Fig11_dataset_overview", "Data-set overview: number of samples and eigen-decay exponent by family."),
 ]
 NOTES = [("EXPERIMENT_DESIGN_preregistration.md", "Pre-specified protocol of the first design (time-stamped)"),
-         ("BRPM_preregistration_addendum.md", "Pre-specification addendum for B-RPM (hypotheses HB1–HB4), reproduced verbatim as committed; 'version 2' refers to the final re-analysis reported in the article and 'identification set' to the compatible set"),
+         ("BRPM_preregistration_addendum.md", "Pre-specification addendum for B-RPM (hypotheses HB1–HB4), reproduced as committed (internal file references removed); 'version 2' refers to the final re-analysis reported in the article and 'identification set' to the compatible set"),
          ("FULLRES_preregistration_addendum.md", "Pre-specification addendum 2: native-resolution confirmation study (hypothesis HC1)"),
          ("DATA_LEAKAGE_AUDIT.md", "Data-leakage audit")
 ]

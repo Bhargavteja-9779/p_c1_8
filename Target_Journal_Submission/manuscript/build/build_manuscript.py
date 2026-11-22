@@ -82,9 +82,13 @@ def format_reference(r):
                 ini = " ".join(p[0] + "." for p in re.split(r"[\s\-]+", giv) if p)
                 out.append(f"{ini} {fam}".strip())
             else:
-                out.append(a)
+                parts = a.split()
+                ini = " ".join(q[0] + "." for w in parts[:-1] for q in w.split("-") if q)
+                out.append(f"{ini} {parts[-1]}".strip())
         s = ", ".join(out)
         return s + (", et al." if len(lst) > 6 else "")
+    if "arxiv" in r and r.get("venue"):
+        return f"{authors(r['authors'])}, {r['title']}, in: {r['venue']} ({r['venue_year']}). arXiv:{r['arxiv']}."
     if "arxiv" in r:
         return f"{authors(r['authors'])}, {r['title']}, arXiv:{r['arxiv']} ({r['year']})."
     vol = f" {r['volume']}" if r.get("volume") else ""
@@ -210,7 +214,7 @@ def main():
                     "--resource-path", ROOT], check=True)
     content.postprocess_docx(docx_path)
     os.makedirs(os.path.join(ROOT, "REVIEW"), exist_ok=True)
-    write_provenance(os.path.join(ROOT, "REVIEW", "claim_evidence_map_numbers.md"))
+    write_provenance(os.path.join(ROOT, "results", "claim_evidence_map_numbers.md"))
     subprocess.run(["soffice", "--headless", "--convert-to", "pdf", "--outdir", OUT, docx_path], check=True,
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     print("built", docx_path, "and PDF;", len(order), "references")

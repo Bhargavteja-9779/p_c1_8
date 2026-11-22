@@ -1,6 +1,6 @@
 """Bayesian regularisation-path matching (B-RPM) on exactly the main-run pilots (identical seeds; paired comparisons).
 
-Specified 2026-11-21 (session 3) BEFORE any version-2 forecast result had been inspected; see EXPERIMENT_LOG.md and
+Specified 2026-11-21 BEFORE any version-2 forecast result had been inspected; see EXPERIMENT_LOG.md and
 supplementary/BRPM_preregistration_addendum.md. Variants:
   B-RPM        primary: prior on r and logit(eta) from large-sample fits of OTHER sources (LOSO), m_eff = 2
   B-RPM-LOFO   prior from other application FAMILIES only (soil tasks get a non-soil prior and vice versa)

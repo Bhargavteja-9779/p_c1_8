@@ -16,7 +16,7 @@ All data are public. The Open Soil Spectral Library v1.3 libraries are available
 
 # Declaration of generative AI and AI-assisted technologies in the writing process
 
-During the preparation of this work the authors used an AI assistant (Claude, Anthropic) for literature screening, code development and drafting of the manuscript text. The authors reviewed and edited all content, verified every reference against Crossref, DataCite or arXiv, and take full responsibility for the content of the publication.
+During the preparation of this work the authors used Claude (Anthropic) in order to assist with literature screening, code development and drafting and language editing of the manuscript text. After using this tool, the authors reviewed and edited the content as needed, re-ran and checked all analyses, verified every reference against Crossref, DataCite or arXiv, and take full responsibility for the content of the published article.
 
 # Funding
 

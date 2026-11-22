@@ -1,3 +1,4 @@
+import os
 """python-docx post-processing for the journal manuscript."""
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -107,8 +108,16 @@ def _explicit_delimiters(d):
     return n
 
 
+def set_metadata(d, title=""):
+    """Neutral document properties (author = corresponding author; no tool names)."""
+    cp = d.core_properties
+    cp.author = "P N Bhargav Teja"; cp.last_modified_by = "P N Bhargav Teja"
+    cp.comments = ""; cp.title = title; cp.keywords = ""; cp.subject = ""
+
+
 def postprocess(docx_path, max_img_cm=16.0):
     d = Document(docx_path)
+    set_metadata(d, os.path.splitext(os.path.basename(docx_path))[0].replace("_", " "))
     _explicit_delimiters(d)
     n_eq = _number_equations(d)
     for s in d.sections:

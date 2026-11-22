@@ -1,0 +1,33 @@
+ANALYTICA CHIMICA ACTA (Elsevier) - SUBMISSION PACKAGE
+Article type: Research Paper
+Title: What can a pilot set tell about a calibration learning curve? An observability limit for
+       sample-size planning in spectroscopy
+
+BEFORE UPLOADING - fill these placeholders (search for "[" in each file):
+  * Second author name, both affiliations, corresponding e-mail (05_Manuscript.docx title block,
+    04_Title_Page.docx, 01_Cover_Letter.docx, CRediT statement in 05_Manuscript.docx).
+    If there is no second author, delete "[Second author]", the "b" affiliation and the second
+    CRediT entry, and change "authors" to "author" in the declarations.
+  * Add e-mail addresses to 11_Suggested_Reviewers.docx and check each affiliation online.
+  * Then regenerate the PDFs from Word (File > Save as PDF) if you edited a .docx.
+
+FILE -> EDITORIAL MANAGER ITEM TYPE
+  01_Cover_Letter.docx              Cover Letter
+  02_Highlights.docx                Highlights (5 bullets, each <= 85 characters)
+  03_Graphical_Abstract/*.tif       Graphical Abstract (1328 x 531 px minimum; TIFF or PDF)
+  04_Title_Page.docx                Title Page (with author details)
+  05_Manuscript.docx                Manuscript (editable source; figures and tables embedded,
+                                    line and page numbers, structured abstract 235 words)
+  05_Manuscript_reference.pdf       optional - for your own check of the rendering
+  06_Figures/Figure_1..7.tif|.pdf   Figure (upload one file per figure, in numerical order;
+                                    600 dpi TIFF or vector PDF)
+  08_Supplementary_Material.docx    Supplementary Material (Tables S1-S30, Figures S1-S7, Notes 1-4)
+  09_Declaration_of_Competing_Interest.docx   Declaration of Interest
+  10_Declaration_of_Generative_AI_Use.docx    (statement is also inside the manuscript; upload if
+                                    the system offers a slot, otherwise the in-manuscript one suffices)
+  11_Suggested_Reviewers.docx       enter the names in the "Suggest Reviewers" step
+
+Questions in the submission form:
+  Funding: none. Competing interests: none. Data: all public (see Data availability).
+  Code: available on request (as stated in the manuscript).
+  Ethics: no human or animal subjects.

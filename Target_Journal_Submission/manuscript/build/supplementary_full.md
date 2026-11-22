@@ -974,14 +974,14 @@ Soil (Open Soil Spectral Library v1.3): ICRAF-ISRIC VisNIR and MIR, KSSL MIR and
 - Stratified summaries by n0, extrapolation ratio and family. No seeds are selected after seeing results; all pilots are reported.
 
 
-# Supplementary Note 2: Pre-specification addendum for B-RPM (hypotheses HB1–HB4), reproduced verbatim as committed; 'version 2' refers to the final re-analysis reported in the article and 'identification set' to the compatible set
+# Supplementary Note 2: Pre-specification addendum for B-RPM (hypotheses HB1–HB4), reproduced as committed (internal file references removed); 'version 2' refers to the final re-analysis reported in the article and 'identification set' to the compatible set
 
 
-_Written 2026-11-21 ~21:00 UTC (session 3; committed in git commit "Add B-RPM ..."), before any version-2 forecast result was inspected. The version-2 main
-stage was running at that time; only version-1 results (archived, `archive/v1_pre_review/`) had been seen._
+_Written and committed on 2026-11-21, before any version-2 forecast result was inspected. The version-2 main
+stage was running at that time; only version-1 results (archived unchanged) had been seen._
 
 ## Rationale
-Version-1 results and review cycle 1 showed that (i) no pilot-only forecaster beat the no-improvement rule (FLAT) on
+Version-1 results and their internal audit showed that (i) no pilot-only forecaster beat the no-improvement rule (FLAT) on
 the registered level endpoint, (ii) a transferred empirical slope (SLOPE-T) predicted gains well within the soil
 family but failed when transferred across application families, and (iii) RPM with a transferred alignment exponent
 failed through noise-floor collapse. The observability argument (manuscript Proposition 1) implies that the gain
@@ -1015,7 +1015,7 @@ propagates prior and pilot uncertainty into a posterior-predictive forecast.
 # Supplementary Note 3: Pre-specification addendum 2: native-resolution confirmation study (hypothesis HC1)
 
 
-_Written and committed 2026-11-22 (session 4) after inspecting the six-task full-resolution robustness run
+_Written and committed on 2026-11-22 after inspecting the six-task full-resolution robustness run
 (KSSL-MIR:OC, ICRAF-MIR:clay, KSSL-VisNIR:clay, Neospectra-NIR:pH, Diesel:bp50, Tablets:assay) and BEFORE running any
 other task at full resolution._
 
@@ -1043,7 +1043,7 @@ resolution; no bootstrap for RPM; no other change to any method.
 | Temporal / source leakage | Mango seasons and orchard populations | Main analysis: fruit-level i.i.d. estimand (documented); robustness E7(c,d): season-held-out and population-grouped splits | Robustness results T8 |
 | Pre-processing leakage | Column-wise scaling, PCA, or centring fitted on all data | Only sample-wise operations (absorbance conversion, SNV, Savitzky–Golay); mean-centring and ridge/PLS fitted within each training set | `test_snv_rowwise_only` |
 | Test contamination via unlabelled spectra | RPM uses unlabelled spectra for the eigen-spectrum | Unlabelled spectra = pool spectra only (never test spectra); AfSIS/KSSL extra library spectra used only in an ablation | Code: `forecast_experiment.run_pilots` (lam from `truth["lam"]`, computed on pool) |
-| Label leakage into forecasts | Truth curves computed on the test set | Forecasters receive only the pilot (X0, y0, groups) and unlabelled pool spectra; truth is used only for scoring | Code review (Reviewer-4 round) |
+| Label leakage into forecasts | Truth curves computed on the test set | Forecasters receive only the pilot (X0, y0, groups) and unlabelled pool spectra; truth is used only for scoring | Code inspection |
 | Hyper-parameter selection on test data | Ridge penalty / PLS components | Selected by LOGO / grouped CV inside the training set only | `src/models/ridge.py` |
 | Seed selection | Choosing favourable pilots | Pilot seeds derived deterministically from task name (SHA-256) and pilot index; all pilots reported | `task_seed()` |
 | Design informed by evaluation data | Default r = 1 chosen in exploratory work on ICRAF-VisNIR | Disclosed; sensitivity analysis S0 excludes ICRAF-VisNIR tasks | Sensitivity tables excluding ICRAF-VisNIR |

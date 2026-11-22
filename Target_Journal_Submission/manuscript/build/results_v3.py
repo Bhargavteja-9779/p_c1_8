@@ -371,7 +371,7 @@ COVER_LETTER = [
     "batch improves sample-size decisions more than any choice of forecaster.",
     "The work connects to current themes in Analytica Chimica Acta: validation design and leakage, the error structure of reference values "
     "and replicates, and calibration-set size. The study follows a time-stamped, pre-specified design. The new method and its hypotheses were fixed before "
-    "the results were seen, negative outcomes are reported, all data are public, and the complete code (one-command rerun) will be deposited in a public repository on acceptance and is available to referees on request.",
+    "the results were seen, negative outcomes are reported, all data are public, and the complete code (one-command rerun) will be made available on request.",
     "The manuscript has not been published and is not under consideration elsewhere. All authors approved the submission and declare no "
     "competing interests.",
 ]

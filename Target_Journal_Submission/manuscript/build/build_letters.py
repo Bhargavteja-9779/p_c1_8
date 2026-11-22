@@ -39,7 +39,7 @@ def highlights(lines, path):
 
 def cover_letter(paragraphs, title, path):
     d = _doc()
-    for t in ("[Corresponding author name]", "[Department, Institution]", "[Address]", "[E-mail]", "", "[Date]", ""):
+    for t in ("P N Bhargav Teja", "[Department, Institution]", "[Address]", "[E-mail]", "", "[Date]", ""):
         d.add_paragraph(t)
     d.add_paragraph("The Editors\nAnalytica Chimica Acta")
     d.add_paragraph("")
@@ -50,7 +50,7 @@ def cover_letter(paragraphs, title, path):
     for para in paragraphs:
         d.add_paragraph(para).paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     d.add_paragraph("Yours sincerely,")
-    d.add_paragraph("[Corresponding author name], on behalf of all authors")
+    d.add_paragraph("P N Bhargav Teja (corresponding author), on behalf of all authors")
     d.save(path)
 
 

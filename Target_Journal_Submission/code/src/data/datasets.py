@@ -60,8 +60,15 @@ def _cache_path(cache_dir, key):
     return os.path.join(cache_dir, key + ".npz")
 
 
+FULLRES = os.environ.get("RPM_FULLRES") == "1"     # full-resolution spectra (robustness experiment)
+FULLRES_DIV = {"mir": 4, "visnir": 5, "nir": 4}      # step 16 -> 4 cm-1; 10 -> 2 nm; 8 -> 2 nm
+
+
 def _read_ossl(raw_root, folder, stype, rng_axis, suffix, cache_dir):
-    key = f"ossl_{folder}_{stype}"
+    if FULLRES:
+        a0, a1, st = rng_axis
+        rng_axis = (a0, a1, max(1, st // FULLRES_DIV.get(stype, 1)))
+    key = f"ossl_{folder}_{stype}" + ("_full" if FULLRES else "")
     cp = _cache_path(cache_dir, key)
     if os.path.exists(cp):
         z = np.load(cp, allow_pickle=True)
@@ -249,8 +256,9 @@ def load_diesel(raw_root, prop, prep="snv"):
     X = S[:, :len(axis)]
     y = np.array([lab.get(l, np.nan) for l in s_lab], float)
     ok = np.isfinite(y) & np.all(np.isfinite(X), 1)
-    X, y = X[ok][:, ::2], y[ok]
-    axis = axis[::2]
+    dec = 1 if FULLRES else 2
+    X, y = X[ok][:, ::dec], y[ok]
+    axis = axis[::dec]
     Xp = preprocess(X, prep, absorbance_from_reflectance=False)
     return Task(name=f"Diesel:{prop}", family="fuel", X=Xp, y=y, groups=np.arange(len(y)), wavelengths=axis,
                 meta={"library": "Diesel (SWRI)", "property": prop, "transform": "none", "unit": "-",
@@ -269,7 +277,8 @@ def load_tablets(raw_root, prep="snv"):
         X, o = _ev_mat(path, f"{part}_1"); Y, _ = _ev_mat(path, f"{part}_Y")
         Xs.append(X); ys.append(Y[:, 2])  # columns: weight, hardness, assay
         axis = np.asarray(o.axisscale[1, 0], float)
-    X = np.vstack(Xs)[:, ::3]; y = np.concatenate(ys); axis = axis[::3]
+    dec = 1 if FULLRES else 3
+    X = np.vstack(Xs)[:, ::dec]; y = np.concatenate(ys); axis = axis[::dec]
     ok = np.isfinite(y) & np.all(np.isfinite(X), 1)
     Xp = preprocess(X[ok], prep, absorbance_from_reflectance=False)
     return Task(name="Tablets:assay", family="pharma", X=Xp, y=y[ok], groups=np.arange(ok.sum()), wavelengths=axis,

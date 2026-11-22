@@ -4,7 +4,7 @@
 
 # CRediT authorship contribution statement
 
-**[Author 1]:** Conceptualization, Methodology, Software, Formal analysis, Investigation, Data curation, Visualization, Writing – original draft. **[Author 2]:** Supervision, Validation, Writing – review & editing. *(Placeholders — to be completed by the authors.)*
+**P N Bhargav Teja:** Conceptualization, Methodology, Software, Formal analysis, Investigation, Data curation, Visualization, Writing – original draft. **[Second author]:** Validation, Writing – review & editing.
 
 # Declaration of competing interest
 
@@ -12,12 +12,16 @@ The authors declare that they have no known competing financial interests or per
 
 # Data availability
 
-All data are public. The Open Soil Spectral Library v1.3 libraries are available from the OSSL public bucket. The mango data are at Mendeley Data (doi:10.17632/46htwnp833). The diesel, IDRC-2002 tablet and CGL data are in the Eigenvector Research archive, and the Tecator data are OpenML data set 505. The complete code, configuration files, per-pilot raw results, statistics, tables and figures are provided as Supplementary Material and will be deposited in a public repository upon acceptance. A single script (`run_all.py`) reproduces every number in this article.
+All data are public. The Open Soil Spectral Library v1.3 libraries are available from the OSSL public bucket. The mango data are at Mendeley Data (doi:10.17632/46htwnp833). The diesel, IDRC-2002 tablet and CGL data are in the Eigenvector Research archive, and the Tecator data are OpenML data set 505. The code that reproduces every number, table and figure of this article (one-command rerun) will be made available on request.
 
 # Declaration of generative AI and AI-assisted technologies in the writing process
 
-During the preparation of this work the authors used an AI assistant (Claude, Anthropic) for literature screening, code development and drafting of the manuscript text. The authors reviewed and edited all content, verified every reference against Crossref, DataCite or arXiv, and take full responsibility for the content of the publication. *(Authors: confirm or amend this statement according to the actual use.)*
+During the preparation of this work the authors used an AI assistant (Claude, Anthropic) for literature screening, code development and drafting of the manuscript text. The authors reviewed and edited all content, verified every reference against Crossref, DataCite or arXiv, and take full responsibility for the content of the publication.
+
+# Funding
+
+This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors.
 
 # Acknowledgements
 
-The authors thank the providers of the Open Soil Spectral Library (Woodwell Climate Research Center, USDA-NRCS Kellogg Soil Survey Laboratory, ICRAF/ISRIC, the Africa Soil Information Service), N. Anderson, K. Walsh, P. Subedi and J. Walsh for the mango data, Southwest Research Institute and Eigenvector Research for the diesel and shoot-out data, and the IDRC shoot-out organisers. *(Funding: [to be completed].)*
+The authors thank the providers of the Open Soil Spectral Library (Woodwell Climate Research Center, USDA-NRCS Kellogg Soil Survey Laboratory, ICRAF/ISRIC, the Africa Soil Information Service), N. Anderson, K. Walsh, P. Subedi and J. Walsh for the mango data, Southwest Research Institute and Eigenvector Research for the diesel and shoot-out data, and the IDRC shoot-out organisers. 

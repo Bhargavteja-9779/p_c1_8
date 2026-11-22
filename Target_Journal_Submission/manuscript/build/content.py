@@ -26,9 +26,9 @@ def context(numbers, RES, TAB):
 def front_matter(ctx):
     from results_v3 import ABSTRACT_BACKGROUND, ABSTRACT_RESULTS, ABSTRACT_SIGNIFICANCE
     lines = [f"# {TITLE}", "",
-             "[Author 1]^a^, [Author 2]^a,\\*^", "",
-             "^a^ [Department, Institution, City, Country]", "",
-             "\\* Corresponding author: [name, e-mail]", "",
+             "P N Bhargav Teja^a,\\*^, [Second author]^b^", "",
+             "^a^ [Department, Institution, City, Country]", "", "^b^ [Department, Institution, City, Country]", "",
+             "\\* Corresponding author: P N Bhargav Teja, [e-mail]", "",
              "## Abstract", "",
              f"**Background:** {ABSTRACT_BACKGROUND}", "",
              f"**Results:** {ABSTRACT_RESULTS}", "",

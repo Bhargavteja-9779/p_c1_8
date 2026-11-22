@@ -1063,5 +1063,32 @@
   "pages": "884-908",
   "type": "journal-article",
   "publisher": "Institute of Mathematical Statistics"
+ },
+ "angelopoulos2022": {
+  "arxiv": "2208.02814",
+  "verified": true,
+  "title": "Conformal Risk Control",
+  "authors": [
+   "A. N. Angelopoulos",
+   "S. Bates",
+   "A. Fisch",
+   "L. Lei",
+   "T. Schuster"
+  ],
+  "year": 2022,
+  "note": "ICLR 2024"
+ },
+ "angelopoulos2023": {
+  "doi": "10.1561/9781638281597",
+  "verified": true,
+  "title": "Conformal Prediction: A Gentle Introduction",
+  "authors": [
+   "Angelopoulos, Anastasios N.",
+   "Bates, Stephen"
+  ],
+  "year": 2023,
+  "journal": "Foundations and Trends in Machine Learning",
+  "publisher": "Now Publishers",
+  "type": "book"
  }
 }

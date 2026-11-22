@@ -88,6 +88,22 @@ def bayes_context(ROOT):
     c["sd_brpm_unreach"] = f"{100 * sbt.loc['one-shot:B-RPM'].xs('unreachable', level=1).mean():.0f}%"
     t9 = T("TB9_fixed_target"); t9 = t9[t9.n_target == 800].set_index("n0")
     c["ft800_brpm_50"] = _f(t9.loc[50, "B-RPM"]); c["ft800_brpm_100"] = _f(t9.loc[100, "B-RPM"]); c["ft800_brpm_200"] = _f(t9.loc[200, "B-RPM"])
+    cp = T("TB12_campaign_planning").set_index("policy")
+    def _cp(k, col, pct=False):
+        v = cp.loc[k, col]
+        return f"{100 * v:.0f}%" if pct else f"{v:.2f}"
+    for k in cp.index:
+        kk = k.replace(":", "_").replace("-", "_")
+        c[f"cp_ok_{kk}"] = _cp(k, "success_rate", True); c[f"cp_over_{kk}"] = _cp(k, "cost_over_oracle")
+    c["cp_ntasks"] = str(int(cp.loc["FIXED", "n_tasks"]))
+    c["cp_save_lofo80"] = f"{100 * (1 - cp.loc['CAL80:B-RPM-LOFO', 'cost_over_oracle'] / cp.loc['FIXED', 'cost_over_oracle']):.0f}%"
+    c["cp_save_lofo90"] = f"{100 * (1 - cp.loc['CAL90:B-RPM-LOFO', 'cost_over_oracle'] / cp.loc['FIXED', 'cost_over_oracle']):.0f}%"
+    ct = T("TB12b_campaign_tests")
+    for _, r_ in ct.iterrows():
+        kk = f"{int(r_.q * 100)}_{r_.method}_{r_.endpoint}".replace("-", "_")
+        c[f"ct_d_{kk}"] = f"{100 * r_.mean_diff:+.0f}" if r_.endpoint == "success" else f"{r_.mean_diff:+.2f}"
+        c[f"ct_ci_{kk}"] = (f"{100 * r_.ci_lo:+.0f} to {100 * r_.ci_hi:+.0f}" if r_.endpoint == "success" else f"{r_.ci_lo:+.2f} to {r_.ci_hi:+.2f}")
+        c[f"ct_p_{kk}"] = _p(r_.p); c[f"ct_w_{kk}"] = f"{int(r_.wins)} of {int(r_.n_tasks)}"
     c["b_r_post"] = _f(num["brpm_r_post_median"], 2); c["b_eta_post"] = _f(num["brpm_eta_post_median"], 2)
     rel = T("TB7_info_reliability").set_index("info_tertile")
     for q in ("low", "mid", "high"):
@@ -260,7 +276,41 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "the set excluded the target in only {{gate_settled}} of cases, so a second batch was needed almost always. For decisions this fine, "
         "a 25–100-sample pilot cannot replace a second batch.")
     # 4.7 -----------------------------------------------------------------------------------------------------
-    s.append("## 4.7. Robustness, distribution shift and ablation")
+    s.append("## 4.7. Real-world case study: planning a calibration campaign")
+    s.append(
+        "Forecast errors matter only through the decisions they cause. We therefore simulated the decision a laboratory actually faces. "
+        "A target RMSEP $T$ must be reached at the lowest number of reference analyses, and the largest affordable calibration is $N_{\\max}$ "
+        "(the largest ground-truth size of the task, at least 800; {{cp_ntasks}} tasks). Targets were set 5% and 15% above the true RMSEP at "
+        "$N_{\\max}$, so they are reachable. The oracle buys the smallest grid size $n^{*}$ whose true RMSEP meets $T$. From a 50-sample "
+        "pilot, each forecaster buys the smallest size whose forecast meets $T$ (Supplementary Table [[ST:TB12_campaign_planning]]). Point "
+        "forecasts did not differ in skill so much as in implicit risk attitude (Fig. 9a). The transferred slope and IPL3 bought "
+        "{{cp_over_ONE_SLOPE_T}} and {{cp_over_ONE_IPL3}} times the oracle size and met the target in only {{cp_ok_ONE_SLOPE_T}} and "
+        "{{cp_ok_ONE_IPL3}} of cases. The no-improvement rule met it in {{cp_ok_ONE_FLAT}} but bought {{cp_over_ONE_FLAT}} times the oracle size, "
+        "close to the {{cp_over_FIXED}} of simply buying $N_{\\max}$. Proposition 1 predicts exactly this behaviour: each method's "
+        "assumption about the hidden signal fixes where it sits on the cost–risk curve.")
+    s.append(
+        "A planner needs a stated risk, not an implicit one. With a predictive distribution, the analyst can buy the smallest size $n$ with "
+        "$P(\\mathrm{RMSEP}(n)\\le T)\\ge q$ for a chosen confidence $q$. Following conformal risk control [@angelopoulos2022], we "
+        "calibrated the threshold on the realised outcomes of other data sources (LOSO) or of other application families (LOFO), so that "
+        "the achieved success rate matches $q$ without using the task being planned. For B-RPM the predictive distribution is its "
+        "posterior. For the transferred slope it is the empirical distribution of the slope rule's errors in the calibration groups, the "
+        "fairest probabilistic version of that rule. With calibration data from other sources of the same family, both delivered close to "
+        "the requested 80% and 90% (B-RPM {{cp_ok_CAL80_B_RPM}} and {{cp_ok_CAL90_B_RPM}}; slope {{cp_ok_CAL80_SLOPE_T}} and "
+        "{{cp_ok_CAL90_SLOPE_T}}). The slope rule was cheaper ({{cp_over_CAL80_SLOPE_T}} vs {{cp_over_CAL80_B_RPM}} times the oracle at 80%). "
+        "The situation that matters most in practice is a new application, for which no calibrations of the same family exist. When prior "
+        "and calibration came from other families, the slope planner promised 80% and 90% but delivered {{cp_ok_CAL80_SLOPE_T_LOFO}} and "
+        "{{cp_ok_CAL90_SLOPE_T_LOFO}}. B-RPM delivered {{cp_ok_CAL80_B_RPM_LOFO}} and {{cp_ok_CAL90_B_RPM_LOFO}}, an improvement of "
+        "{{ct_d_80_B_RPM_LOFO_success}} and {{ct_d_90_B_RPM_LOFO_success}} percentage points (95% CI {{ct_ci_80_B_RPM_LOFO_success}} and "
+        "{{ct_ci_90_B_RPM_LOFO_success}}; better on {{ct_w_80_B_RPM_LOFO_success}} tasks, p {{ct_p_80_B_RPM_LOFO_success}}; Supplementary Table "
+        "[[ST:TB12b_campaign_tests]]). It needed {{cp_save_lofo80}} and {{cp_save_lofo90}} fewer reference analyses than buying $N_{\\max}$ "
+        "(Fig. 9b). This is the practical value of transferring structure rather than curves. A slope learned on soils misleads a fruit or "
+        "fuel campaign, and vice versa, whereas a structural prior combined with the new task's own spectra and pilot path gives risk "
+        "statements that hold. Two caveats apply. Only {{cp_ntasks}} tasks (soils and mango) reach 800 samples, so for the soil tasks the "
+        "cross-family calibration rests on the mango task. And the 50- and 200-sample pilots are independent draws rather than nested "
+        "batches.")
+    s.append(f"![**Fig. 9.** Planning a calibration campaign to reach a target RMSEP. (a) Point forecasts from a 50-sample pilot: share of campaigns that met the target vs reference analyses bought relative to the oracle. (b) Decision-calibrated planning at requested success rates of 80% and 90% (dotted lines), with prior and calibration from other data sources (solid) or other application families (dashed). Black square: buy the maximum.]({fig('Fig9_campaign_planning')}){{width=16cm}}")
+    # 4.8 -----------------------------------------------------------------------------------------------------
+    s.append("## 4.8. Robustness, distribution shift and ablation")
     s.append(
         "On six representative tasks, B-RPM was evaluated with raw-absorbance and first-derivative spectra, Kennard–Stone-selected pilots and "
         "noisier reference values, and on mango under a new-season and an orchard-population shift (Supplementary Table [[ST:T8_robustness]]). "
@@ -279,8 +329,9 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "{{sim_FLAT_2}}). This is the cost of importing information that Proposition 1 makes unavoidable. The pre-specified ablations "
         "(Supplementary Table [[ST:T7_ablation]]) showed that freeing the alignment exponent without a prior is the most damaging choice "
         "(Section 2.4).")
-    # 4.8 -----------------------------------------------------------------------------------------------------
-    s.append("## 4.8. Comparison with previous work and practical recommendations")
+    # 4.9 -----------------------------------------------------------------------------------------------------
+    s.append("## 4.9. Comparison with previous work and practical recommendations")
+    s.append(table_md(_table_related(), "Comparison with previous approaches to sample-size planning and learning-curve forecasting. ✓ = addressed; – = not addressed.", "Table 3"))
     s.append(
         "Learning-curve extrapolation for sample-size planning in analytical spectroscopy [@ali2018] and in classification more generally "
         "[@mukherjee2003; @figueroa2012; @beleites2013] has relied on the assumption that the curve's shape can be read from a pilot. Our results "
@@ -302,6 +353,19 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "pilots at random from the target population. A space-filling selection such as Kennard–Stone remains the right choice for building "
         "the final calibration, but not for forecasting.")
     return "\n\n".join(x for x in s if x)
+
+
+def _table_related():
+    rows = [
+        ("Inverse-power-law extrapolation [@mukherjee2003; @figueroa2012; @ali2018]", "Classification / spectroscopy", "–", "–", "–", "–", "Delta-method bands", "–"),
+        ("Test-set size planning [@beleites2013]", "Classification (spectroscopy)", "–", "–", "–", "–", "Binomial CI", "–"),
+        ("Minimum-sample-size criteria [@riley2020; @konstantinidis2025]", "Regression (low-dim. / chemometrics)", "–", "–", "–", "–", "–", "–"),
+        ("Random-matrix scaling exponent [@wei2022]", "Regression (neural features)", "✓", "✓", "–", "–", "–", "–"),
+        ("Learned curve priors (AutoML) [@adriaensen2023]", "Training curves (epochs)", "–", "–", "✓", "–", "Posterior", "–"),
+        ("This work: B-RPM + compatible set", "Multivariate calibration (NIR/MIR)", "✓", "✓", "✓", "✓", "Posterior + calibrated", "✓"),
+    ]
+    return pd.DataFrame(rows, columns=["Approach", "Setting", "Uses unlabelled spectra", "Theory-derived curve shape",
+                                       "Explicit transferable prior", "Identifiability analysis", "Uncertainty", "Decision-calibrated planning"])
 
 
 def _table2(TAB):

@@ -70,6 +70,32 @@
 | `collapse_n` | 38 | `tables/T9b_kappa_collapse_dispersion.csv` |
 | `collapse_ref` | 0.515 | `tables/T9b_kappa_collapse_dispersion.csv` |
 | `collapse_sd` | 0.037 | `tables/T9b_kappa_collapse_dispersion.csv` |
+| `cp_ntasks` | 24 | `results/numbers.json` |
+| `cp_ok_CAL80_B_RPM` | 82% | `results/numbers.json` |
+| `cp_ok_CAL80_B_RPM_LOFO` | 72% | `results/numbers.json` |
+| `cp_ok_CAL80_SLOPE_T` | 74% | `results/numbers.json` |
+| `cp_ok_CAL80_SLOPE_T_LOFO` | 28% | `results/numbers.json` |
+| `cp_ok_CAL90_B_RPM` | 91% | `results/numbers.json` |
+| `cp_ok_CAL90_B_RPM_LOFO` | 88% | `results/numbers.json` |
+| `cp_ok_CAL90_SLOPE_T` | 87% | `results/numbers.json` |
+| `cp_ok_CAL90_SLOPE_T_LOFO` | 40% | `results/numbers.json` |
+| `cp_ok_ONE_FLAT` | 77% | `results/numbers.json` |
+| `cp_ok_ONE_IPL3` | 32% | `results/numbers.json` |
+| `cp_ok_ONE_SLOPE_T` | 21% | `results/numbers.json` |
+| `cp_over_CAL80_B_RPM` | 3.05 | `results/numbers.json` |
+| `cp_over_CAL80_SLOPE_T` | 2.05 | `results/numbers.json` |
+| `cp_over_FIXED` | 4.17 | `results/numbers.json` |
+| `cp_over_ONE_FLAT` | 3.04 | `results/numbers.json` |
+| `cp_over_ONE_IPL3` | 1.14 | `results/numbers.json` |
+| `cp_over_ONE_SLOPE_T` | 0.50 | `results/numbers.json` |
+| `cp_save_lofo80` | 39% | `results/numbers.json` |
+| `cp_save_lofo90` | 20% | `results/numbers.json` |
+| `ct_ci_80_B_RPM_LOFO_success` | +34 to +55 | `results/numbers.json` |
+| `ct_ci_90_B_RPM_LOFO_success` | +36 to +59 | `results/numbers.json` |
+| `ct_d_80_B_RPM_LOFO_success` | +45 | `results/numbers.json` |
+| `ct_d_90_B_RPM_LOFO_success` | +47 | `results/numbers.json` |
+| `ct_p_80_B_RPM_LOFO_success` | < 0.001 | `results/numbers.json` |
+| `ct_w_80_B_RPM_LOFO_success` | 23 of 24 | `results/numbers.json` |
 | `fam_soil_brpm` | 0.214 | `results/numbers.json` |
 | `fam_soil_brpm_lofo` | 0.230 | `results/numbers.json` |
 | `fam_soil_slope` | 0.258 | `results/numbers.json` |

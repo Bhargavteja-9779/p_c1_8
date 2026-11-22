@@ -8,6 +8,8 @@ import re
 
 TABLES = [
     ("TB2_brpm_paired", "Paired comparisons of B-RPM (pre-specified hypotheses HB1–HB2 and exploratory comparisons): mean improvement over the reference (positive favours B-RPM), bootstrap 95% CI, Wilcoxon p (task level, Holm-adjusted) and source-level results."),
+    ("TB12_campaign_planning", "Campaign-planning case study: share of campaigns meeting the target RMSEP, reference analyses bought relative to the oracle, total cost with recourse and purchase rounds, for fixed, one-shot, staged, risk-based and decision-calibrated policies."),
+    ("TB12b_campaign_tests", "Paired comparisons of decision-calibrated planning (B-RPM vs transferred slope; task level): difference in success rate and in cost relative to the oracle."),
     ("TB11_hidden_signal", "Share of the apparent error floor at the observability horizon of a pilot that is learnable target power, per task and pilot size (large-sample fits)."),
     ("TB5_idset", "Prior-free compatible set: coverage of the true RMSEP, median width factor and median information fraction, by extrapolation ratio and pilot size (HB4)."),
     ("TB8_bias_by_ratio", "Mean signed log error by extrapolation ratio for all forecasters (pooled over tasks)."),

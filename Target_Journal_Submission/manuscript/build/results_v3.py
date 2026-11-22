@@ -286,7 +286,7 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "forecasts did not differ in skill so much as in implicit risk attitude (Fig. 9a). The transferred slope and IPL3 bought "
         "{{cp_over_ONE_SLOPE_T}} and {{cp_over_ONE_IPL3}} times the oracle size and met the target in only {{cp_ok_ONE_SLOPE_T}} and "
         "{{cp_ok_ONE_IPL3}} of cases. The no-improvement rule met it in {{cp_ok_ONE_FLAT}} but bought {{cp_over_ONE_FLAT}} times the oracle size, "
-        "close to the {{cp_over_FIXED}} of simply buying $N_{\\max}$. Proposition 1 predicts exactly this behaviour: each method's "
+        "close to the {{cp_over_FIXED}} of simply buying $N_{\\max}$. This is consistent with Proposition 1: each method's "
         "assumption about the hidden signal fixes where it sits on the cost–risk curve.")
     s.append(
         "A planner needs a stated risk, not an implicit one. With a predictive distribution, the analyst can buy the smallest size $n$ with "
@@ -360,7 +360,7 @@ def _table_related():
         ("Inverse-power-law extrapolation [@mukherjee2003; @figueroa2012; @ali2018]", "Classification / spectroscopy", "–", "–", "–", "–", "Delta-method bands", "–"),
         ("Test-set size planning [@beleites2013]", "Classification (spectroscopy)", "–", "–", "–", "–", "Binomial CI", "–"),
         ("Minimum-sample-size criteria [@riley2020; @konstantinidis2025]", "Regression (low-dim. / chemometrics)", "–", "–", "–", "–", "–", "–"),
-        ("Random-matrix scaling exponent [@wei2022]", "Regression (neural features)", "✓", "✓", "–", "–", "–", "–"),
+        ("Random-matrix scaling exponent [@wei2022]", "Regression (neural features)", "✓ (features)", "✓", "–", "–", "–", "–"),
         ("Learned curve priors (AutoML) [@adriaensen2023]", "Training curves (epochs)", "–", "–", "✓", "–", "Posterior", "–"),
         ("This work: B-RPM + compatible set", "Multivariate calibration (NIR/MIR)", "✓", "✓", "✓", "✓", "Posterior + calibrated", "✓"),
     ]

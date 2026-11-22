@@ -37,7 +37,7 @@ def fig_idset_examples(df, paths, tasks=("KSSL-VisNIR:clay", "Mango:DM", "Diesel
     _save(fig, paths, "Fig3_identification_set_examples")
 
 
-def hidden_signal_table(paths, n0s=(25, 50, 100, 150)):
+def hidden_signal_table(paths, n0s=(25, 50, 100, 200)):
     """Share of the pilot's apparent error floor N(kappa_0) that is learnable target power (large-sample fit, r free):
     H = sum_k s_k (k0/(lam_k+k0))^2 / N(k0), at the observability horizon kappa_0 of a pilot of n0 samples."""
     from src.models.theory import solve_kappa
@@ -62,24 +62,23 @@ def fig_observability(paths):
     t = pd.read_csv(os.path.join(paths["tables"], "TB5_idset.csv"))
     r = t[t.by == "ratio"]; q = t[t.by == "n0"]
     hs = hidden_signal_table(paths)
-    fig, axs = plt.subplots(1, 4, figsize=(10.6, 2.4), gridspec_kw={"wspace": 0.6})
-    grp = [g.hidden_share.values for _, g in hs.groupby("n0")]
-    axs[0].boxplot(grp, tick_labels=[str(k) for k in sorted(hs.n0.unique())], widths=0.55, showfliers=False,
-                   medianprops=dict(color=BLUE, lw=1.6))
-    axs[0].set_title("(a) Learnable signal hidden\nin the pilot's error floor"); axs[0].set_xlabel("Pilot size $n_0$")
-    axs[0].set_ylabel("Share of $N(\\kappa_0)$"); axs[0].set_ylim(0, None)
-    axs = axs[1:]
+    fig, AX = plt.subplots(1, 4, figsize=(10.6, 2.4), gridspec_kw={"wspace": 0.6})
     x = np.arange(len(r))
-    axs[0].bar(x, r.coverage, color=BLUE); axs[0].axhline(0.9, color=INK2, ls="--", lw=1)
-    axs[0].set_xticks(x, [f"{v}x" for v in r.ratio]); axs[0].set_ylim(0, 1); axs[0].set_title("(b) Truth inside compatible set")
-    axs[0].set_xlabel("Extrapolation ratio $n/n_0$"); axs[0].set_ylabel("Share of forecasts")
-    axs[1].plot(x, r.median_width_factor, color=ORANGE, marker="s"); axs[1].set_yscale("log")
-    axs[1].set_xticks(x, [f"{v}x" for v in r.ratio]); axs[1].set_title("(c) Width of compatible set")
-    axs[1].set_xlabel("Extrapolation ratio $n/n_0$"); axs[1].set_ylabel("Upper/lower RMSEP")
+    AX[0].bar(x, r.coverage, color=BLUE); AX[0].axhline(0.9, color=INK2, ls="--", lw=1)
+    AX[0].set_xticks(x, [f"{v}x" for v in r.ratio]); AX[0].set_ylim(0, 1); AX[0].set_title("(a) Truth inside compatible set")
+    AX[0].set_xlabel("Extrapolation ratio $n/n_0$"); AX[0].set_ylabel("Share of forecasts")
+    AX[1].plot(x, r.median_width_factor, color=ORANGE, marker="s"); AX[1].set_yscale("log")
+    AX[1].set_xticks(x, [f"{v}x" for v in r.ratio]); AX[1].set_title("(b) Width of compatible set")
+    AX[1].set_xlabel("Extrapolation ratio $n/n_0$"); AX[1].set_ylabel("Upper/lower RMSEP")
+    grp = [g.hidden_share.values for _, g in hs.groupby("n0")]
+    AX[2].boxplot(grp, tick_labels=[str(k) for k in sorted(hs.n0.unique())], widths=0.55, showfliers=False,
+                  medianprops=dict(color=BLUE, lw=1.6))
+    AX[2].set_title("(c) Learnable signal hidden\nin the pilot's error floor"); AX[2].set_xlabel("Pilot size $n_0$")
+    AX[2].set_ylabel("Share of $N(\\kappa_0)$"); AX[2].set_ylim(0, None)
     xq = np.arange(len(q))
-    axs[2].bar(xq, q.info_fraction_median, color=AQUA)
-    axs[2].set_xticks(xq, [str(int(v)) for v in q.n0]); axs[2].set_ylim(0, 1)
-    axs[2].set_title("(d) Information from the pilot"); axs[2].set_xlabel("Pilot size $n_0$"); axs[2].set_ylabel("Median information fraction")
+    AX[3].bar(xq, q.info_fraction_median, color=AQUA)
+    AX[3].set_xticks(xq, [str(int(v)) for v in q.n0]); AX[3].set_ylim(0, 1)
+    AX[3].set_title("(d) Information from the pilot"); AX[3].set_xlabel("Pilot size $n_0$"); AX[3].set_ylabel("Median information fraction")
     fig.subplots_adjust(left=0.06, right=0.99, bottom=0.2, top=0.82); _save(fig, paths, "Fig5_observability")
 
 
@@ -124,12 +123,6 @@ def make_bayes_figures(paths):
     fig_idset_examples(df, paths); fig_observability(paths); fig_bias(paths); fig_transfer(df, paths); fig_campaign(paths)
 
 
-if __name__ == "__main__":
-    root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-    make_bayes_figures({"raw_out": os.path.join(root, "results", "raw"), "tables": os.path.join(root, "tables"),
-                        "figures": os.path.join(root, "figures"), "results": os.path.join(root, "results")})
-
-
 def fig_campaign(paths):
     """Planning a calibration campaign: success rate vs samples bought (relative to the oracle) for all policies."""
     t = pd.read_csv(os.path.join(paths["tables"], "TB12_campaign_planning.csv")).set_index("policy")
@@ -160,3 +153,9 @@ def fig_campaign(paths):
     ax.set_title("(b) Decision-calibrated planning (requested 80% / 90%)"); ax.set_xlabel("Samples bought / oracle")
     ax.legend(fontsize=6.3, loc="lower right")
     fig.tight_layout(); _save(fig, paths, "Fig9_campaign_planning")
+
+
+if __name__ == "__main__":
+    root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    make_bayes_figures({"raw_out": os.path.join(root, "results", "raw"), "tables": os.path.join(root, "tables"),
+                        "figures": os.path.join(root, "figures"), "results": os.path.join(root, "results")})

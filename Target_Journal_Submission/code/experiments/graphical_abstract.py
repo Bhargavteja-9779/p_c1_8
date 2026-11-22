@@ -40,7 +40,7 @@ def main(root):
     ax.set_title("Soil organic carbon (MIR), 50-sample pilot\n(pilot with the median B-RPM error)", fontsize=12, color=INK2)
     ax2 = fig.add_axes([0.72, 0.0, 0.28, 1.0]); ax2.axis("off")
     ax2.text(0.02, 0.84, "Observability limit", fontsize=18, weight="bold", color=INK)
-    ax2.text(0.02, 0.70, "signal below $\\kappa_0$ looks like noise:\nthe gain is not identifiable\nfrom the pilot alone", fontsize=13.5, color=INK2, va="top")
+    ax2.text(0.02, 0.70, "signal below $\\kappa_0$ looks like noise:\nthe gain cannot be read from\nthe pilot's error path", fontsize=13.5, color=INK2, va="top")
     ax2.text(0.02, 0.42, "B-RPM", fontsize=18, weight="bold", color=BLUE)
     ax2.text(0.02, 0.32, "explicit, transferable prior;\nbetter gain forecasts;\nplanning at a stated risk", fontsize=13.5, color=INK2, va="top")
     fig.savefig(os.path.join(root, "manuscript", "Graphical_Abstract.png"), dpi=100, facecolor="white")

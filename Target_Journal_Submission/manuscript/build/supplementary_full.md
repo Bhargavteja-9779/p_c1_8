@@ -24,7 +24,148 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | level | B-RPM-LOFO | SLOPE-T-LOFO | 0.101 | 0.048 | 0.158 | 0.001 | 27 | 38 | 0.031 | 0.641 | 4 | 8 | 0.011 |
 | level | B-RPM-LOFO | FLAT | -0.030 | -0.046 | -0.014 | 0.000819 | 10 | 38 | -0.033 | 0.023 | 1 | 8 | 0.008 |
 
-**Table S2.** Prior-free compatible set: coverage of the true RMSEP, median width factor and median information fraction, by extrapolation ratio and pilot size (HB4).
+**Table S2.** Share of the apparent error floor at the observability horizon of a pilot that is learnable target power, per task and pilot size (large-sample fits).
+
+| task | family | n0 | hidden share | p |
+|---|---|---|---|---|
+| AfSIS1-MIR:OC | soil | 25 | 0.289 | 212 |
+| AfSIS1-MIR:OC | soil | 50 | 0.082 | 212 |
+| AfSIS1-MIR:OC | soil | 100 | 0.007 | 212 |
+| AfSIS1-MIR:OC | soil | 150 | 0.000646 | 212 |
+| AfSIS1-MIR:clay | soil | 25 | 0.250 | 212 |
+| AfSIS1-MIR:clay | soil | 50 | 0.096 | 212 |
+| AfSIS1-MIR:clay | soil | 100 | 0.015 | 212 |
+| AfSIS1-MIR:clay | soil | 150 | 0.002 | 212 |
+| AfSIS1-MIR:pH | soil | 25 | 0.377 | 212 |
+| AfSIS1-MIR:pH | soil | 50 | 0.169 | 212 |
+| AfSIS1-MIR:pH | soil | 100 | 0.031 | 212 |
+| AfSIS1-MIR:pH | soil | 150 | 0.005 | 212 |
+| CGL:casein | mixture | 25 | 0.532 | 116 |
+| CGL:casein | mixture | 50 | 0.217 | 116 |
+| CGL:casein | mixture | 100 | 0.010 | 116 |
+| CGL:glucose | mixture | 25 | 0.668 | 116 |
+| CGL:glucose | mixture | 50 | 0.342 | 116 |
+| CGL:glucose | mixture | 100 | 0.020 | 116 |
+| CGL:lactate | mixture | 25 | 0.470 | 116 |
+| CGL:lactate | mixture | 50 | 0.164 | 116 |
+| CGL:lactate | mixture | 100 | 0.007 | 116 |
+| CGL:moisture | mixture | 25 | 0.374 | 116 |
+| CGL:moisture | mixture | 50 | 0.114 | 116 |
+| CGL:moisture | mixture | 100 | 0.004 | 116 |
+| Diesel:bp50 | fuel | 25 | 0.252 | 200 |
+| Diesel:bp50 | fuel | 50 | 0.124 | 200 |
+| Diesel:bp50 | fuel | 100 | 0.037 | 200 |
+| Diesel:bp50 | fuel | 150 | 0.007 | 200 |
+| Diesel:cn | fuel | 25 | 0.005 | 200 |
+| Diesel:cn | fuel | 50 | 0.002 | 200 |
+| Diesel:cn | fuel | 100 | 0.000425 | 200 |
+| Diesel:cn | fuel | 150 | 7.01e-05 | 200 |
+| Diesel:d4052 | fuel | 25 | 0.556 | 200 |
+| Diesel:d4052 | fuel | 50 | 0.311 | 200 |
+| Diesel:d4052 | fuel | 100 | 0.097 | 200 |
+| Diesel:d4052 | fuel | 150 | 0.018 | 200 |
+| Diesel:freeze | fuel | 25 | 0.110 | 200 |
+| Diesel:freeze | fuel | 50 | 0.049 | 200 |
+| Diesel:freeze | fuel | 100 | 0.014 | 200 |
+| Diesel:freeze | fuel | 150 | 0.003 | 200 |
+| Diesel:total | fuel | 25 | 0.010 | 200 |
+| Diesel:total | fuel | 50 | 0.002 | 200 |
+| Diesel:total | fuel | 100 | 0.000431 | 200 |
+| Diesel:total | fuel | 150 | 5.64e-05 | 200 |
+| Diesel:visc | fuel | 25 | 0.192 | 200 |
+| Diesel:visc | fuel | 50 | 0.095 | 200 |
+| Diesel:visc | fuel | 100 | 0.029 | 200 |
+| Diesel:visc | fuel | 150 | 0.006 | 200 |
+| ICRAF-MIR:CEC | soil | 25 | 0.215 | 212 |
+| ICRAF-MIR:CEC | soil | 50 | 0.068 | 212 |
+| ICRAF-MIR:CEC | soil | 100 | 0.008 | 212 |
+| ICRAF-MIR:CEC | soil | 150 | 0.000713 | 212 |
+| ICRAF-MIR:OC | soil | 25 | 0.208 | 212 |
+| ICRAF-MIR:OC | soil | 50 | 0.064 | 212 |
+| ICRAF-MIR:OC | soil | 100 | 0.007 | 212 |
+| ICRAF-MIR:OC | soil | 150 | 0.000621 | 212 |
+| ICRAF-MIR:clay | soil | 25 | 0.254 | 212 |
+| ICRAF-MIR:clay | soil | 50 | 0.102 | 212 |
+| ICRAF-MIR:clay | soil | 100 | 0.016 | 212 |
+| ICRAF-MIR:clay | soil | 150 | 0.002 | 212 |
+| ICRAF-MIR:pH | soil | 25 | 0.209 | 212 |
+| ICRAF-MIR:pH | soil | 50 | 0.075 | 212 |
+| ICRAF-MIR:pH | soil | 100 | 0.010 | 212 |
+| ICRAF-MIR:pH | soil | 150 | 0.001 | 212 |
+| ICRAF-VisNIR:CEC | soil | 25 | 0.031 | 208 |
+| ICRAF-VisNIR:CEC | soil | 50 | 0.010 | 208 |
+| ICRAF-VisNIR:CEC | soil | 100 | 0.002 | 208 |
+| ICRAF-VisNIR:CEC | soil | 150 | 0.000595 | 208 |
+| ICRAF-VisNIR:OC | soil | 25 | 0.153 | 208 |
+| ICRAF-VisNIR:OC | soil | 50 | 0.074 | 208 |
+| ICRAF-VisNIR:OC | soil | 100 | 0.026 | 208 |
+| ICRAF-VisNIR:OC | soil | 150 | 0.008 | 208 |
+| ICRAF-VisNIR:clay | soil | 25 | 0.237 | 208 |
+| ICRAF-VisNIR:clay | soil | 50 | 0.137 | 208 |
+| ICRAF-VisNIR:clay | soil | 100 | 0.057 | 208 |
+| ICRAF-VisNIR:clay | soil | 150 | 0.018 | 208 |
+| ICRAF-VisNIR:pH | soil | 25 | 0.247 | 208 |
+| ICRAF-VisNIR:pH | soil | 50 | 0.143 | 208 |
+| ICRAF-VisNIR:pH | soil | 100 | 0.059 | 208 |
+| ICRAF-VisNIR:pH | soil | 150 | 0.018 | 208 |
+| KSSL-MIR:CEC | soil | 25 | 0.519 | 212 |
+| KSSL-MIR:CEC | soil | 50 | 0.230 | 212 |
+| KSSL-MIR:CEC | soil | 100 | 0.035 | 212 |
+| KSSL-MIR:CEC | soil | 150 | 0.003 | 212 |
+| KSSL-MIR:OC | soil | 25 | 0.445 | 212 |
+| KSSL-MIR:OC | soil | 50 | 0.128 | 212 |
+| KSSL-MIR:OC | soil | 100 | 0.010 | 212 |
+| KSSL-MIR:OC | soil | 150 | 0.000517 | 212 |
+| KSSL-MIR:clay | soil | 25 | 0.493 | 212 |
+| KSSL-MIR:clay | soil | 50 | 0.284 | 212 |
+| KSSL-MIR:clay | soil | 100 | 0.075 | 212 |
+| KSSL-MIR:clay | soil | 150 | 0.013 | 212 |
+| KSSL-MIR:pH | soil | 25 | 0.336 | 212 |
+| KSSL-MIR:pH | soil | 50 | 0.155 | 212 |
+| KSSL-MIR:pH | soil | 100 | 0.031 | 212 |
+| KSSL-MIR:pH | soil | 150 | 0.004 | 212 |
+| KSSL-VisNIR:CEC | soil | 25 | 0.178 | 208 |
+| KSSL-VisNIR:CEC | soil | 50 | 0.093 | 208 |
+| KSSL-VisNIR:CEC | soil | 100 | 0.036 | 208 |
+| KSSL-VisNIR:CEC | soil | 150 | 0.011 | 208 |
+| KSSL-VisNIR:OC | soil | 25 | 0.298 | 208 |
+| KSSL-VisNIR:OC | soil | 50 | 0.154 | 208 |
+| KSSL-VisNIR:OC | soil | 100 | 0.058 | 208 |
+| KSSL-VisNIR:OC | soil | 150 | 0.017 | 208 |
+| KSSL-VisNIR:clay | soil | 25 | 0.189 | 208 |
+| KSSL-VisNIR:clay | soil | 50 | 0.102 | 208 |
+| KSSL-VisNIR:clay | soil | 100 | 0.041 | 208 |
+| KSSL-VisNIR:clay | soil | 150 | 0.013 | 208 |
+| KSSL-VisNIR:pH | soil | 25 | 0.233 | 208 |
+| KSSL-VisNIR:pH | soil | 50 | 0.132 | 208 |
+| KSSL-VisNIR:pH | soil | 100 | 0.054 | 208 |
+| KSSL-VisNIR:pH | soil | 150 | 0.017 | 208 |
+| Mango:DM | fruit | 25 | 0.299 | 94 |
+| Mango:DM | fruit | 50 | 0.141 | 94 |
+| Neospectra-NIR:CEC | soil | 25 | 0.047 | 150 |
+| Neospectra-NIR:CEC | soil | 50 | 0.010 | 150 |
+| Neospectra-NIR:CEC | soil | 100 | 0.000413 | 150 |
+| Neospectra-NIR:OC | soil | 25 | 0.104 | 150 |
+| Neospectra-NIR:OC | soil | 50 | 0.024 | 150 |
+| Neospectra-NIR:OC | soil | 100 | 0.000948 | 150 |
+| Neospectra-NIR:clay | soil | 25 | 0.119 | 150 |
+| Neospectra-NIR:clay | soil | 50 | 0.035 | 150 |
+| Neospectra-NIR:clay | soil | 100 | 0.003 | 150 |
+| Neospectra-NIR:pH | soil | 25 | 0.131 | 150 |
+| Neospectra-NIR:pH | soil | 50 | 0.039 | 150 |
+| Neospectra-NIR:pH | soil | 100 | 0.003 | 150 |
+| Tablets:assay | pharma | 25 | 0.073 | 216 |
+| Tablets:assay | pharma | 50 | 0.010 | 216 |
+| Tablets:assay | pharma | 100 | 0.000368 | 216 |
+| Tablets:assay | pharma | 150 | 1.66e-05 | 216 |
+| Tecator:fat | meat | 25 | 0.007 | 99 |
+| Tecator:fat | meat | 50 | 0.001 | 99 |
+| Tecator:moisture | meat | 25 | 0.000377 | 99 |
+| Tecator:moisture | meat | 50 | 4.74e-05 | 99 |
+| Tecator:protein | meat | 25 | 0.192 | 99 |
+| Tecator:protein | meat | 50 | 0.065 | 99 |
+
+**Table S3.** Prior-free compatible set: coverage of the true RMSEP, median width factor and median information fraction, by extrapolation ratio and pilot size (HB4).
 
 | ratio | coverage | median width factor | info fraction median | n | by | n0 |
 |---|---|---|---|---|---|---|
@@ -38,7 +179,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | – | 0.929 | 5.377 | 0.826 | 2900 | n0 | 100.000 |
 | – | 0.911 | 1.727 | 0.953 | 1720 | n0 | 200.000 |
 
-**Table S3.** Mean signed log error by extrapolation ratio for all forecasters (pooled over tasks). Key forecasters shown; all forecasters are in the machine-readable table files.
+**Table S4.** Mean signed log error by extrapolation ratio for all forecasters (pooled over tasks). Key forecasters shown; all forecasters are in the machine-readable table files.
 
 | rb | B-RPM | B-RPM-LOFO | RPM | IPL3 | WEI | FLAT | SLOPE-T | SLOPE-T-LOFO |
 |---|---|---|---|---|---|---|---|---|
@@ -48,7 +189,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | 16 | -0.114 | -0.111 | 0.103 | -0.381 | -0.360 | 0.192 | -0.244 | -0.489 |
 | >=32 | -0.134 | -0.146 | 0.169 | -0.665 | -0.414 | 0.271 | -0.326 | -0.673 |
 
-**Table S4.** Reachability decisions split into reachable and unreachable targets.
+**Table S5.** Reachability decisions split into reachable and unreachable targets.
 
 | N | 400 | 400.1 | 800 | 800.1 |
 |---|---|---|---|---|
@@ -66,7 +207,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | gated | 0.83788 | 0.740228 | 0.7571875 | 0.9210416666666666 |
 | gated_second_batch_share | 0.88 | 0.9944 | 0.8895833333333334 | 0.94375 |
 
-**Table S5.** Calibration tasks: pool and test sizes, number of spectral variables, largest ground-truth calibration size and eigen-decay exponent (slope of log λk vs log k, k ≤ 60).
+**Table S6.** Calibration tasks: pool and test sizes, number of spectral variables, largest ground-truth calibration size and eigen-decay exponent (slope of log λk vs log k, k ≤ 60).
 
 | task | n pool | n test | p | max n truth | eigen decay exponent | truth seconds | family |
 |---|---|---|---|---|---|---|---|
@@ -109,7 +250,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | Tecator:moisture | 161 | 54 | 99 | 100 | 5.677 | 1.343 | meat |
 | Tecator:protein | 161 | 54 | 99 | 100 | 5.669 | 1.247 | meat |
 
-**Table S6.** Theory validity: deterministic-equivalent curve fitted to the full-pool cross-validation path (r free or r = 1) vs empirical ridge and PLS learning curves (absolute log error per task).
+**Table S7.** Theory validity: deterministic-equivalent curve fitted to the full-pool cross-validation path (r free or r = 1) vs empirical ridge and PLS learning curves (absolute log error per task).
 
 | task | mode | mean abs err ridge | mean abs err pls | r | noise frac |
 |---|---|---|---|---|---|
@@ -190,7 +331,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | Tecator:protein | fixed1 | 0.273 | 0.323 | 1.000 | 0.060 |
 | Tecator:protein | free | 0.224 | 0.274 | 0.406 | 0.034 |
 
-**Table S7.** POST HOC: regression of the ground-truth learning-curve slope (log RMSE per doubling of n) on large-sample theory parameters, and Spearman correlations.
+**Table S8.** POST HOC: regression of the ground-truth learning-curve slope (log RMSE per doubling of n) on large-sample theory parameters, and Spearman correlations.
 
 | descriptor | spearman rho | p | r2 |
 |---|---|---|---|
@@ -200,7 +341,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | n_pool | 0.453 | 0.004 | – |
 | OLS: slope ~ r + log(noise fraction) + eigen-decay | – | 2.3e-11 | 0.783 |
 
-**Table S8.** All forecasters on the version-2 design: task-level mean absolute log error (level), mean absolute gain error, mean signed bias, and source-level means.
+**Table S9.** All forecasters on the version-2 design: task-level mean absolute log error (level), mean absolute gain error, mean signed bias, and source-level means.
 
 | method | n tasks | level mae | level median | mean bias | gain mae | gain median | level mae source | gain mae source |
 |---|---|---|---|---|---|---|---|---|
@@ -222,7 +363,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | SLOPE-T | 38 | 0.286 | 0.284 | -0.125 | 0.188 | 0.116 | 0.279 | 0.195 |
 | SLOPE-T-LOFO | 38 | 0.392 | 0.398 | -0.248 | 0.278 | 0.255 | 0.341 | 0.246 |
 
-**Table S9.** Level and gain error by application family for all forecasters. Key forecasters shown; all forecasters are in the machine-readable table files.
+**Table S10.** Level and gain error by application family for all forecasters. Key forecasters shown; all forecasters are in the machine-readable table files.
 
 | level 0 | level 1 | B-RPM | B-RPM-LOFO | RPM | IPL3 | WEI | FLAT | SLOPE-T | SLOPE-T-LOFO |
 |---|---|---|---|---|---|---|---|---|---|
@@ -239,7 +380,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | gain | pharma | 0.122 | 0.122 | 0.172 | 0.254 | 0.440 | 0.273 | 0.101 | 0.101 |
 | gain | soil | 0.158 | 0.171 | 0.243 | 0.299 | 0.217 | 0.292 | 0.109 | 0.259 |
 
-**Table S10.** Coverage and median width factor of 80% and 95% bands by family and pilot size, including the post-hoc leave-one-source-out recalibration of B-RPM.
+**Table S11.** Coverage and median width factor of 80% and 95% bands by family and pilot size, including the post-hoc leave-one-source-out recalibration of B-RPM.
 
 | method | stratum | value | cov80 | cov95 | median width factor80 | n tasks |
 |---|---|---|---|---|---|---|
@@ -310,7 +451,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | B-RPM-LOFO-cal (post hoc) | n0 | 200 | 0.801 | 0.946 | 1.469 | 25 |
 | B-RPM-LOFO-cal (post hoc) | all | all | 0.794 | 0.947 | 2.375 | 38 |
 
-**Table S11.** Brier score of the probabilistic decision 'an eightfold larger calibration set reduces RMSEP by at least 15%'.
+**Table S12.** Brier score of the probabilistic decision 'an eightfold larger calibration set reduces RMSEP by at least 15%'.
 
 | method | brier task mean | prevalence | mean prob | brier climatology |
 |---|---|---|---|---|
@@ -322,7 +463,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | RPM | 0.306 | 0.448 | 0.240 | 0.247 |
 | IPL3 | 0.277 | 0.448 | 0.487 | 0.247 |
 
-**Table S12.** Mean absolute per-task bias by extrapolation ratio (does not allow opposite task biases to cancel). Key forecasters shown; all forecasters are in the machine-readable table files.
+**Table S13.** Mean absolute per-task bias by extrapolation ratio (does not allow opposite task biases to cancel). Key forecasters shown; all forecasters are in the machine-readable table files.
 
 | rb | B-RPM | B-RPM-LOFO | RPM | IPL3 | WEI | FLAT | SLOPE-T | SLOPE-T-LOFO |
 |---|---|---|---|---|---|---|---|---|
@@ -332,7 +473,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | 16 | 0.143 | 0.149 | 0.131 | 0.381 | 0.361 | 0.192 | 0.251 | 0.489 |
 | >=32 | 0.171 | 0.191 | 0.182 | 0.665 | 0.418 | 0.271 | 0.337 | 0.673 |
 
-**Table S13.** B-RPM level error by tertile of the information fraction within each pilot size.
+**Table S14.** B-RPM level error by tertile of the information fraction within each pilot size.
 
 | n0 | level mae low | level mae mid | level mae high |
 |---|---|---|---|
@@ -341,7 +482,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | 100 | 0.233 | 0.163 | 0.185 |
 | 200 | 0.136 | 0.141 | 0.129 |
 
-**Table S14.** Forecast error for a fixed target calibration size (400, 800, 1600) by pilot size: value of a larger pilot or second batch.
+**Table S15.** Forecast error for a fixed target calibration size (400, 800, 1600) by pilot size: value of a larger pilot or second batch.
 
 | n target | n0 | n tasks | B-RPM | FLAT | IPL3 | RPM | SLOPE-T |
 |---|---|---|---|---|---|---|---|
@@ -358,7 +499,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | 1600 | 100 | 17 | 0.170 | 0.192 | 0.350 | 0.184 | 0.275 |
 | 1600 | 200 | 17 | 0.117 | 0.128 | 0.218 | 0.142 | 0.230 |
 
-**Table S15.** Reachability decisions for an absolute RMSEP target at budget N: one-shot (pilot N/8), staged (second batch, N/4) and compatible-set-gated policies.
+**Table S16.** Reachability decisions for an absolute RMSEP target at budget N: one-shot (pilot N/8), staged (second batch, N/4) and compatible-set-gated policies.
 
 | Unnamed: 0 | 400 | 800 |
 |---|---|---|
@@ -375,7 +516,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | gated | 0.789 | 0.839 |
 | gated_second_batch_share | 0.937 | 0.917 |
 
-**Table S16.** Forecast accuracy against the ridge ground truth (per-task means of |log(RMSE_fc/RMSE_true)|, bootstrap 95% CI over tasks, bias and share of forecasts within ±10% and ±20%).
+**Table S17.** Forecast accuracy against the ridge ground truth (per-task means of |log(RMSE_fc/RMSE_true)|, bootstrap 95% CI over tasks, bias and share of forecasts within ±10% and ±20%).
 
 | method | label | n tasks | mean abs logerr | ci95 lo | ci95 hi | median task abs logerr | median abs logerr rows | mean bias | pct within 10 | pct within 20 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -391,7 +532,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | DFOLS | Fixed-complexity formula (DF-OLS) | 38 | 1.198 | 0.929 | 1.491 | 1.059 | 0.246 | -1.089 | 23.007 | 40.318 |
 | SLOPE-T | Transferred slope (SLOPE-T) | 38 | 0.286 | 0.260 | 0.314 | 0.284 | 0.245 | -0.125 | 19.558 | 37.453 |
 
-**Table S17.** Forecast accuracy against the PLS ground truth.
+**Table S18.** Forecast accuracy against the PLS ground truth.
 
 | method | label | n tasks | mean abs logerr | ci95 lo | ci95 hi | median task abs logerr | median abs logerr rows | mean bias | pct within 10 | pct within 20 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -407,7 +548,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | DFOLS | Fixed-complexity formula (DF-OLS) | 38 | 1.217 | 0.946 | 1.514 | 1.080 | 0.263 | -1.128 | 21.606 | 38.250 |
 | SLOPE-T | Transferred slope (SLOPE-T) | 38 | 0.303 | 0.275 | 0.333 | 0.300 | 0.262 | -0.164 | 17.291 | 34.247 |
 
-**Table S18.** Sensitivity analysis excluding the four ICRAF-VisNIR tasks used in exploratory work.
+**Table S19.** Sensitivity analysis excluding the four ICRAF-VisNIR tasks used in exploratory work.
 
 | method | label | n tasks | mean abs logerr | ci95 lo | ci95 hi | median task abs logerr | median abs logerr rows | mean bias | pct within 10 | pct within 20 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -423,7 +564,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | DFOLS | Fixed-complexity formula (DF-OLS) | 34 | 1.251 | 0.955 | 1.566 | 1.076 | 0.261 | -1.138 | 21.518 | 38.276 |
 | SLOPE-T | Transferred slope (SLOPE-T) | 34 | 0.288 | 0.260 | 0.318 | 0.284 | 0.246 | -0.109 | 19.966 | 37.674 |
 
-**Table S19.** Pre-registered ablation of RPM (n0 ∈ {50,100}, 10 pilots per task).
+**Table S20.** Pre-registered ablation of RPM (n0 ∈ {50,100}, 10 pilots per task).
 
 | variant | n tasks | mean abs logerr | rpm same tasks | mean diff vs rpm | ci95 lo | ci95 hi | p raw | p holm | rank biserial |
 |---|---|---|---|---|---|---|---|---|---|
@@ -438,7 +579,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | RPM-cut0.5 | 38 | 0.286 | 0.258 | 0.028 | 0.010 | 0.048 | 0.040 | 0.239 | 0.382 |
 | RPM-cut0.95 | 38 | 0.257 | 0.258 | -0.000657 | -0.003 | 0.000606 | 0.376 | 1.000 | 0.207 |
 
-**Table S20.** Robustness and distribution-shift experiments (six representative tasks and mango shift scenarios).
+**Table S21.** Robustness and distribution-shift experiments (six representative tasks and mango shift scenarios).
 
 | variant | method | n tasks | mean abs logerr | mean bias | coverage80 |
 |---|---|---|---|---|---|
@@ -485,7 +626,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | shift_season | RPM-T | 1.000 | 0.105 | -0.065 | 77.778 |
 | shift_season | RPM-wT | 1.000 | 0.099 | 0.014 | 85.556 |
 
-**Table S21.** E0 simulation summarised by pilot size.
+**Table S22.** E0 simulation summarised by pilot size.
 
 | method | n0 | median abs err | median bias |
 |---|---|---|---|
@@ -508,7 +649,7 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | RPM-wT | 60 | 0.523 | -0.463 |
 | RPM-wT | 120 | 0.154 | -0.103 |
 
-**Table S22.** Measured run time per pilot.
+**Table S23.** Measured run time per pilot.
 
 | component | mean | median | max |
 |---|---|---|---|

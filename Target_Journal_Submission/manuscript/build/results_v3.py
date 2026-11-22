@@ -55,6 +55,9 @@ def bayes_context(ROOT):
     for n0 in (25, 50, 100, 200):
         c[f"info_{n0}"] = _f(iq.loc[n0, "info_fraction_median"], 2); c[f"idw_{n0}"] = f"{iq.loc[n0, 'median_width_factor']:.1f}"
     num = json.load(open(os.path.join(ROOT, "results", "bayes_numbers.json")))
+    hs = T("TB11_hidden_signal").groupby("n0").hidden_share.median()
+    for k in (25, 50, 100):
+        c[f"hid_{k}"] = f"{100 * hs.loc[k]:.0f}%" if hs.loc[k] >= 0.1 else f"{100 * hs.loc[k]:.1f}%"
     c["id_curve_cov"] = f"{100 * num['idset_curve_coverage_task_mean']:.0f}%"
     c["id_cov_all"] = f"{100 * num['idset_coverage_task_mean']:.0f}%"
     c["lofo_eta_post"] = _f(num["lofo_soil_eta_post_median"], 2); c["lofo_eta_prior"] = _f(num["lofo_soil_eta_prior_median"], 2)
@@ -145,18 +148,23 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
     # 4.3 -----------------------------------------------------------------------------------------------------
     s.append("## 4.3. What a pilot set can identify")
     s.append(
+        "How much learnable signal hides below the horizon of a real pilot can be computed from the large-sample fits. At the horizon "
+        "$\\kappa_0$ of a 25-sample pilot, a median {{hid_25}} of the apparent error floor $N(\\kappa_0)$ was target power that larger "
+        "calibrations learn, {{hid_50}} for 50 samples and {{hid_100}} for 100 samples (Fig. 6a; Supplementary Table "
+        "[[ST:TB11_hidden_signal]]). These shares are lower bounds for full-resolution spectra, because sub-sampling to 94–216 variables "
+        "lowers the horizon of a given pilot. "
         "Proposition 1 predicts that a pilot leaves the gain from additional samples undetermined unless prior information is added. The "
         "prior-free compatible set makes this measurable (Fig. 5). For every pilot it contains all learning curves of the family "
         "$s_k\\propto(\\lambda_k/\\lambda_1)^r$ that are consistent with the pilot's cross-validation path. Across all pilots and horizons the set "
         "contained the true ridge RMSEP in {{id_cov_all}} of forecasts (task average; pooled over forecasts {{id_cov_2}} at $n/n_0=2$ and "
-        "{{id_cov_32}} at $n/n_0\\ge32$; Fig. 6a), and the whole true curve of a pilot in {{id_curve_cov}}. In the controlled simulation, where the truth is a Monte-Carlo estimate rather than a fitted curve, coverage was "
+        "{{id_cov_32}} at $n/n_0\\ge32$; Fig. 6b), and the whole true curve of a pilot in {{id_curve_cov}}. In the controlled simulation, where the truth is a Monte-Carlo estimate rather than a fitted curve, coverage was "
         "{{sim_id_cov}} overall and at least {{sim_id_cov_min}} in every scenario. The theory therefore describes correctly what is compatible with "
         "a pilot. What a pilot can decide is a different matter. The median ratio between the upper and lower RMSEP of the set was {{id_w_2}} at "
-        "$n/n_0=2$, {{id_w_8}} at $n/n_0=8$ and {{id_w_32}} at $n/n_0\\ge32$ (Fig. 6b). Long extrapolations from a pilot alone are thus not merely "
+        "$n/n_0=2$, {{id_w_8}} at $n/n_0=8$ and {{id_w_32}} at $n/n_0\\ge32$ (Fig. 6c). Long extrapolations from a pilot alone are thus not merely "
         "inaccurate. They are undetermined, and any method that returns a narrow forecast does so because it has imported an assumption.")
     s.append(f"![**Fig. 5.** Learning-curve forecasts from one 50-sample pilot for three tasks. Grey: prior-free compatible set (all curves consistent with the pilot's cross-validation path, Section 2.4); blue: B-RPM posterior mean and 80% band; dotted: no-improvement rule; dashed: inverse power law (IPL3); black: true learning curve (independent test set).]({fig('Fig3_identification_set_examples')}){{width=16cm}}")
     s.append(
-        "The information fraction quantifies how much of the forecast comes from the pilot rather than the prior (Fig. 6c). Its median was "
+        "The information fraction quantifies how much of the forecast comes from the pilot rather than the prior (Fig. 6d). Its median was "
         "{{info_25}} for 25-sample pilots, {{info_50}} for 50, {{info_100}} for 100 and {{info_200}} for 200 samples. Below about 100 samples the "
         "gain forecast comes mainly from the prior. The high values at 100–200 samples partly reflect the wavelength sub-sampling to 94–216 "
         "variables: when $n_0$ approaches $p$, the horizon $\\kappa_0$ falls far below the leading eigenvalues and almost all modes are "
@@ -165,7 +173,7 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "when the pilot contradicts the prior). Within a pilot size it carried some warning value only for small pilots: B-RPM's mean absolute "
         "log error was {{rel25_low}} in the lowest and {{rel25_high}} in the highest within-size tertile at $n_0=25$ ({{rel50_low}} vs "
         "{{rel50_high}} at $n_0=50$), but {{rel200_low}} vs {{rel200_high}} at $n_0=200$ (Supplementary Table [[ST:TB7c_info_within_n0]]).")
-    s.append(f"![**Fig. 6.** Observability of learning curves. (a) Share of forecasts whose true RMSEP lies inside the prior-free compatible set; dashed line 90%. (b) Median width of the compatible set (ratio of upper to lower RMSEP). (c) Median information fraction of B-RPM (share of the prior variance of the gain removed by the pilot) by pilot size.]({fig('Fig5_observability')}){{width=16cm}}")
+    s.append(f"![**Fig. 6.** Observability of learning curves. (a) Share of the apparent error floor $N(\\kappa_0)$ at the horizon of a pilot of $n_0$ samples that is learnable target power (large-sample fits; boxes over tasks). (b) Share of forecasts whose true RMSEP lies inside the prior-free compatible set; dashed line 90%. (c) Median width of the compatible set (ratio of upper to lower RMSEP). (d) Median information fraction of B-RPM (share of the prior variance of the gain removed by the pilot) by pilot size.]({fig('Fig5_observability')}){{width=16cm}}")
     # 4.4 -----------------------------------------------------------------------------------------------------
     s.append("## 4.4. Forecasting accuracy")
     s.append(

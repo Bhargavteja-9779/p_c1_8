@@ -78,6 +78,9 @@
 | `ft800_brpm_200` | 0.121 | `results/numbers.json` |
 | `ft800_brpm_50` | 0.244 | `results/numbers.json` |
 | `gate_settled` | 7% | `results/numbers.json` |
+| `hid_100` | 1.5% | `results/numbers.json` |
+| `hid_25` | 22% | `results/numbers.json` |
+| `hid_50` | 9.6% | `results/numbers.json` |
 | `id_cov_2` | 88% | `results/numbers.json` |
 | `id_cov_32` | 98% | `results/numbers.json` |
 | `id_cov_all` | 91% | `results/numbers.json` |

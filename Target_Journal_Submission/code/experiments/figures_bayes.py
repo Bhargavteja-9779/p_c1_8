@@ -37,22 +37,50 @@ def fig_idset_examples(df, paths, tasks=("KSSL-VisNIR:clay", "Mango:DM", "Diesel
     _save(fig, paths, "Fig3_identification_set_examples")
 
 
+def hidden_signal_table(paths, n0s=(25, 50, 100, 150)):
+    """Share of the pilot's apparent error floor N(kappa_0) that is learnable target power (large-sample fit, r free):
+    H = sum_k s_k (k0/(lam_k+k0))^2 / N(k0), at the observability horizon kappa_0 of a pilot of n0 samples."""
+    from src.models.theory import solve_kappa
+    al = pd.read_csv(os.path.join(paths["results"], "alignment_exponents.csv")).set_index("task")
+    rows = []
+    for t in al.index:
+        z = np.load(os.path.join(paths["raw_out"], f"truth_{t.replace(':', '__')}.npz"), allow_pickle=True)
+        lam = z["lam"]; r = al.loc[t, "r_full_pool"]; eta = al.loc[t, "noise_frac_full_pool"]
+        sk = (lam / lam.max()) ** r; sig = eta / (1 - eta) * sk.sum()
+        for n0 in n0s:
+            if n0 >= len(lam) - 1:
+                continue
+            k0 = solve_kappa(lam, float(n0), np.array([1e-14 * lam.max()]))[0]
+            h = float(np.sum(sk * (k0 / (lam + k0)) ** 2))
+            rows.append({"task": t, "family": al.loc[t, "family"], "n0": n0, "hidden_share": h / (h + sig), "p": len(lam)})
+    d = pd.DataFrame(rows)
+    d.to_csv(os.path.join(paths["tables"], "TB11_hidden_signal.csv"), index=False)
+    return d
+
+
 def fig_observability(paths):
     t = pd.read_csv(os.path.join(paths["tables"], "TB5_idset.csv"))
     r = t[t.by == "ratio"]; q = t[t.by == "n0"]
-    fig, axs = plt.subplots(1, 3, figsize=(7.4, 2.3))
+    hs = hidden_signal_table(paths)
+    fig, axs = plt.subplots(1, 4, figsize=(10.6, 2.4), gridspec_kw={"wspace": 0.6})
+    grp = [g.hidden_share.values for _, g in hs.groupby("n0")]
+    axs[0].boxplot(grp, tick_labels=[str(k) for k in sorted(hs.n0.unique())], widths=0.55, showfliers=False,
+                   medianprops=dict(color=BLUE, lw=1.6))
+    axs[0].set_title("(a) Learnable signal hidden\nin the pilot's error floor"); axs[0].set_xlabel("Pilot size $n_0$")
+    axs[0].set_ylabel("Share of $N(\\kappa_0)$"); axs[0].set_ylim(0, None)
+    axs = axs[1:]
     x = np.arange(len(r))
     axs[0].bar(x, r.coverage, color=BLUE); axs[0].axhline(0.9, color=INK2, ls="--", lw=1)
-    axs[0].set_xticks(x, [f"{v}x" for v in r.ratio]); axs[0].set_ylim(0, 1); axs[0].set_title("(a) Truth inside compatible set")
+    axs[0].set_xticks(x, [f"{v}x" for v in r.ratio]); axs[0].set_ylim(0, 1); axs[0].set_title("(b) Truth inside compatible set")
     axs[0].set_xlabel("Extrapolation ratio $n/n_0$"); axs[0].set_ylabel("Share of forecasts")
     axs[1].plot(x, r.median_width_factor, color=ORANGE, marker="s"); axs[1].set_yscale("log")
-    axs[1].set_xticks(x, [f"{v}x" for v in r.ratio]); axs[1].set_title("(b) Width of compatible set")
-    axs[1].set_xlabel("Extrapolation ratio $n/n_0$"); axs[1].set_ylabel("Median upper/lower RMSEP")
+    axs[1].set_xticks(x, [f"{v}x" for v in r.ratio]); axs[1].set_title("(c) Width of compatible set")
+    axs[1].set_xlabel("Extrapolation ratio $n/n_0$"); axs[1].set_ylabel("Upper/lower RMSEP")
     xq = np.arange(len(q))
     axs[2].bar(xq, q.info_fraction_median, color=AQUA)
     axs[2].set_xticks(xq, [str(int(v)) for v in q.n0]); axs[2].set_ylim(0, 1)
-    axs[2].set_title("(c) Information from the pilot"); axs[2].set_xlabel("Pilot size $n_0$"); axs[2].set_ylabel("Median information fraction")
-    fig.tight_layout(); _save(fig, paths, "Fig5_observability")
+    axs[2].set_title("(d) Information from the pilot"); axs[2].set_xlabel("Pilot size $n_0$"); axs[2].set_ylabel("Median information fraction")
+    fig.subplots_adjust(left=0.06, right=0.99, bottom=0.2, top=0.82); _save(fig, paths, "Fig5_observability")
 
 
 def fig_bias(paths, methods=("B-RPM", "FLAT", "SLOPE-T", "RPM", "IPL3")):

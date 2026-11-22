@@ -8,6 +8,7 @@ import re
 
 TABLES = [
     ("TB2_brpm_paired", "Paired comparisons of B-RPM (pre-specified hypotheses HB1–HB2 and exploratory comparisons): mean improvement over the reference (positive favours B-RPM), bootstrap 95% CI, Wilcoxon p (task level, Holm-adjusted) and source-level results."),
+    ("TB11_hidden_signal", "Share of the apparent error floor at the observability horizon of a pilot that is learnable target power, per task and pilot size (large-sample fits)."),
     ("TB5_idset", "Prior-free compatible set: coverage of the true RMSEP, median width factor and median information fraction, by extrapolation ratio and pilot size (HB4)."),
     ("TB8_bias_by_ratio", "Mean signed log error by extrapolation ratio for all forecasters (pooled over tasks)."),
     ("TB10b_staged_decision_by_target", "Reachability decisions split into reachable and unreachable targets."),

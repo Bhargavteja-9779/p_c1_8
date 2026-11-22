@@ -108,3 +108,10 @@ RUNNING / TO RESUME:
     (Ali 2018, Figueroa 2012, Beleites 2013, Riley 2020/Konstantinidis 2025, Wei 2022, Adriaensen 2023, this work);
     update abstract/highlights/cover letter/GA; add TB12/TB12b/fullres tables to supp_index; rebuild all; commit/push.
  4. Optional: external datasets (agent was stopped; nothing found yet).
+
+## 10. Status 2026-11-22 ~12:30 UTC (session 4 continued)
+DONE: native-resolution study (38 tasks; HC1 NOT confirmed, reported; other results replicate) -> TC1-TC5, Section 4.8;
+campaign case study in manuscript (4.7, Fig 7); Table 3 related-work capability matrix; Proposition 2 (minimax bound);
+fresh-editor fixes (equations, glyphs, claims, figure count 7, abstract 238 words, body ~7.8k words).
+Fresh editor (cycle 3) estimate before fixes: desk-reject 0.55 -> ~0.40 with fixes; re-screen of v5 requested.
+REMAINING for user: second author name, affiliations, e-mail. Code: "available on request" (user choice).

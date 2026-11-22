@@ -124,6 +124,30 @@
 | `n_r_below_1` | 38 | `results/alignment_exponents.csv` |
 | `n_soil` | 23 | `tables/T1_tasks.csv` |
 | `n_tasks` | 38 | `tables/T1_tasks.csv` |
+| `nhid_100` | 2.8% | `results/numbers.json` |
+| `nhid_25` | 25% | `results/numbers.json` |
+| `nhid_50` | 13% | `results/numbers.json` |
+| `nr200_brpm` | 0.118 | `results/numbers.json` |
+| `nr200_flat` | 0.128 | `results/numbers.json` |
+| `nr_gen_B_RPM` | 0.252 | `results/numbers.json` |
+| `nr_gen_FLAT` | 0.244 | `results/numbers.json` |
+| `nr_ho_B_RPM` | 0.283 | `results/numbers.json` |
+| `nr_ho_FLAT` | 0.266 | `results/numbers.json` |
+| `nr_r_med` | 0.54 | `results/numbers.json` |
+| `nrg_ho_B_RPM` | 0.271 | `results/numbers.json` |
+| `nrg_ho_SLOPE_T` | 0.189 | `results/numbers.json` |
+| `nt_ci_ho_level_FLAT` | -0.036 to +0.004 | `results/numbers.json` |
+| `nt_d_ho_gain_FLAT` | +0.072 | `results/numbers.json` |
+| `nt_d_ho_gain_RPM` | +0.094 | `results/numbers.json` |
+| `nt_d_ho_level_FLAT` | -0.016 | `results/numbers.json` |
+| `nt_d_ho_level_IPL3` | +0.131 | `results/numbers.json` |
+| `nt_p_ho_gain_FLAT` | = 0.002 | `results/numbers.json` |
+| `nt_p_ho_gain_RPM` | < 0.001 | `results/numbers.json` |
+| `nt_p_ho_level_FLAT` | = 0.129 | `results/numbers.json` |
+| `nt_p_ho_level_IPL3` | = 0.001 | `results/numbers.json` |
+| `nt_w_ho_gain_FLAT` | 22 of 32 | `results/numbers.json` |
+| `nt_w_ho_gain_RPM` | 29 of 32 | `results/numbers.json` |
+| `nt_w_ho_level_IPL3` | 27 of 32 | `results/numbers.json` |
 | `r_max` | 0.88 | `results/alignment_exponents.csv` |
 | `r_median` | 0.55 | `results/alignment_exponents.csv` |
 | `r_min` | 0.32 | `results/alignment_exponents.csv` |
@@ -187,6 +211,7 @@
 | `slope_reg_vis` | -0.083 | `results/numbers.json` |
 | `slope_rho_noise` | +0.54 | `results/numbers.json` |
 | `soil_eta_ls` | 0.20 | `results/numbers.json` |
+| `sub_r_med` | 0.55 | `results/numbers.json` |
 | `tv_pls_mean` | 0.153 | `tables/T9_theory_validity_full_pool_fit.csv` |
 | `tv_pls_mean_r1` | 0.220 | `tables/T9_theory_validity_full_pool_fit.csv` |
 | `tv_pls_median` | 0.132 | `tables/T9_theory_validity_full_pool_fit.csv` |

@@ -10,6 +10,11 @@ TABLES = [
     ("TB2_brpm_paired", "Paired comparisons of B-RPM (pre-specified hypotheses HB1–HB2 and exploratory comparisons): mean improvement over the reference (positive favours B-RPM), bootstrap 95% CI, Wilcoxon p (task level, Holm-adjusted) and source-level results."),
     ("TB12_campaign_planning", "Campaign-planning case study: share of campaigns meeting the target RMSEP, reference analyses bought relative to the oracle, total cost with recourse and purchase rounds, for fixed, one-shot, staged, risk-based and decision-calibrated policies."),
     ("TB12b_campaign_tests", "Paired comparisons of decision-calibrated planning (B-RPM vs transferred slope; task level): difference in success rate and in cost relative to the oracle."),
+    ("TC1_native_resolution_summary", "Native-resolution confirmation study: level error, gain error and bias by method for the 32 held-out tasks, the 6 hypothesis-generating tasks and all 38 tasks."),
+    ("TC2_native_resolution_tests", "Native-resolution confirmation study: paired comparisons of B-RPM (HC1 and secondary endpoints), task and source level."),
+    ("TC3_native_resolution_by_family", "Native-resolution level error by application family (held-out tasks)."),
+    ("TC4_native_resolution_by_n0", "Native-resolution level error by pilot size (held-out tasks)."),
+    ("TC5_native_hidden_signal", "Native resolution: share of the apparent error floor at the observability horizon that is learnable target power."),
     ("TB11_hidden_signal", "Share of the apparent error floor at the observability horizon of a pilot that is learnable target power, per task and pilot size (large-sample fits)."),
     ("TB5_idset", "Prior-free compatible set: coverage of the true RMSEP, median width factor and median information fraction, by extrapolation ratio and pilot size (HB4)."),
     ("TB8_bias_by_ratio", "Mean signed log error by extrapolation ratio for all forecasters (pooled over tasks)."),
@@ -42,6 +47,7 @@ FIGS = [
 ]
 NOTES = [("EXPERIMENT_DESIGN_preregistration.md", "Pre-specified protocol of the first design (time-stamped)"),
          ("BRPM_preregistration_addendum.md", "Pre-specification addendum for B-RPM (hypotheses HB1–HB4), reproduced verbatim as committed; 'version 2' refers to the final re-analysis reported in the article and 'identification set' to the compatible set"),
+         ("FULLRES_preregistration_addendum.md", "Pre-specification addendum 2: native-resolution confirmation study (hypothesis HC1)"),
          ("DATA_LEAKAGE_AUDIT.md", "Data-leakage audit")
 ]
 

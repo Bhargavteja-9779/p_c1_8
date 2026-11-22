@@ -104,6 +104,24 @@ def bayes_context(ROOT):
         c[f"ct_d_{kk}"] = f"{100 * r_.mean_diff:+.0f}" if r_.endpoint == "success" else f"{r_.mean_diff:+.2f}"
         c[f"ct_ci_{kk}"] = (f"{100 * r_.ci_lo:+.0f} to {100 * r_.ci_hi:+.0f}" if r_.endpoint == "success" else f"{r_.ci_lo:+.2f} to {r_.ci_hi:+.2f}")
         c[f"ct_p_{kk}"] = _p(r_.p); c[f"ct_w_{kk}"] = f"{int(r_.wins)} of {int(r_.n_tasks)}"
+    tc1 = T("TC1_native_resolution_summary").set_index(["scope", "method"])
+    for sc, k in (("held-out (HC1)", "ho"), ("all", "all"), ("hypothesis-generating", "gen")):
+        for m in ("B-RPM", "FLAT", "RPM", "IPL3", "SLOPE-T"):
+            c[f"nr_{k}_{m.replace('-', '_')}"] = _f(tc1.loc[(sc, m), "level_mae"])
+            c[f"nrg_{k}_{m.replace('-', '_')}"] = _f(tc1.loc[(sc, m), "gain_mae"])
+    tc2 = T("TC2_native_resolution_tests")
+    for _, r_ in tc2.iterrows():
+        k = f"{'ho' if r_.scope.startswith('held') else 'all'}_{r_.endpoint}_{r_.reference}".replace("-", "_")
+        c[f"nt_d_{k}"] = f"{r_.improvement:+.3f}"; c[f"nt_ci_{k}"] = f"{r_.ci_lo:+.3f} to {r_.ci_hi:+.3f}"
+        c[f"nt_p_{k}"] = _p(r_.p); c[f"nt_w_{k}"] = f"{int(r_.wins)} of {int(r_.n)}"
+    tc5 = T("TC5_native_hidden_signal").groupby("n0").hidden_share.median()
+    for k in (25, 50, 100):
+        c[f"nhid_{k}"] = f"{100 * tc5.loc[k]:.0f}%" if tc5.loc[k] >= 0.1 else f"{100 * tc5.loc[k]:.1f}%"
+    alf = pd.read_csv(os.path.join(ROOT, "results", "fullres_all", "alignment_exponents_fullres.csv"))
+    als = pd.read_csv(os.path.join(ROOT, "results", "alignment_exponents.csv"))
+    c["nr_r_med"] = _f(alf.r_full_pool.median(), 2); c["sub_r_med"] = _f(als.r_full_pool.median(), 2)
+    tc4 = T("TC4_native_resolution_by_n0").set_index("n0")
+    c["nr200_brpm"] = _f(tc4.loc[200, "B-RPM"]); c["nr200_flat"] = _f(tc4.loc[200, "FLAT"])
     c["b_r_post"] = _f(num["brpm_r_post_median"], 2); c["b_eta_post"] = _f(num["brpm_eta_post_median"], 2)
     rel = T("TB7_info_reliability").set_index("info_tertile")
     for q in ("low", "mid", "high"):
@@ -167,8 +185,7 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "How much learnable signal hides below the horizon of a real pilot can be computed from the large-sample fits. At the horizon "
         "$\\kappa_0$ of a 25-sample pilot, a median {{hid_25}} of the apparent error floor $N(\\kappa_0)$ was target power that larger "
         "calibrations learn, {{hid_50}} for 50 samples and {{hid_100}} for 100 samples (Fig. 6a; Supplementary Table "
-        "[[ST:TB11_hidden_signal]]). These shares are lower bounds for full-resolution spectra, because sub-sampling to 94–216 variables "
-        "lowers the horizon of a given pilot. "
+        "[[ST:TB11_hidden_signal]]); at native spectral resolution the shares were larger (Section 4.8). "
         "Proposition 1 predicts that a pilot leaves the gain from additional samples undetermined unless prior information is added. The "
         "prior-free compatible set makes this measurable (Fig. 5). For every pilot it contains all learning curves of the family "
         "$s_k\\propto(\\lambda_k/\\lambda_1)^r$ that are consistent with the pilot's cross-validation path. Across all pilots and horizons the set "
@@ -184,7 +201,7 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "{{info_25}} for 25-sample pilots, {{info_50}} for 50, {{info_100}} for 100 and {{info_200}} for 200 samples. Below about 100 samples the "
         "gain forecast comes mainly from the prior. The high values at 100–200 samples partly reflect the wavelength sub-sampling to 94–216 "
         "variables: when $n_0$ approaches $p$, the horizon $\\kappa_0$ falls far below the leading eigenvalues and almost all modes are "
-        "resolved. For full-resolution spectra the horizon of a given pilot would be higher. The fraction is "
+        "resolved. At native resolution the horizon of a given pilot is higher (Section 4.8). The fraction is "
         "therefore largely a function of pilot size, and {{info_neg}} of the values were negative (posterior spread wider than prior spread, "
         "when the pilot contradicts the prior). Within a pilot size it carried some warning value only for small pilots: B-RPM's mean absolute "
         "log error was {{rel25_low}} in the lowest and {{rel25_high}} in the highest within-size tertile at $n_0=25$ ({{rel50_low}} vs "
@@ -309,8 +326,29 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "cross-family calibration rests on the mango task. And the 50- and 200-sample pilots are independent draws rather than nested "
         "batches.")
     s.append(f"![**Fig. 9.** Planning a calibration campaign to reach a target RMSEP. (a) Point forecasts from a 50-sample pilot: share of campaigns that met the target vs reference analyses bought relative to the oracle. (b) Decision-calibrated planning at requested success rates of 80% and 90% (dotted lines), with prior and calibration from other data sources (solid) or other application families (dashed). Black square: buy the maximum.]({fig('Fig9_campaign_planning')}){{width=16cm}}")
-    # 4.8 -----------------------------------------------------------------------------------------------------
-    s.append("## 4.8. Robustness, distribution shift and ablation")
+    # 4.8 native resolution
+    s.append("## 4.8. Native spectral resolution: a pre-specified confirmation study")
+    s.append(
+        "The main analysis used spectra sub-sampled to 94–216 variables. A first robustness run on six tasks at near-native resolution "
+        "(MIR 4 cm$^{-1}$, Vis–NIR and NIR 2 nm, fuel and tablet spectra undecimated) suggested that B-RPM was more accurate than the "
+        "no-improvement rule there. Because those six tasks had generated the hypothesis, we fixed and committed a confirmatory test (HC1) "
+        "before running the other 32 tasks: at native resolution, B-RPM has a lower level error than FLAT on the held-out tasks "
+        "(Supplementary Material, addendum 2). HC1 was not confirmed. On the 32 held-out tasks the mean absolute log errors were "
+        "{{nr_ho_B_RPM}} for B-RPM and {{nr_ho_FLAT}} for FLAT (difference {{nt_d_ho_level_FLAT}}, 95% CI {{nt_ci_ho_level_FLAT}}, p "
+        "{{nt_p_ho_level_FLAT}}). Rerun with the main study's seeds, the six hypothesis-generating tasks also no longer favoured B-RPM "
+        "({{nr_gen_B_RPM}} vs {{nr_gen_FLAT}}), so the initial observation reflected pilot sampling noise. Everything else replicated. B-RPM "
+        "forecast gains better than FLAT ({{nt_d_ho_gain_FLAT}}, better on {{nt_w_ho_gain_FLAT}} held-out tasks, p {{nt_p_ho_gain_FLAT}}) "
+        "and than RPM ({{nt_d_ho_gain_RPM}}, {{nt_w_ho_gain_RPM}}, p {{nt_p_ho_gain_RPM}}). It was more accurate than IPL3 on the level "
+        "endpoint ({{nt_d_ho_level_IPL3}}, {{nt_w_ho_level_IPL3}}, p {{nt_p_ho_level_IPL3}}), and the transferred slope again predicted "
+        "gains best ({{nrg_ho_SLOPE_T}} vs {{nrg_ho_B_RPM}}). With 200-sample pilots B-RPM was the most accurate method "
+        "({{nr200_brpm}} vs {{nr200_flat}} for FLAT; Supplementary Tables [[ST:TC1_native_resolution_summary]]–"
+        "[[ST:TC4_native_resolution_by_n0]]). The structural quantities on which the paper rests were stable. The median alignment exponent "
+        "was {{nr_r_med}} at native resolution and {{sub_r_med}} after sub-sampling. As expected from the higher horizon of a given pilot "
+        "when $p$ is larger, more learnable signal was hidden in the pilot's error floor: a median {{nhid_25}}, {{nhid_50}} and {{nhid_100}} "
+        "for pilots of 25, 50 and 100 samples (Supplementary Table [[ST:TC5_native_hidden_signal]]). The conclusions therefore do not depend "
+        "on the wavelength sub-sampling.")
+    # 4.9 -----------------------------------------------------------------------------------------------------
+    s.append("## 4.9. Robustness, distribution shift and ablation")
     s.append(
         "On six representative tasks, B-RPM was evaluated with raw-absorbance and first-derivative spectra, Kennard–Stone-selected pilots and "
         "noisier reference values, and on mango under a new-season and an orchard-population shift (Supplementary Table [[ST:T8_robustness]]). "
@@ -329,8 +367,8 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "{{sim_FLAT_2}}). This is the cost of importing information that Proposition 1 makes unavoidable. The pre-specified ablations "
         "(Supplementary Table [[ST:T7_ablation]]) showed that freeing the alignment exponent without a prior is the most damaging choice "
         "(Section 2.4).")
-    # 4.9 -----------------------------------------------------------------------------------------------------
-    s.append("## 4.9. Comparison with previous work and practical recommendations")
+    # 4.10 ----------------------------------------------------------------------------------------------------
+    s.append("## 4.10. Comparison with previous work and practical recommendations")
     s.append(table_md(_table_related(), "Comparison with previous approaches to sample-size planning and learning-curve forecasting. ✓ = addressed; – = not addressed.", "Table 3"))
     s.append(
         "Learning-curve extrapolation for sample-size planning in analytical spectroscopy [@ali2018] and in classification more generally "
@@ -394,7 +432,7 @@ ABSTRACT_RESULTS = (
     "25-sample pilot, a median {{hid_25}} of the apparent error floor was learnable signal. A computable compatible set of learning curves "
     "contained the true RMSEP in {{id_cov_all}} of forecasts. Bayesian regularisation-path matching (B-RPM) makes the unavoidable prior "
     "explicit and transferable. On the RMSEP level the pilot's own cross-validated error remained hard to beat ({{b_lvl_FLAT}} vs "
-    "{{b_lvl_B_RPM}}), and three of four pre-specified hypotheses failed. In a campaign-planning case study, however, decision-calibrated "
+    "{{b_lvl_B_RPM}}), and three of four pre-specified hypotheses failed, as did a confirmatory test at native resolution. In a campaign-planning case study, however, decision-calibrated "
     "B-RPM delivered {{cp_ok_CAL80_B_RPM_LOFO}} and {{cp_ok_CAL90_B_RPM_LOFO}} success at requested 80% and 90% when its prior came from "
     "other application families. A transferred learning-curve slope delivered {{cp_ok_CAL80_SLOPE_T_LOFO}} and "
     "{{cp_ok_CAL90_SLOPE_T_LOFO}} (p {{ct_p_80_B_RPM_LOFO_success}}).")
@@ -449,5 +487,6 @@ LIMITATIONS = """# 5. Limitations
 1. **Linear calibrations.** The theory describes ridge regression and tracked PLS closely (Section 4.1). Non-linear and local calibration methods may keep improving after linear models saturate, and their observability limits are not covered.
 2. **Parametric family.** The compatible set and B-RPM use the power-law family $s_k\\propto\\lambda_k^r$. Other families could give wider sets. The coverage of about 90% on real data and 99% in simulation suggests that the family is adequate for these spectra, but it is not guaranteed for other materials.
 3. **Pre-specified hypotheses not met.** B-RPM's raw bands under-covered (HB3). Its level error was 0.02 above the no-improvement rule, so non-inferiority (HB2) was not shown. Under cross-family transfer, its gain error equalled that of the transferred slope (HB1). The recalibrated bands are post hoc.
-4. **Random sampling from a stable population.** Kennard–Stone pilots and genuine shifts bias every anchored forecast (Section 4.7). In the robustness scenarios, B-RPM was less accurate than the no-improvement rule, and under a season shift it was optimistic.
-5. **Data sets.** {{n_soil}} of the {{n_tasks}} tasks are soil calibrations. The fruit, fuel, pharmaceutical, meat and mixture sets are smaller and allow only short extrapolations, and the designed mixtures violate the random-sampling premise of the theory."""
+4. **Random sampling from a stable population.** Kennard–Stone pilots and genuine shifts bias every anchored forecast (Section 4.9). In the robustness scenarios, B-RPM was less accurate than the no-improvement rule, and under a season shift it was optimistic.
+5. **Spectral resolution.** The main analysis used sub-sampled spectra; a native-resolution rerun of all tasks (Section 4.8) replicated the conclusions, and its pre-specified confirmatory hypothesis failed.
+6. **Data sets.** {{n_soil}} of the {{n_tasks}} tasks are soil calibrations. The fruit, fuel, pharmaceutical, meat and mixture sets are smaller and allow only short extrapolations, and the designed mixtures violate the random-sampling premise of the theory."""

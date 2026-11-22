@@ -177,7 +177,15 @@ def run_bayes_analysis(paths):
     b["info_tertile"] = pd.qcut(b.info_gain.clip(-1, 1), 3, labels=["low", "mid", "high"])
     TB7 = b.groupby("info_tertile", observed=True).agg(level_mae=("abs_err", "mean"), gain_mae=("gain_abs_err", "mean"),
                                                        info_median=("info_gain", "median"), n=("abs_err", "size")).reset_index()
-    TB7b = b.groupby("n0").agg(info_median=("info_gain", "median")).reset_index()
+    TB7b = b.groupby("n0").agg(info_median=("info_gain", "median"), share_negative=("info_gain", lambda x: float((x < 0).mean()))).reset_index()
+    # within pilot size (the fraction is confounded with n0): level error by within-n0 tertile
+    w = []
+    for n0v, gg in b.groupby("n0"):
+        gg = gg.assign(q=pd.qcut(gg.info_gain.clip(-1, 1).rank(method="first"), 3, labels=["low", "mid", "high"]))
+        tt = gg.groupby("q", observed=True).abs_err.mean()
+        w.append({"n0": int(n0v), **{f"level_mae_{k}": float(v) for k, v in tt.items()}})
+    TB7c = pd.DataFrame(w); num["TB7c_info_within_n0"] = TB7c.to_dict("records")
+    num["info_share_negative"] = float((b.info_gain < 0).mean())
     num["TB7_info_reliability"] = TB7.astype({"info_tertile": str}).to_dict("records"); num["TB7_info_by_n0"] = TB7b.to_dict("records")
     # signed bias by extrapolation ratio
     rb2 = pd.cut(ev.ratio, [1.5, 3, 6, 12, 24, 1e9], labels=["2", "4", "8", "16", ">=32"])
@@ -203,6 +211,9 @@ def run_bayes_analysis(paths):
                                info_fraction_median=("info_gain", "median"), n=("cid", "size")).reset_index()
     num["TB5_idset_by_ratio"] = TB5.astype({"ratio": str}).to_dict("records"); num["TB5_idset_by_n0"] = TB5b.to_dict("records")
     num["idset_coverage_task_mean"] = float(g.groupby("task").cid.mean().mean())
+    # whole-curve (simultaneous) coverage: all horizons of a pilot inside the set
+    wc = g.groupby(["task", "split", "n0", "pilot"]).cid.all()
+    num["idset_curve_coverage_task_mean"] = float(wc.groupby("task").mean().mean())
     # probabilistic planning decision: P(RMSEP(n) <= 0.85 x pilot CV RMSEP) at n = 8 n0
     dec = []
     thr = np.log(0.85)
@@ -246,8 +257,16 @@ def run_bayes_analysis(paths):
     os.makedirs(tabs, exist_ok=True)
     for nm, t in (("TB1_brpm_summary", TB1), ("TB2_brpm_paired", TB2), ("TB3_brpm_by_family", TB3.reset_index()),
                   ("TB4_brpm_coverage", TB4), ("TB5_idset", pd.concat([TB5.astype({"ratio": str}), TB5b.assign(by="n0")])),
-                  ("TB6_decision", TB6), ("TB7_info_reliability", TB7), ("TB8_bias_by_ratio", TB8.reset_index()), ("TB9_fixed_target", TB9)):
+                  ("TB6_decision", TB6), ("TB7_info_reliability", TB7), ("TB8_bias_by_ratio", TB8.reset_index()), ("TB9_fixed_target", TB9), ("TB7c_info_within_n0", TB7c)):
         t.to_csv(os.path.join(tabs, nm + ".csv"), index=False)
+    # mean absolute per-task bias (guards against cancellation of opposite family biases in the pooled mean)
+    absb = ev.groupby(["task", "method"]).err.mean().abs().groupby("method").mean()
+    num["abs_task_bias"] = absb.to_dict()
+    rbb = pd.cut(ev.ratio, [1.5, 3, 6, 12, 24, 1e9], labels=["2", "4", "8", "16", ">=32"])
+    TB8b = ev.assign(rb=rbb).groupby(["rb", "task", "method"], observed=True).err.mean().abs().groupby(["rb", "method"], observed=True).mean().unstack()
+    TB8b.reset_index().to_csv(os.path.join(tabs, "TB8b_abs_task_bias_by_ratio.csv"), index=False)
+    from experiments.staged_decision import run_staged
+    run_staged(df, tabs)
     json.dump(num, open(os.path.join(paths["results"], "bayes_numbers.json"), "w"), indent=1, default=float)
     return num
 

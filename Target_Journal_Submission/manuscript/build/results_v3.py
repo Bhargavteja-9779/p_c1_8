@@ -55,9 +55,36 @@ def bayes_context(ROOT):
     for n0 in (25, 50, 100, 200):
         c[f"info_{n0}"] = _f(iq.loc[n0, "info_fraction_median"], 2); c[f"idw_{n0}"] = f"{iq.loc[n0, 'median_width_factor']:.1f}"
     num = json.load(open(os.path.join(ROOT, "results", "bayes_numbers.json")))
+    c["id_curve_cov"] = f"{100 * num['idset_curve_coverage_task_mean']:.0f}%"
     c["id_cov_all"] = f"{100 * num['idset_coverage_task_mean']:.0f}%"
     c["lofo_eta_post"] = _f(num["lofo_soil_eta_post_median"], 2); c["lofo_eta_prior"] = _f(num["lofo_soil_eta_prior_median"], 2)
     c["soil_eta_ls"] = _f(num["soil_eta_large_sample_median"], 2)
+    ab = num["abs_task_bias"]
+    for m in ("B-RPM", "FLAT", "RPM", "SLOPE-T", "IPL3", "B-RPM-LOFO", "SLOPE-T-LOFO"):
+        c[f"absb_{m.replace('-', '_')}"] = _f(ab[m])
+    b8b = T("TB8b_abs_task_bias_by_ratio").astype({"rb": str}).set_index("rb")
+    for m in ("B-RPM", "FLAT", "RPM", "SLOPE-T", "IPL3"):
+        c[f"absb8_{m.replace('-', '_')}"] = f"{b8b.loc[['8', '16', '>=32'], m].min():.2f}–{b8b.loc[['8', '16', '>=32'], m].max():.2f}"
+    w7 = T("TB7c_info_within_n0").set_index("n0")
+    c["rel25_low"] = _f(w7.loc[25, "level_mae_low"]); c["rel25_high"] = _f(w7.loc[25, "level_mae_high"])
+    c["rel50_low"] = _f(w7.loc[50, "level_mae_low"]); c["rel50_high"] = _f(w7.loc[50, "level_mae_high"])
+    c["rel200_low"] = _f(w7.loc[200, "level_mae_low"]); c["rel200_high"] = _f(w7.loc[200, "level_mae_high"])
+    c["info_neg"] = f"{100 * num['info_share_negative']:.0f}%"
+    st10 = pd.read_csv(os.path.join(ROOT, "tables", "TB10_staged_decision.csv"), index_col=0)
+    st10.columns = [str(int(float(x))) for x in st10.columns]
+    for N in ("400", "800"):
+        for k in st10.index:
+            c[f"sd{N}_{k.replace(':', '_').replace('-', '_')}"] = (f"{100 * st10.loc[k, N]:.0f}%")
+    gains = [(st10.loc[f"staged:{m}", N] - st10.loc[f"one-shot:{m}", N]) * 100 for m in ("B-RPM", "FLAT", "SLOPE-T", "RPM", "IPL3") for N in ("400", "800")]
+    c["sd_gain_range"] = f"{min(gains):.0f}–{max(gains):.0f}"
+    sbt = pd.read_csv(os.path.join(ROOT, "tables", "TB10b_staged_decision_by_target.csv"), header=[0, 1], index_col=0)
+    c["gate_settled"] = f"{100 * (1 - (st10.loc['gated_second_batch_share', '400'] + st10.loc['gated_second_batch_share', '800']) / 2):.0f}%"
+    c["sd_flat_reach"] = f"{100 * sbt.loc['one-shot:FLAT'].xs('reachable', level=1).mean():.0f}%"
+    c["sd_slope_unreach"] = f"{100 * sbt.loc['one-shot:SLOPE-T'].xs('unreachable', level=1).mean():.0f}%"
+    c["sd_brpm_reach"] = f"{100 * sbt.loc['one-shot:B-RPM'].xs('reachable', level=1).mean():.0f}%"
+    c["sd_brpm_unreach"] = f"{100 * sbt.loc['one-shot:B-RPM'].xs('unreachable', level=1).mean():.0f}%"
+    t9 = T("TB9_fixed_target"); t9 = t9[t9.n_target == 800].set_index("n0")
+    c["ft800_brpm_50"] = _f(t9.loc[50, "B-RPM"]); c["ft800_brpm_100"] = _f(t9.loc[100, "B-RPM"]); c["ft800_brpm_200"] = _f(t9.loc[200, "B-RPM"])
     c["b_r_post"] = _f(num["brpm_r_post_median"], 2); c["b_eta_post"] = _f(num["brpm_eta_post_median"], 2)
     rel = T("TB7_info_reliability").set_index("info_tertile")
     for q in ("low", "mid", "high"):
@@ -119,29 +146,32 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
     s.append("## 4.3. What a pilot set can identify")
     s.append(
         "Proposition 1 predicts that a pilot leaves the gain from additional samples undetermined unless prior information is added. The "
-        "prior-free identification set makes this measurable (Fig. 5). For every pilot it contains all learning curves of the family "
+        "prior-free compatible set makes this measurable (Fig. 5). For every pilot it contains all learning curves of the family "
         "$s_k\\propto(\\lambda_k/\\lambda_1)^r$ that are consistent with the pilot's cross-validation path. Across all pilots and horizons the set "
-        "contained the true ridge learning curve in {{id_cov_all}} of cases (task average; {{id_cov_2}} at $n/n_0=2$ and {{id_cov_32}} at "
-        "$n/n_0\\ge32$; Fig. 6a). In the controlled simulation, where the truth is a Monte-Carlo estimate rather than a fitted curve, coverage was "
+        "contained the true ridge RMSEP in {{id_cov_all}} of forecasts (task average; pooled over forecasts {{id_cov_2}} at $n/n_0=2$ and "
+        "{{id_cov_32}} at $n/n_0\\ge32$; Fig. 6a), and the whole true curve of a pilot in {{id_curve_cov}}. In the controlled simulation, where the truth is a Monte-Carlo estimate rather than a fitted curve, coverage was "
         "{{sim_id_cov}} overall and at least {{sim_id_cov_min}} in every scenario. The theory therefore describes correctly what is compatible with "
         "a pilot. What a pilot can decide is a different matter. The median ratio between the upper and lower RMSEP of the set was {{id_w_2}} at "
         "$n/n_0=2$, {{id_w_8}} at $n/n_0=8$ and {{id_w_32}} at $n/n_0\\ge32$ (Fig. 6b). Long extrapolations from a pilot alone are thus not merely "
         "inaccurate. They are undetermined, and any method that returns a narrow forecast does so because it has imported an assumption.")
-    s.append(f"![**Fig. 5.** Learning-curve forecasts from one 50-sample pilot for three tasks. Grey: prior-free identification set (all curves consistent with the pilot's cross-validation path, Section 2.4); blue: B-RPM posterior mean and 80% band; dotted: no-improvement rule; dashed: inverse power law (IPL3); black: true learning curve (independent test set).]({fig('Fig3_identification_set_examples')}){{width=16cm}}")
+    s.append(f"![**Fig. 5.** Learning-curve forecasts from one 50-sample pilot for three tasks. Grey: prior-free compatible set (all curves consistent with the pilot's cross-validation path, Section 2.4); blue: B-RPM posterior mean and 80% band; dotted: no-improvement rule; dashed: inverse power law (IPL3); black: true learning curve (independent test set).]({fig('Fig3_identification_set_examples')}){{width=16cm}}")
     s.append(
         "The information fraction quantifies how much of the forecast comes from the pilot rather than the prior (Fig. 6c). Its median was "
         "{{info_25}} for 25-sample pilots, {{info_50}} for 50, {{info_100}} for 100 and {{info_200}} for 200 samples. Below about 100 samples the "
-        "gain forecast comes mainly from the prior; above it, the pilot's regularisation path pins down most of the gain. The fraction also flags "
-        "unreliable individual forecasts. In the lowest tertile of information fraction, B-RPM's mean absolute log error was {{rel_low}}, against "
-        "{{rel_mid}} in the middle and {{rel_high}} in the highest tertile (Supplementary Table [[ST:TB7_info_reliability]]). This gives the analyst a "
-        "per-pilot warning that is available before any further reference analysis.")
-    s.append(f"![**Fig. 6.** Observability of learning curves. (a) Share of forecasts whose true RMSEP lies inside the prior-free identification set; dashed line 90%. (b) Median width of the identification set (ratio of upper to lower RMSEP). (c) Median information fraction of B-RPM (share of the prior variance of the gain removed by the pilot) by pilot size.]({fig('Fig5_observability')}){{width=16cm}}")
+        "gain forecast comes mainly from the prior. The high values at 100–200 samples partly reflect the wavelength sub-sampling to 94–216 "
+        "variables: when $n_0$ approaches $p$, the horizon $\\kappa_0$ falls far below the leading eigenvalues and almost all modes are "
+        "resolved. For full-resolution spectra the horizon of a given pilot would be higher. The fraction is "
+        "therefore largely a function of pilot size, and {{info_neg}} of the values were negative (posterior spread wider than prior spread, "
+        "when the pilot contradicts the prior). Within a pilot size it carried some warning value only for small pilots: B-RPM's mean absolute "
+        "log error was {{rel25_low}} in the lowest and {{rel25_high}} in the highest within-size tertile at $n_0=25$ ({{rel50_low}} vs "
+        "{{rel50_high}} at $n_0=50$), but {{rel200_low}} vs {{rel200_high}} at $n_0=200$ (Supplementary Table [[ST:TB7c_info_within_n0]]).")
+    s.append(f"![**Fig. 6.** Observability of learning curves. (a) Share of forecasts whose true RMSEP lies inside the prior-free compatible set; dashed line 90%. (b) Median width of the compatible set (ratio of upper to lower RMSEP). (c) Median information fraction of B-RPM (share of the prior variance of the gain removed by the pilot) by pilot size.]({fig('Fig5_observability')}){{width=16cm}}")
     # 4.4 -----------------------------------------------------------------------------------------------------
     s.append("## 4.4. Forecasting accuracy")
     s.append(
-        "In all paired comparisons below, differences are reference minus B-RPM, so positive values favour B-RPM. Table 2 summarises all forecasters on the version-2 design (group-disjoint splits; ten repeated outer splits for the small data sets). "
+        "In all paired comparisons below, differences are reference minus B-RPM, so positive values favour B-RPM. Table 2 summarises all forecasters (group-disjoint splits; ten repeated outer splits for the small data sets). "
         "The pre-registered RPM ($r=1$) remained more accurate than inverse-power-law extrapolation (mean absolute log error {{v2_rpm}} vs "
-        "{{v2_ipl3}}) but not more accurate than the no-improvement rule ({{v2_flat}}), as in the first version of the study. B-RPM reached "
+        "{{v2_ipl3}}) but not more accurate than the no-improvement rule ({{v2_flat}}). B-RPM reached "
         "{{b_lvl_B_RPM}}. It was more accurate than IPL3 (difference {{bp_d_level_B_RPM_vs_IPL3}}, 95% CI {{bp_ci_level_B_RPM_vs_IPL3}}, "
         "better on {{bp_w_level_B_RPM_vs_IPL3}} tasks, Holm-adjusted p {{bp_ph_level_B_RPM_vs_IPL3}}) and than the scaling-exponent estimator of "
         "Wei et al. [@wei2022] ({{bp_d_level_B_RPM_vs_WEI}}, {{bp_w_level_B_RPM_vs_WEI}} tasks), and as accurate as RPM ({{bp_d_level_B_RPM_vs_RPM}}) "
@@ -151,12 +181,16 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "because the dominant error source is the noise in that error, which no forecaster can remove (Section 4.6).")
     s.append(table_md(_table2(TAB), "Accuracy of learning-curve forecasts (task-level means over pilots, pilot sizes 25–200 and horizons $n\\ge2n_0$). Level: $|\\log(\\widehat{\\mathrm{RMSEP}}/\\mathrm{RMSEP})|$; gain: error of the forecast gain $\\mathrm{RMSEP}(n)/\\mathrm{RMSEP}(n_0)$; bias: mean signed log error (> 0 pessimistic). LOSO/LOFO: prior or slope transferred from other data sources / other application families.", "Table 2", floatfmt=3))
     s.append(
-        "The methods differ much more in *bias* than in absolute error (Fig. 7). The no-improvement rule was pessimistic by construction, and its "
-        "bias grew from {{bias2_FLAT}} at $n/n_0=2$ to {{bias32_FLAT}} at $n/n_0\\ge32$. The transferred slope and IPL3 became increasingly "
-        "optimistic ({{bias32_SLOPE_T}} and {{bias32_IPL3}} at $n/n_0\\ge32$). B-RPM was the only forecaster whose mean bias stayed within "
-        "±{{bias_brpm_maxabs_le8}} up to an eightfold extrapolation ({{bias32_B_RPM}} at $n/n_0\\ge32$; overall {{b_bias_B_RPM}} vs {{b_bias_FLAT}} "
-        "for FLAT, {{b_bias_SLOPE_T}} for SLOPE-T and {{b_bias_RPM}} for RPM). For a planner this is the relevant property: an unbiased forecast "
-        "neither talks a laboratory out of a worthwhile extension of the calibration set nor promises an improvement that will not come. "
+        "The methods differ more in *bias* than in absolute error (Fig. 7). Pooled over tasks, the no-improvement rule was pessimistic, with "
+        "a bias growing from {{bias2_FLAT}} at $n/n_0=2$ to {{bias32_FLAT}} at $n/n_0\\ge32$. The transferred slope and IPL3 became "
+        "increasingly optimistic ({{bias32_SLOPE_T}} and {{bias32_IPL3}} at $n/n_0\\ge32$). B-RPM's pooled bias stayed within "
+        "±{{bias_brpm_maxabs_le8}} up to eightfold extrapolation (overall {{b_bias_B_RPM}}). Pooled bias can hide opposite biases in different "
+        "tasks, however. B-RPM was optimistic for soil and pessimistic for the designed mixtures (Supplementary Table [[ST:TB3_brpm_by_family]]). "
+        "The mean absolute per-task bias, which does not cancel, was {{absb_B_RPM}} for B-RPM, {{absb_FLAT}} for FLAT, {{absb_RPM}} for RPM, "
+        "{{absb_SLOPE_T}} for SLOPE-T and {{absb_IPL3}} for IPL3. At extrapolation ratios of 8 and more it was {{absb8_B_RPM}} for B-RPM against "
+        "{{absb8_FLAT}} for FLAT, {{absb8_SLOPE_T}} for SLOPE-T and {{absb8_IPL3}} for IPL3 (RPM {{absb8_RPM}}; Supplementary Table "
+        "[[ST:TB8b_abs_task_bias_by_ratio]]). The theory-based forecasters are therefore the least biased for long extrapolations, but they "
+        "are not unbiased task by task. "
         "For the gain itself, B-RPM improved on the no-improvement rule ({{bp_d_gain_B_RPM_vs_FLAT}}, {{bp_w_gain_B_RPM_vs_FLAT}} tasks, Holm p "
         "{{bp_ph_gain_B_RPM_vs_FLAT}}) and on RPM ({{bp_d_gain_B_RPM_vs_RPM}}, {{bp_w_gain_B_RPM_vs_RPM}} tasks, Holm p {{bp_ph_gain_B_RPM_vs_RPM}}), "
         "and the pilot path added information beyond the prior ({{bp_d_gain_B_RPM_vs_B_RPM_0}} vs the prior-only variant B-RPM-0). The transferred slope "
@@ -168,12 +202,17 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
     s.append(
         "A planning rule is useful only if it works for a new application, for which no calibrations of the same kind exist. We therefore "
         "repeated the comparison with priors and slopes taken from *other application families* (leave-one-family-out, LOFO): soil tasks "
-        "received a prior from fruit, fuel, pharmaceutical, meat and mixture calibrations, and vice versa. The transferred slope lost much of its "
+        "received a prior from fruit, fuel, pharmaceutical, meat and mixture calibrations. Each non-soil family comes from a single source, so "
+        "its LOFO and LOSO priors are identical and already exclude its own family. The test is therefore informative for the 23 soil tasks, "
+        "and the non-soil tasks show the cross-family case under both schemes. The transferred slope lost much of its "
         "accuracy: its mean absolute log error rose from {{b_lvl_SLOPE_T}} to {{b_lvl_SLOPE_T_LOFO}}, and from {{fam_soil_slope}} to "
         "{{fam_soil_slope_lofo}} on the soil tasks (Fig. 8a). B-RPM was almost unaffected ({{b_lvl_B_RPM}} to {{b_lvl_B_RPM_LOFO}}; soil "
         "{{fam_soil_brpm}} to {{fam_soil_brpm_lofo}}; Fig. 8b). Under LOFO transfer, B-RPM was more accurate than the transferred slope by "
         "{{bp_d_level_B_RPM_LOFO_vs_SLOPE_T_LOFO}} (95% CI {{bp_ci_level_B_RPM_LOFO_vs_SLOPE_T_LOFO}}; better on "
-        "{{bp_w_level_B_RPM_LOFO_vs_SLOPE_T_LOFO}} tasks, p {{bp_p_level_B_RPM_LOFO_vs_SLOPE_T_LOFO}}). On the pre-specified gain endpoint "
+        "{{bp_w_level_B_RPM_LOFO_vs_SLOPE_T_LOFO}} tasks, p {{bp_p_level_B_RPM_LOFO_vs_SLOPE_T_LOFO}}; at the level of the eight sources, "
+        "{{bp_sw_level_B_RPM_LOFO_vs_SLOPE_T_LOFO}}, p {{bp_sp_level_B_RPM_LOFO_vs_SLOPE_T_LOFO}}, because the difference is concentrated in "
+        "the three soil sources). With a cross-family prior, B-RPM remained less accurate than the no-improvement rule "
+        "({{bp_d_level_B_RPM_LOFO_vs_FLAT}}, Holm p {{bp_ph_level_B_RPM_LOFO_vs_FLAT}}). On the pre-specified gain endpoint "
         "(HB1), the two were equivalent ({{bp_d_gain_B_RPM_LOFO_vs_SLOPE_T_LOFO}}, p {{bp_p_gain_B_RPM_LOFO_vs_SLOPE_T_LOFO}}), so HB1 was not "
         "confirmed. The difference on the level endpoint lies in the bias. A slope summarises the noise level, eigen-structure and alignment of "
         "the calibrations it was learned from, and it carries them into the new task. B-RPM transfers only a weak prior on the alignment exponent and the noise "
@@ -196,7 +235,22 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "'will an eightfold larger calibration set reduce RMSEP by at least 15%?', no method beat the base rate (Brier score {{brier_B_RPM}} for "
         "B-RPM, {{brier_FLAT}} for FLAT, {{brier_SLOPE_T}} for SLOPE-T and {{brier_clim}} for the climatological forecast; Supplementary Table "
         "[[ST:TB6_decision]]). This is consistent with Proposition 1. Such decisions turn on precisely the gain that a 25–200-sample pilot cannot "
-        "determine, and they should be made with a staged design in which the second batch measures the gain.")
+        "determine.")
+    s.append(
+        "We therefore tested the staged design that Proposition 1 suggests, using the existing forecasts (Supplementary Table "
+        "[[ST:TB10_staged_decision]]). An analyst with an absolute RMSEP target and a budget of $N$ = 400 or 800 reference samples asks "
+        "whether the target is reachable. Targets were set 15% above and 15% below the true RMSEP at $N$. Deciding from a pilot of $N/8$ "
+        "samples was correct in {{sd400_one_shot_B_RPM}} ($N$ = 400) and {{sd800_one_shot_B_RPM}} ($N$ = 800) of cases with B-RPM, "
+        "{{sd400_one_shot_FLAT}} and {{sd800_one_shot_FLAT}} with FLAT, and {{sd400_one_shot_IPL3}} and {{sd800_one_shot_IPL3}} with IPL3. "
+        "Taking a second batch first, i.e. deciding from $N/4$ samples, raised the accuracy of every method by {{sd_gain_range}} percentage "
+        "points (B-RPM {{sd400_staged_B_RPM}} and {{sd800_staged_B_RPM}}; FLAT {{sd400_staged_FLAT}} and {{sd800_staged_FLAT}}). The error of "
+        "a B-RPM forecast for a fixed size of 800 samples fell from {{ft800_brpm_50}} with a 50-sample pilot to {{ft800_brpm_100}} with 100 "
+        "and {{ft800_brpm_200}} with 200 (Supplementary Table [[ST:TB9_fixed_target]]). The methods failed in characteristic directions. FLAT "
+        "declared reachable targets unreachable (correct for only {{sd_flat_reach}} of reachable targets), and SLOPE-T declared unreachable "
+        "targets reachable (correct for {{sd_slope_unreach}} of unreachable ones). B-RPM was the most balanced ({{sd_brpm_reach}} and "
+        "{{sd_brpm_unreach}}). Gating the second batch on the compatible set did not save reference analyses: at this ±15% resolution, "
+        "the set excluded the target in only {{gate_settled}} of cases, so a second batch was needed almost always. For decisions this fine, "
+        "a 25–100-sample pilot cannot replace a second batch.")
     # 4.7 -----------------------------------------------------------------------------------------------------
     s.append("## 4.7. Robustness, distribution shift and ablation")
     s.append(
@@ -232,12 +286,13 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "statement of what the pilot can and cannot tell, and a forecaster whose prior information is explicit, transferable and measurable.")
     s.append(
         "We therefore recommend the following. (i) Do not extrapolate learning curves with power-law, exponential or logarithmic fits to a small "
-        "pilot. (ii) Report the identification set with any forecast. If it spans more than the decision-relevant range, the pilot cannot settle "
-        "the question, and the analyst should collect a second batch before committing the full budget. (iii) Use pilots of at least 100 "
-        "samples when the gain matters; below that, the information fraction shows that the forecast is mainly prior. (iv) Use B-RPM with a "
-        "structural prior learned from previous calibrations, including calibrations of other materials, and recalibrate its bands on previous "
-        "calibrations. Empirical slopes should be transferred only within an application family. (v) Draw pilots at random from the target "
-        "population.")
+        "pilot. (ii) Treat the pilot's cross-validated error as the best single estimate of the current error, and plan decisions that "
+        "depend on the gain as staged decisions: a second batch of the same size improved every method's decisions more than any choice of "
+        "forecaster did. (iii) Report the compatible set with any forecast, as an honest statement of what the pilot allows. (iv) When a "
+        "gain forecast is needed before the second batch, prefer a forecaster with an explicit structural prior (B-RPM) over a transferred "
+        "slope whenever the previous calibrations come from other materials, and recalibrate its bands on previous calibrations. (v) Draw "
+        "pilots at random from the target population. A space-filling selection such as Kennard–Stone remains the right choice for building "
+        "the final calibration, but not for forecasting.")
     return "\n\n".join(x for x in s if x)
 
 
@@ -261,35 +316,36 @@ ABSTRACT_BACKGROUND = (
     "curve a pilot can determine.")
 ABSTRACT_RESULTS = (
     "The deterministic-equivalent (random-matrix) risk of ridge regression reproduced ridge and PLS learning curves of {{n_tasks}} public "
-    "calibration tasks (mean absolute log error {{tv_ridge_mean}} and {{tv_pls_mean}}). From it we prove that a pilot observes the "
-    "calibration's bias function only above an effective-regularisation horizon. Analyte signal below the horizon is indistinguishable from "
-    "noise, so the gain from more samples is not identifiable from a pilot alone. A computable identification set of curves consistent with "
-    "the pilot contained the true curve in {{id_cov_all}} of cases ({{sim_id_cov}} in simulation) but spanned a factor of {{id_w_8}} in "
-    "RMSEP at eightfold extrapolation; below about 100 samples, gain forecasts came mainly from prior assumptions. Bayesian "
-    "regularisation-path matching (B-RPM) combines the pilot's exact cross-validation path, the task's unlabelled spectra and a transferable "
-    "prior on signal alignment and noise. It was the least biased forecaster (mean bias {{b_bias_B_RPM}}; within ±{{bias_brpm_maxabs_le8}} "
-    "up to eightfold extrapolation) and kept its accuracy when the prior came from a different application family ({{b_lvl_B_RPM_LOFO}}), "
-    "whereas a transferred learning-curve slope degraded to {{b_lvl_SLOPE_T_LOFO}} (p {{bp_p_level_B_RPM_LOFO_vs_SLOPE_T_LOFO}}).")
+    "NIR/MIR calibration tasks (mean absolute log error {{tv_ridge_mean}} and {{tv_pls_mean}}). From it we prove that a pilot observes the "
+    "calibration's bias function only above an effective-regularisation horizon. Analyte signal below the horizon is indistinguishable "
+    "from noise, so the gain from more samples cannot be identified from a pilot alone. A computable compatible set of curves "
+    "consistent with the pilot contained the true curve in {{id_cov_all}} of cases ({{sim_id_cov}} in simulation) but spanned a factor of "
+    "{{id_w_8}} in RMSEP at eightfold extrapolation. Bayesian regularisation-path matching (B-RPM) makes the unavoidable prior explicit. "
+    "It forecast gains better than the no-improvement rule and power-law extrapolation and kept its accuracy with a prior from another "
+    "application family ({{b_lvl_B_RPM_LOFO}} vs {{b_lvl_SLOPE_T_LOFO}} for a transferred slope). On the RMSEP level, however, the pilot's "
+    "own cross-validated error stayed best ({{b_lvl_FLAT}} vs {{b_lvl_B_RPM}}), and three of four pre-specified hypotheses failed. A "
+    "second batch raised the accuracy of reachability decisions by {{sd_gain_range}} percentage points for every method.")
 ABSTRACT_SIGNIFICANCE = (
-    "Every pilot-based learning-curve forecast imports prior information. B-RPM makes it explicit and transferable, and the identification "
-    "set shows when a pilot cannot settle the sample-size question and a second batch is needed.")
+    "Every pilot-based learning-curve forecast rests on prior information that the pilot cannot supply. Sample-size decisions that depend "
+    "on the future gain should be staged, and forecasts should state their prior and their compatible set.")
 
 HIGHLIGHTS = [
     "A pilot set observes a calibration's error curve only above a computable horizon.",
-    "The gain from more reference samples is not identifiable from a pilot alone.",
-    "A prior-free identification set contained the true learning curve in ~9 of 10 cases.",
-    "Bayesian path matching (B-RPM) gave the least biased learning-curve forecasts.",
-    "Structural priors transferred across application families; empirical slopes did not.",
+    "The gain from more reference samples cannot be identified from a pilot alone.",
+    "A prior-free compatible set contained the true learning curve in ~9 of 10 cases.",
+    "Bayesian path matching (B-RPM) states its prior and transfers across materials.",
+    "A second batch improved sample-size decisions more than any choice of forecaster.",
 ]
 
 CONCLUSION = (
-    "A small pilot set determines a calibration's error curve only above an observability horizon set by its size and the eigen-spectrum of "
-    "the spectra. Below the horizon, analyte signal and irreducible noise cannot be told apart, so the gain from more reference samples must "
-    "come from prior knowledge. This explains the long-standing optimism of power-law extrapolation and the surprising strength of the "
-    "no-improvement rule. The identification set and the information fraction make the limit visible for every pilot. B-RPM turns the "
-    "unavoidable prior into an explicit, transferable one; its forecasts were the least biased and generalised across application families. For "
-    "planning, the practical consequence is a staged design: a pilot of at least 100 samples, a B-RPM forecast with its identification set, "
-    "and a second batch whenever the set is wider than the decision requires.")
+    "A small pilot set determines a calibration's error curve only above an observability horizon set by its size and the eigen-spectrum "
+    "of the spectra. Below the horizon, analyte signal and irreducible noise cannot be told apart, so the gain from more reference samples "
+    "must come from prior knowledge. This explains the optimism of power-law extrapolation and the strength of the no-improvement rule. The "
+    "compatible set makes the limit visible for every pilot. B-RPM turns the unavoidable prior into an explicit one; it predicted gains "
+    "better than power-law extrapolation and the no-improvement rule and, unlike a transferred slope, kept its accuracy across application "
+    "families, but it did not beat the pilot's own error on the RMSEP level. For planning, the practical consequence is a staged design. Use "
+    "the pilot's error as the current estimate and a structural forecast with its compatible set as a guide, and take a second batch "
+    "before committing the full reference budget.")
 
 COVER_LETTER = [
     "Every multivariate calibration project faces the same early decision: will more reference analyses reduce the prediction error enough "
@@ -297,11 +353,13 @@ COVER_LETTER = [
     "Our manuscript shows, with a proof and a leakage-free benchmark on {{n_tasks}} public NIR/MIR calibration tasks, which part of a "
     "learning curve a pilot can determine and which part it cannot.",
     "The methodological contributions are: (i) Proposition 1, which locates the observability horizon of a pilot set and shows that the gain "
-    "from more samples is not identifiable without prior information; (ii) a computable, prior-free identification set and an information "
+    "from more samples is not identifiable without prior information; (ii) a computable, prior-free compatible set and an information "
     "fraction that tell the analyst, for every pilot, whether the sample-size question can be settled; and (iii) Bayesian regularisation-path "
-    "matching (B-RPM), a forecaster that combines a transferable structural prior with the task's unlabelled spectra and the pilot's exact cross-validation path. B-RPM was the "
-    "least biased method up to eightfold extrapolation, and unlike a transferred empirical slope it kept its accuracy when the prior "
-    "came from a different application family.",
+    "matching (B-RPM), a forecaster that combines a transferable structural prior with the task's unlabelled spectra and the pilot's exact cross-validation path. B-RPM "
+    "predicted gains better than power-law extrapolation and, unlike a transferred empirical slope, kept its accuracy when its prior came "
+    "from a different application family. We report openly that the pilot's own cross-validated error remained the best estimate of the "
+    "RMSEP level and that three of four pre-specified hypotheses were not confirmed. The positive practical result is that a second "
+    "batch improves sample-size decisions more than any choice of forecaster.",
     "The work connects to current themes in Analytica Chimica Acta: validation design and leakage, the error structure of reference values "
     "and replicates, and calibration-set size. The study follows a pre-registered design. The new method and its hypotheses were fixed before "
     "the results were seen, negative outcomes are reported, all data are public, and the complete code (one-command rerun) will be deposited in a public repository on acceptance and is available to referees on request.",
@@ -312,7 +370,7 @@ COVER_LETTER = [
 LIMITATIONS = """# 5. Limitations
 
 1. **Linear calibrations.** The theory describes ridge regression and tracked PLS closely (Section 4.1). Non-linear and local calibration methods may keep improving after linear models saturate, and their observability limits are not covered.
-2. **Parametric family.** The identification set and B-RPM use the power-law family $s_k\\propto\\lambda_k^r$. Other families could give wider sets. The coverage of about 90% on real data and 99% in simulation suggests that the family is adequate for these spectra, but it is not guaranteed for other materials.
+2. **Parametric family.** The compatible set and B-RPM use the power-law family $s_k\\propto\\lambda_k^r$. Other families could give wider sets. The coverage of about 90% on real data and 99% in simulation suggests that the family is adequate for these spectra, but it is not guaranteed for other materials.
 3. **Pre-specified hypotheses not met.** B-RPM's raw bands under-covered (HB3). Its level error was 0.02 above the no-improvement rule, so non-inferiority (HB2) was not shown. Under cross-family transfer, its gain error equalled that of the transferred slope (HB1). The recalibrated bands are post hoc.
 4. **Random sampling from a stable population.** Kennard–Stone pilots and genuine shifts bias every anchored forecast (Section 4.7). In the robustness scenarios, B-RPM was less accurate than the no-improvement rule, and under a season shift it was optimistic.
 5. **Data sets.** {{n_soil}} of the {{n_tasks}} tasks are soil calibrations. The fruit, fuel, pharmaceutical, meat and mixture sets are smaller and allow only short extrapolations, and the designed mixtures violate the random-sampling premise of the theory."""

@@ -21,7 +21,7 @@ def fig_idset_examples(df, paths, tasks=("KSSL-VisNIR:clay", "Mango:DM", "Diesel
         if not len(b):
             continue
         n = b.n.values
-        ax.fill_between(n, np.exp(b.id_lo), np.exp(b.id_hi), color=GREY, alpha=0.18, lw=0, label="Identification set (prior-free)")
+        ax.fill_between(n, np.exp(b.id_lo), np.exp(b.id_hi), color=GREY, alpha=0.18, lw=0, label="Compatible set (prior-free)")
         ax.fill_between(n, np.exp(b.lo80), np.exp(b.hi80), color=BLUE, alpha=0.25, lw=0, label="B-RPM 80 % band")
         ax.plot(n, np.exp(b.fc_logrmse), color=BLUE, marker="o", label="B-RPM")
         for m, c, ls, mk in (("FLAT", AQUA, ":", "^"), ("IPL3", ORANGE, "--", "s")):
@@ -43,10 +43,10 @@ def fig_observability(paths):
     fig, axs = plt.subplots(1, 3, figsize=(7.4, 2.3))
     x = np.arange(len(r))
     axs[0].bar(x, r.coverage, color=BLUE); axs[0].axhline(0.9, color=INK2, ls="--", lw=1)
-    axs[0].set_xticks(x, [f"{v}x" for v in r.ratio]); axs[0].set_ylim(0, 1); axs[0].set_title("(a) Truth inside identification set")
+    axs[0].set_xticks(x, [f"{v}x" for v in r.ratio]); axs[0].set_ylim(0, 1); axs[0].set_title("(a) Truth inside compatible set")
     axs[0].set_xlabel("Extrapolation ratio $n/n_0$"); axs[0].set_ylabel("Share of forecasts")
     axs[1].plot(x, r.median_width_factor, color=ORANGE, marker="s"); axs[1].set_yscale("log")
-    axs[1].set_xticks(x, [f"{v}x" for v in r.ratio]); axs[1].set_title("(b) Width of identification set")
+    axs[1].set_xticks(x, [f"{v}x" for v in r.ratio]); axs[1].set_title("(b) Width of compatible set")
     axs[1].set_xlabel("Extrapolation ratio $n/n_0$"); axs[1].set_ylabel("Median upper/lower RMSEP")
     xq = np.arange(len(q))
     axs[2].bar(xq, q.info_fraction_median, color=AQUA)

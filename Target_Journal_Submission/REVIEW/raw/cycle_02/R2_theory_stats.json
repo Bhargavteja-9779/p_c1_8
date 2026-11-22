@@ -1,0 +1,165 @@
+{
+ "reviewer": "R2 (statistical learning theory / chemometrics; theory and statistics)",
+ "summary": "The manuscript formalises a 'observability horizon' for pilot-based learning-curve forecasting of ridge calibrations (Proposition 1), derives an 'identification set' and an 'information fraction', and proposes B-RPM, a grid-Bayesian path-matching forecaster with a transferred structural prior. I verified the proof, the code, and all B-RPM numbers against the tables and raw forecasts, and ran independent checks. Part (a) of the proposition is correct, and part (b) is correct at a fixed penalty. However, the claim for CV-tuned (optimal) risks is unproven. The non-identifiability holds only for forecasters that use the risk path, not for the full pilot (Dicker/EigenPrism are mischaracterised), and the mathematical novelty is modest. The identification set is not a partial-identification set: within the power family the parameters are point-identified, and with a noise-free path the set collapses to width 1.02. Its width comes from an incoherent likelihood scale (level variance applied to shape residuals, m_eff=2) and from the grid bounds. The apparent dependence of identifiability on n0 is largely an artefact of sub-sampling the spectra to p = 94\u2013216 variables (kappa_0 -> 0 at n0=200). No leakage was found in the B-RPM priors or the evaluation, and the recalibration is labelled post hoc and LOSO-clean. Statistically, three of four pre-specified hypotheses failed; HB4 holds only overall (89% at n/n0 <= 4). The headline transfer result is non-pre-specified, unadjusted, and not significant at source level, and it comes entirely from soil tasks, because LOFO = LOSO for all non-soil tasks. 'Least biased' relies on cancellation of signed errors. Reported numbers otherwise match the tables.",
+ "strengths": [
+  "Proof of Proposition 1(a) is correct and the deterministic-equivalent factorisation E = P(n,kappa) N(kappa), with P independent of (s, sigma^2), is used properly.",
+  "Fast, transparent implementation; all B-RPM numbers are machine-generated and reproducible from the raw forecasts.",
+  "Careful leakage control: LOSO/LOFO priors from pool-only full fits of other sources, eigenvalues from pool spectra, group-disjoint splits; no leakage found.",
+  "Failed hypotheses are disclosed in Limitations; the post-hoc recalibration is labelled and LOSO-clean; sign conventions are consistent between code and text.",
+  "Honest negative results (no method beats climatology on the decision Brier score; FLAT hard to beat on level)."
+ ],
+ "issues": [
+  {
+   "id": "R2-C02-01",
+   "severity": "CRITICAL",
+   "title": "The 'identification set' is a finite-sample likelihood confidence set inside a point-identified parametric family, not a partial-identification set; its width does not measure 'planning ambiguity that no pilot-only method can remove'",
+   "description": "Proposition 1 shows non-identifiability only nonparametrically (arbitrary target power below kappa_0). The Corollary then restricts to the 2-parameter family s_k ~ (lambda_k/lambda_1)^r, in which the tail is tied analytically to the observed head of N(kappa). Within that family (r, eta) are point-identified from the population path, so the population identification set is a single curve. The reported width is set entirely by the sampling scale s2 (delta-method variance of log CV-MSE at the optimum), the ad hoc m_eff=2 weighting and the grid bounds. The Corollary's 'ambiguity no pilot-only method can remove' and the partial-identification framing (Tamer 2010) therefore contradict the code. There is also an internal inconsistency: the Proposition says the tail cannot be identified, but the Corollary's family identifies it by assumption, so the family is itself a prior.",
+   "evidence": "Reviewer check (/tmp/claude-0/rev2/chk4.py): KSSL-MIR:OC eigen-spectrum, noise-free deterministic-equivalent pilot path with r=0.55, eta=0.15, fed to fit_forecast_brpm. With s2=2/n0 the id-set width at 8x is 51.6 (n0=25) and 36.8 (n0=50). With s2=1e-4 (an effectively infinite pilot) the width is 1.02 at every horizon and every n0, and info fraction = 1.0. code/src/models/bayes_rpm.py: idmask = loglik >= max-3 with loglik = -0.5*sse/s2.",
+   "corrective_action": "Rename it a 'pilot-compatible (confidence) set' and drop the partial-identification and 'no pilot-only method can remove' language, or define a genuine identification set over a nonparametric or much richer class of s (e.g. arbitrary non-negative s_k below kappa_0 subject to the observed N(kappa) on kappa>=kappa_0). Under the Proposition that set is unbounded or bounded only by eta in [0,1], which is the real content. State explicitly that within the power family the width reflects sampling noise and m_eff.",
+   "requires_new_experiment": true,
+   "proposed_experiment": "Compute (i) the population (noise-free) set for each task from the large-sample fit to show it collapses; (ii) a nonparametric set (LP over s_k>=0, sum s_k<=V) consistent with the pilot path within its bootstrap tolerance; report both widths."
+  },
+  {
+   "id": "R2-C02-02",
+   "severity": "CRITICAL",
+   "title": "The likelihood scale is incoherent: level variance is applied to shape residuals after the level is profiled out; m_eff=2 and the deviance-6/chi2_2 calibration have no justification",
+   "description": "The log CV-MSE residuals along one pilot path are strongly positively correlated, because the same residuals are reused at every penalty. After V (the level) is profiled out, the remaining residuals are shape deviations, and their sampling variance is much smaller than var(log CV-MSE at the optimum), which is the s2 used. The m_eff=2 rescaling compensates arbitrarily. Treating the profile deviance as chi2_2 with 2 effective observations and 3 parameters (V, r, eta) has no asymptotic basis. The 91% coverage, the band widths, the posterior and the information fraction all depend on these choices. HB3 failed (80% bands covered 55%), which shows the likelihood/predictive scale is miscalibrated. The id-set coverage of ~91% is achieved only through very wide sets.",
+   "evidence": "bayes_rpm.py: w = w/w.sum()*m_eff; s2 = max(path_var_log_opt,1e-4); loglik=-0.5*sse/s2. TB4: cov80 = 0.551 overall, 0.107 for mixtures. B-RPM-m10 changes gain MAE (0.256 vs 0.265) and bias (TB8).",
+   "corrective_action": "Estimate the covariance of the log path (or of its first differences) by a pilot-level Bayesian or group bootstrap and use a proper Gaussian (or Whittle-type) likelihood with that covariance. Alternatively, calibrate the deviance threshold by parametric bootstrap from the fitted model. Report sensitivity of coverage, width and info fraction to m_eff in {1,2,5,10} and to the threshold.",
+   "requires_new_experiment": true,
+   "proposed_experiment": "Parametric-bootstrap calibration of the id-set threshold and m_eff sensitivity on the existing pilots (no new data needed)."
+  },
+  {
+   "id": "R2-C02-03",
+   "severity": "CRITICAL",
+   "title": "'No pilot-only forecaster can predict the gain' is overstated; Proposition 1 covers only forecasters that use the CV path / deterministic-equivalent risk functional, and the cited literature is mischaracterised",
+   "description": "Proposition 1 compares two models that give the same deterministic-equivalent risk path at n0. The pilot data (X0, y0) carry more information than the path. With Gaussian design and known (here: well-estimated, from unlabelled spectra) Sigma, method-of-moment estimators (Dicker 2014) and EigenPrism (Janson et al. 2017) estimate sigma^2, and hence total signal beta'Sigma beta, without any sparsity or prior on beta. Their limitation is precision (variance ~ p/n^2), not identifiability. Subtracting the path-identified head power then identifies S_T to that precision. The manuscript says these results 'require a prior or a structural assumption on the signal'; that is incorrect for Dicker and EigenPrism. The bold claim in Section 2.4 and the abstract ('not identifiable from a pilot alone'; 'every pilot-based forecast imports prior information') therefore does not follow. What does follow is weak identification at practical n0, or non-identification from the CV path. The paper's own RPM-TD (Dicker floor) performs badly, which is an empirical precision problem, not a theorem.",
+   "evidence": "Section 2.4 'In words' paragraph and last sentence; abstract 'Significance'; TB1 RPM-TD level MAE 0.888.",
+   "corrective_action": "Restate the Proposition as non-identifiability of the gain from the risk path (or from any statistic that is a functional of E(n0, mu)), and as weak identifiability from the full pilot (with a rate argument based on Dicker's variance). Correct the description of Dicker/EigenPrism. Tone down the abstract.",
+   "requires_new_experiment": false,
+   "proposed_experiment": ""
+  },
+  {
+   "id": "R2-C02-04",
+   "severity": "CRITICAL",
+   "title": "The observability horizon and the 'pilots >=100 samples' recommendation are artefacts of wavelength sub-sampling (p = 94\u2013216 variables)",
+   "description": "Spectra were sub-sampled to 100\u2013220 variables, so rank(Sigma) <= p. When n0 approaches or exceeds p, kappa_0 -> 0 and the horizon reaches the bottom of the spectrum. The Proposition's premise n0 < rank(Sigma) then fails or becomes vacuous. The jump in information fraction (0.17/0.36/0.83/0.95 for n0 = 25/50/100/200) and the collapse of id-set width at n0=200 (1.73, against 5.4 at n0=100) are therefore driven mechanically by n0/p, not by any intrinsic property of calibration problems. With full-resolution spectra (p in the thousands) the horizon at n0=200 would remain high. The recommendation 'use pilots of at least 100 samples' does not transfer.",
+   "evidence": "Reviewer check (/tmp/claude-0/rev2/chk3.py): kappa_0/lambda_1 at n0=200 is about 1e-9 to 1e-12. Modes below kappa_0 at n0=200: ICRAF-VisNIR 0/208, Diesel 0/200, Neospectra 0/150, Tecator 0/99, Mango 1/94 (Mango 2/94 already at n0=100). TB5: width factor 8.98/8.04/5.38/1.73 by n0. At 8x the width is 13.2 (n0=25), 40.8 (n0=50), 37.5 (n0=100) and 1.8 (n0=200), which is non-monotone and discontinuous at n0 ~ p.",
+   "corrective_action": "Report kappa_0 per task and n0, and n0/p. Restrict the horizon claims to n0 << rank. Rerun a subset of tasks at full spectral resolution (or with p >> 200) to show how the information fraction and width depend on p. Remove the generic '>=100 samples' recommendation or express it as a condition on n0 relative to the effective rank/eigen-spectrum.",
+   "requires_new_experiment": true,
+   "proposed_experiment": "Rerun B-RPM, the identification set and the info fraction on 4\u20136 tasks with p in {100, 400, full resolution}, same pilots, and report width and info fraction against n0/p."
+  },
+  {
+   "id": "R2-C02-05",
+   "severity": "MAJOR",
+   "title": "Part (b) and the claim about optimal (CV-tuned) risks are not proven; the bound is stated at a fixed penalty",
+   "description": "(a) is correct: N'-N = sum_T s_k lambda_k(lambda_k+2kappa)/(lambda_k+kappa)^2 lies in [0, 2 lambda_k/kappa], P depends only on lambda, kappa(n,mu) does not depend on (s, sigma^2), and the relative bound with N(kappa_0) holds because N is increasing. (b) is correct at a fixed mu with kappa_n <= delta' min_T lambda_k, and P >= 1 holds while df2 < n. However, the quantity forecast is E*(n) = min_mu E(n,mu). E'* >= E* holds (since N' >= N), but a lower bound on E'*-E* requires the condition at the alternative model's optimal kappa'*. kappa'* is typically larger, because there is less signal in weak modes, so (7) need not hold for tuned ridge. The text bridges this with 'in the numerical examples of Section 4.2 the difference is of the same order as S_T', which is an unproven and unquantified claim. The condition in (b) also implicitly requires kappa_0(n) <= delta*delta'*kappa_0(n0), i.e. a very large n, and this is not stated. 'Makes the indistinguishability exact in practice' is wrong wording; it is statistical, not exact. The statement that the gain is 'essentially the target power in the band' ignores the identified variance-term change through P(n,kappa).",
+   "evidence": "manuscript/build/part1_intro_theory_methods.md Sec. 2.4, Eqs. (6)\u2013(7) and the following paragraph.",
+   "corrective_action": "Add a part (c) for optimal risks: E'*(n)-E*(n) >= (1-delta'^2) S_T whenever kappa(n, mu'*) <= delta' min_T lambda_k, or give a bound in terms of E*(n) and the alternative's optimal penalty. Report the numerical gap in optimal risks in a table (not 'same order'). Make the large-n requirement explicit. Replace 'exact in practice' with a testing statement, e.g. power of the best test at path-noise level (2/n0)^{1/2}.",
+   "requires_new_experiment": false,
+   "proposed_experiment": ""
+  },
+  {
+   "id": "R2-C02-06",
+   "severity": "MAJOR",
+   "title": "Novelty of Proposition 1 is modest relative to the existing literature",
+   "description": "That components of the target in modes with lambda_k << kappa act as additive noise for ridge/kernel regression is standard in the deterministic-equivalent and spectral-bias literature: Canatar et al. 2021 (unlearnable target power acts as effective noise), Bordelon et al. 2020, Hastie et al. 2022 (misspecified/unobserved features equivalent to noise), and Bach 2024. Wei et al. 2022 note that extrapolating the scaling requires the alignment tail. The proof is three lines. The contribution is in framing (horizon kappa_0 at mu -> 0 for planning), not in mathematics. The partial-identification link (Tamer 2010) is not substantiated (see R2-C02-01).",
+   "evidence": "Sec. 2.4; Introduction contribution (i).",
+   "corrective_action": "Label it as an observation/lemma that formalises a known mechanism for the planning question. Cite Canatar 2021 and Hastie 2022 (misspecification) explicitly at the Proposition, and present novelty as the empirical quantification.",
+   "requires_new_experiment": false,
+   "proposed_experiment": ""
+  },
+  {
+   "id": "R2-C02-07",
+   "severity": "MAJOR",
+   "title": "The headline transfer result (0.292 vs 0.392, p=0.001) is not pre-specified, is unadjusted, vanishes at source level, and is driven entirely by the soil family",
+   "description": "HB1 (the pre-specified primary) compared gain errors and failed (+0.006, p=0.72; source level -0.034, 3/8 sources). The abstract instead headlines the level-endpoint LOFO comparison with the unadjusted task p (0.0013; Holm 0.011). It omits the source-level result (+0.031, p=0.64, 4/8 sources). For the 15 non-soil tasks the LOFO prior equals the LOSO prior, because each non-soil family is one source; B-RPM and B-RPM-LOFO forecasts are identical there, and so are SLOPE-T and SLOPE-T-LOFO. The 'strictest transfer test' is therefore a test on 23 soil tasks from 3 provenance sources. On non-soil tasks B-RPM-LOFO is actually worse than SLOPE-T-LOFO on level (-0.059, CI -0.107 to -0.014, 5/15 wins). B-RPM-LOFO is also significantly worse than FLAT on level (-0.030, CI -0.046 to -0.014, Holm p=0.008, source p=0.023, 1/8 sources), which the abstract's 'kept its accuracy' hides.",
+   "evidence": "TB2 rows 0, 13, 14. Reviewer check (/tmp/claude-0/rev2/chk1.py, chk5.py): max |B-RPM - B-RPM-LOFO| = 0 for CGL, Diesel, Mango, Tablets, Tecator. Soil-only LOFO level diff +0.205 (22/23 wins); non-soil -0.059.",
+   "corrective_action": "In the abstract, report the HB1 failure first and label the level-LOFO comparison as secondary/exploratory with Holm and source-level p. State that LOFO differs from LOSO only for soil tasks. Report B-RPM-LOFO vs FLAT. Ideally construct a genuine cross-family test for non-soil tasks (e.g. leave-out of all non-soil, or soil-only prior for non-soil tasks).",
+   "requires_new_experiment": true,
+   "proposed_experiment": "For non-soil tasks, use a prior/slope learned only from soil (and vice versa) so that every task is affected by the transfer; report task- and source-level results."
+  },
+  {
+   "id": "R2-C02-08",
+   "severity": "MAJOR",
+   "title": "Abstract and Results selectively report the single (marginal) hypothesis that passed; three of four pre-specified hypotheses failed",
+   "description": "HB1, HB2 and HB3 failed. HB2 (non-inferiority to FLAT, margin 0.02) failed: the point estimate -0.0201 already exceeds the margin, and the CI lower bound is -0.038. B-RPM is in fact nominally worse than FLAT (p=0.037 unadjusted). These failures appear only in Limitations and in passing in Results; the abstract mentions none of them. HB4 is reported as '91%', but it holds only for the task-averaged pooled figure: at the clinically relevant short horizons coverage is 89% (n/n0=2 and 4, task-averaged), below the pre-specified 90%. HB4 was added to the addendum in a separate commit one minute later and is missing from EXPERIMENT_LOG ('hypotheses HB1\u2013HB3 fixed'). The addendum's timestamp was edited from 21:40 to ~21:00. The pre-specification is also weakened because v1 results on essentially the same tasks had been seen.",
+   "evidence": "TB2 row 2; TB5; reviewer recomputation: task-mean id coverage by ratio 2: 0.890, 4: 0.891, 8: 0.953. git log -p on the addendum (3ac616d vs 4b15714); EXPERIMENT_LOG last row.",
+   "corrective_action": "Rewrite the abstract to state the HB1\u2013HB3 outcomes. Report HB4 as 'met overall, not at n/n0<=4'. Reconcile the EXPERIMENT_LOG with the addendum on HB4 and timing. State that v1 outcomes on the same data informed the design choices (grid bounds, m_eff, LOFO hypothesis).",
+   "requires_new_experiment": false,
+   "proposed_experiment": ""
+  },
+  {
+   "id": "R2-C02-09",
+   "severity": "MAJOR",
+   "title": "'Coverage 91%' is pointwise, row-pooled, bought with extreme width, and its strata are not task averages as stated",
+   "description": "The id set is evaluated pointwise per (pilot, horizon), not for the whole curve. Simultaneous whole-curve coverage is 84% pooled (86% task-mean), yet the text says it 'contained the true curve'. Coverage rises with horizon only because the width explodes (median factor 15 at 8x, 58 at >=32x). Those widths are largely set by the arbitrary grid corners (eta >= 5e-4, r >= 0.05; see R2-C02-01), so coverage there is uninformative about family adequacy. The Limitations claim ('coverage of ~90% and 99% in simulation suggests the family is adequate') is therefore unsupported. The simulation is generated from the very same power-law family with known population eigenvalues, so 99% coverage there is in-model. The '88% at n/n0=2 and 98% at >=32' values in Sec. 4.3 are row-pooled (TB5), although the text labels them task averages (task-averaged: 89%, 97\u201399%). Coverage fails for whole tasks: Diesel:total 58%, CGL moisture/casein/lactate 69\u201375%, Tecator:fat 77%. 39% of misses fall below the lower bound.",
+   "evidence": "TB5; reviewer check chk1.py (simultaneous coverage 0.844; per-task minima). simulation_bayes_raw.csv: id coverage 0.993, B-RPM 80% band always inside the id set.",
+   "corrective_action": "Report simultaneous curve coverage and per-family coverage. Report coverage at fixed width, or interval score, rather than coverage alone. Show sensitivity of width and coverage to the grid bounds. Remove the 'family adequate' inference or test it with a misspecified simulation (e.g. bumpy s_k, s_k with concentrated power in weak modes).",
+   "requires_new_experiment": true,
+   "proposed_experiment": "Simulation with s_k outside the power family (e.g. power concentrated in a band below kappa_0) to test id-set coverage; grid-bound sensitivity on real pilots."
+  },
+  {
+   "id": "R2-C02-10",
+   "severity": "MAJOR",
+   "title": "The information fraction can be negative (20% of cases, minimum -4.3), depends on m_eff and the grid, and its reliability evidence is confounded with n0",
+   "description": "info = 1 - var_post/var_prior is defined per data set. A posterior can be more dispersed than the prior, and it often is: 19.8% of B-RPM pilot-horizon values are negative (27% at n0=25, 25% at n0=50), 1.7% are below -1, and the minimum is -4.29. The text describes it as the 'share of prior variance removed' with range 0\u20131, and TB7 silently clips it to [-1,1]. Its level depends on the likelihood scaling (m_eff, s2) and on the grid-truncated prior, so it is not an intrinsic property of the pilot. The tertile analysis (0.373/0.297/0.188) is confounded by n0, because information rises with n0 and error falls with n0. Within n0=200 there is no gradient (0.136/0.141/0.129), and at n0=100 the pattern is non-monotone (0.233/0.163/0.185). In the simulation the gain is referenced to 4n0 rather than n0, which is an inconsistent definition.",
+   "evidence": "Reviewer check chk1.py; bayes_analysis.py: b.info_gain.clip(-1,1); bayes_rpm.py info formula; simulation.py horizons start at 4n0.",
+   "corrective_action": "Disclose negative values. Use an expected-information measure (preposterior variance reduction, or KL divergence prior->posterior), or truncate with justification. Present reliability within n0 strata, or by regression of error on info adjusting for n0 and task. Report sensitivity to m_eff.",
+   "requires_new_experiment": false,
+   "proposed_experiment": ""
+  },
+  {
+   "id": "R2-C02-11",
+   "severity": "MAJOR",
+   "title": "'Least biased forecaster' rests on signed means that cancel across tasks and horizons",
+   "description": "The mean signed bias (+0.008) averages positive and negative task biases. The mean absolute task-level bias is 0.170 for B-RPM, 0.175 for FLAT and 0.183 for RPM, i.e. practically equal; the median is lower for RPM (0.109) than for B-RPM (0.117). At n/n0=2 and 4 FLAT has the smaller absolute task bias (0.107 vs 0.139; 0.179 vs 0.193) and the smaller signed bias at ratio 2 (+0.001 vs -0.006). B-RPM-LOFO also stays within \u00b10.040 up to 8x, so B-RPM is not 'the only forecaster' that does. B-RPM is +0.0400 at 4x, which sits exactly on the stated bound. In the controlled simulation B-RPM is strongly optimistic (bias -0.24 to -0.37) in 5 of 6 scenarios, including r=0.5 with noise 0.3, where the prior is 'approximately right'.",
+   "evidence": "TB8; TB1 mean_bias; reviewer check chk5.py; simulation_bayes_raw.csv recomputation.",
+   "corrective_action": "Report the mean absolute task-level bias by ratio with CIs, and drop 'only' and 'least biased', or qualify them as 'smallest average signed bias'. Report the simulation bias.",
+   "requires_new_experiment": false,
+   "proposed_experiment": ""
+  },
+  {
+   "id": "R2-C02-12",
+   "severity": "MAJOR",
+   "title": "Statistical inference: task-level tests treat 38 correlated tasks as independent; the Holm family mixes confirmatory and exploratory tests; source-level p-values are not adjusted and have floor 0.0078",
+   "description": "Tasks share spectra and samples within sources (KSSL+Neospectra contribute 12 tasks, ICRAF 8). Task-level Wilcoxon p-values overstate the evidence, and several task-level 'significant' results are not significant at source level (B-RPM vs IPL3 level: source p=0.11; LOFO level: p=0.64). Holm is applied over 15 heterogeneous comparisons that include the primary HB1, HB2, ablations and post hoc references, while source-level p-values are unadjusted. With 8 sources, the smallest attainable two-sided Wilcoxon p is 0.0078. Text mixes adjusted and unadjusted p-values (abstract p=0.001 is unadjusted; the Holm value is 0.011). Sign conventions (reference minus method, positive favours B-RPM) are implemented correctly.",
+   "evidence": "bayes_analysis.py paired()/holm(); TB2.",
+   "corrective_action": "Use a hierarchical model (task nested in source; e.g. a mixed model on per-task differences, or a cluster bootstrap by source) as the primary inference. Holm-adjust the confirmatory family (HB1, HB2) separately from exploratory comparisons. Always quote the adjusted p together with the source-level result.",
+   "requires_new_experiment": false,
+   "proposed_experiment": ""
+  },
+  {
+   "id": "R2-C02-13",
+   "severity": "MINOR",
+   "title": "Post-hoc recalibration is properly labelled and leakage-free with respect to the forecast source, but does not achieve conditional calibration",
+   "description": "The LOSO inflation factor uses |z| from other sources only, so there is no leakage from the forecast source. It does use the ground-truth learning curves of other tasks, which a practitioner would rarely have. 'Restored nominal coverage' holds only marginally: mixtures 26%, fuel 76% and soil 89% at 80%, so the HB3 per-stratum criterion still fails post hoc. The pooled |z| is row-weighted, so soil dominates the factor.",
+   "evidence": "bayes_analysis.py recalibration block; TB4 rows 44\u201354.",
+   "corrective_action": "Say 'restored marginal coverage' and give the per-family failures. Weight the quantiles by task. Discuss what previous calibration data a user needs.",
+   "requires_new_experiment": false,
+   "proposed_experiment": ""
+  },
+  {
+   "id": "R2-C02-14",
+   "severity": "MINOR",
+   "title": "Prior construction is leakage-free, but the noise-fraction fallback and the reuse of v1 knowledge should be documented",
+   "description": "Priors come from full-pool fits of other sources (pool labels only), and eigenvalues from pool spectra. I found no use of test labels or of the forecast task's truth in B-RPM. alignment_table falls back to var_test if var_pool is missing; all v2 files contain var_pool, but the fallback should be removed. The pilot's n_eff = n0 - mean group size is used for kappa, while LOGO trains on n0 - |g|; this is fine. Grid bounds act as a hard prior and contradict 'prior-free'. The simulation's r=2 lies outside the r grid [0.05,1.6].",
+   "evidence": "refinement.alignment_table; bayes.py; bayes_rpm.R_GRID; simulation scenarios.",
+   "corrective_action": "Remove the var_test fallback, call the id set 'prior-free within the grid', and extend the grid or justify the bounds.",
+   "requires_new_experiment": false,
+   "proposed_experiment": ""
+  },
+  {
+   "id": "R2-C02-15",
+   "severity": "MINOR",
+   "title": "Number and wording checks",
+   "description": "Numbers in Secs. 4.3\u20134.6 match TB1\u2013TB8 and bayes_numbers.json (0.282, 0.292, 0.392, +0.143, -0.020 CI -0.038/-0.003, Holm 0.222, 55%/73%, 79%/95%, width 2.4 vs 13.8, Brier 0.290/0.274/0.294/0.247, info 0.17/0.36/0.83/0.95, tertiles 0.373/0.297/0.188, simulation 0.224/0.400/0.362). Discrepancies: the strata labelled 'task average' are row-pooled (see R2-C02-09); in 'p=0.001' (abstract, Sec. 4.5) the adjusted value is not given; the 'climatological' Brier uses the in-sample base rate (an oracle reference); the decision outcome is relative to the pilot CV error, so it mixes pilot noise into the target. The width factor of 15 at 8x is pooled over n0 and hides the non-monotone n0 pattern (13/41/38/1.8).",
+   "evidence": "TB1\u2013TB8; bayes_numbers.json; reviewer recomputations.",
+   "corrective_action": "Fix the labels, add Holm p-values, describe the climatology reference as in-sample, and give the width by n0.",
+   "requires_new_experiment": false,
+   "proposed_experiment": ""
+  }
+ ],
+ "recommendation": "Major revision",
+ "recommendation_rationale": "The empirical pipeline is sound and leakage-free, and the numbers match the tables. The central conceptual claims do not hold as stated: (1) non-identifiability from 'the pilot' (it holds only for the risk path); (2) the identification set as an irreducible ambiguity (it is a confidence set whose width is driven by an ad hoc likelihood scale and the grid bounds, and which collapses with a perfect path); (3) n0 thresholds for informativeness (driven by n0/p after wavelength sub-sampling). The abstract emphasises a non-pre-specified, source-level non-significant, soil-only transfer result and omits three failed hypotheses. These problems can be fixed by reframing, adding a proper likelihood calibration, adding optimal-risk bounds, a p-sensitivity rerun on a few tasks, and hierarchical inference. If the reframing were not accepted, I would lean towards reject."
+}

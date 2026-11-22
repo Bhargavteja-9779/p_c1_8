@@ -66,3 +66,13 @@ Run order (session 3): main (running, started 20:57 UTC) -> refinement -> bayes 
  -> bayes_analysis -> rewrite manuscript around Prop. 1 + B-RPM (title/abstract/highlights/cover letter) -> rebuild -> commit/push.
 Commands: cd Target_Journal_Submission/code && nohup python3 run_all.py --mode full --stage <stage> --jobs 4 &  (stages resumable)
 Self-resume: send_later check-ins trig_01FerzTSvpTtyk1mRNXyPzG1 (01:56Z), trig_01AdNmGQopf3B1SayMSXe9L2 (07:56Z); add more as needed.
+
+## 7. Status at 2026-11-22 ~02:30 UTC (session 3)
+DONE: v2 pipeline (all stages) + B-RPM + review cycle 2 (REVIEW/review_02.md) + rebuilt manuscript/supplement/letters/GA.
+Key honest results: compatible set covers 91% pointwise / 86% whole-curve; FLAT best on level (0.262 vs B-RPM 0.282);
+B-RPM best on gain vs FLAT/RPM/IPL3; cross-family robust vs transferred slope (soil only); HB1-HB3 failed, HB4 met pointwise;
+staged second batch +4-10 points decision accuracy for all methods.
+NEXT (optional polish): trim main text to ~7000 words (Sections 4.1-4.2 and Methods); re-run editor desk screen;
+author/declaration placeholders must be filled by the user.
+Rebuild: cd Target_Journal_Submission/code && python3 run_all.py --mode full --stage analysis (runs bayes_analysis + figures);
+         cd ../manuscript/build && python3 build_manuscript.py && python3 build_supplementary.py && python3 build_letters.py

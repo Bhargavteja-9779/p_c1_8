@@ -268,7 +268,7 @@ def results_markdown_v3(ctx, TAB, FIG, table_md, old_results):
         "[[ST:T0b_simulation_by_n0]]), B-RPM with the real-data prior (median $r$ = {{sim_prior_r}}) was the most accurate method when the true "
         "alignment was close to that prior ($r=0.5$: {{sim_b_05}} vs {{sim_FLAT_05}} for FLAT, {{sim_RPM_05}} for RPM and {{sim_IPL3_05}} for "
         "IPL3; with a flat prior {{sim_bf_05}}). When the prior was wrong ($r=2$), it lost to the no-improvement rule ({{sim_b_2}} vs "
-        "{{sim_FLAT_2}}). This is the cost of importing information that Proposition 1 makes unavoidable. The ablations of the first version "
+        "{{sim_FLAT_2}}). This is the cost of importing information that Proposition 1 makes unavoidable. The pre-registered ablations "
         "(Supplementary Table [[ST:T7_ablation]]) showed that freeing the alignment exponent without a prior is the most damaging choice "
         "(Section 2.4).")
     # 4.8 -----------------------------------------------------------------------------------------------------

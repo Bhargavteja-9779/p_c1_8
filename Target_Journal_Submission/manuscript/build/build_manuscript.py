@@ -193,6 +193,14 @@ def main():
     front = fill(front, ctx)
     import supp_index
     md = supp_index.resolve(front + "\n\n" + body + "\n\n# References\n\n" + reflist + "\n")
+    # submission copies of the figures, numbered in order of appearance (Figure_1.png, ...)
+    import shutil
+    sub = os.path.join(OUT, "figures_submission"); shutil.rmtree(sub, ignore_errors=True); os.makedirs(sub)
+    for i, f in enumerate(re.findall(r"!\[\*\*Fig\. \d+\.\*\*.*?\]\(([^)]+\.png)\)", md), 1):
+        for ext in ("png", "pdf"):
+            src = f[:-3] + ext
+            if os.path.exists(src):
+                shutil.copy(src, os.path.join(sub, f"Figure_{i}.{ext}"))
     md_path = os.path.join(HERE, "manuscript_full.md")
     open(md_path, "w").write(md)
     json.dump({"citation_order": order}, open(os.path.join(HERE, "citation_order.json"), "w"), indent=1)

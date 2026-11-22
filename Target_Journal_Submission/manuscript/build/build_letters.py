@@ -39,7 +39,8 @@ def highlights(lines, path):
 
 def cover_letter(paragraphs, title, path):
     d = _doc()
-    for t in ("P N Bhargav Teja", "[Department, Institution]", "[Address]", "[E-mail]", "", "[Date]", ""):
+    import datetime
+    for t in ("P N Bhargav Teja", "[Department, Institution, City, Country]", "[E-mail]", "", datetime.date.today().strftime("%d %B %Y"), ""):
         d.add_paragraph(t)
     d.add_paragraph("The Editors\nAnalytica Chimica Acta")
     d.add_paragraph("")

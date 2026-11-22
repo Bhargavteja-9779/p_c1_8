@@ -79,6 +79,7 @@
 | `cp_ok_CAL90_B_RPM_LOFO` | 88% | `results/numbers.json` |
 | `cp_ok_CAL90_SLOPE_T` | 87% | `results/numbers.json` |
 | `cp_ok_CAL90_SLOPE_T_LOFO` | 40% | `results/numbers.json` |
+| `cp_ok_ONE_B_RPM` | 41% | `results/numbers.json` |
 | `cp_ok_ONE_FLAT` | 77% | `results/numbers.json` |
 | `cp_ok_ONE_IPL3` | 32% | `results/numbers.json` |
 | `cp_ok_ONE_SLOPE_T` | 21% | `results/numbers.json` |
@@ -88,8 +89,8 @@
 | `cp_over_ONE_FLAT` | 3.04 | `results/numbers.json` |
 | `cp_over_ONE_IPL3` | 1.14 | `results/numbers.json` |
 | `cp_over_ONE_SLOPE_T` | 0.50 | `results/numbers.json` |
-| `cp_save_lofo80` | 39% | `results/numbers.json` |
-| `cp_save_lofo90` | 20% | `results/numbers.json` |
+| `cp_save_lofo80` | 23% | `results/numbers.json` |
+| `cp_save_lofo90` | 11% | `results/numbers.json` |
 | `ct_ci_80_B_RPM_LOFO_success` | +34 to +55 | `results/numbers.json` |
 | `ct_ci_90_B_RPM_LOFO_success` | +36 to +59 | `results/numbers.json` |
 | `ct_d_80_B_RPM_LOFO_success` | +45 | `results/numbers.json` |
@@ -100,10 +101,6 @@
 | `fam_soil_brpm_lofo` | 0.230 | `results/numbers.json` |
 | `fam_soil_slope` | 0.258 | `results/numbers.json` |
 | `fam_soil_slope_lofo` | 0.435 | `results/numbers.json` |
-| `ft800_brpm_100` | 0.158 | `results/numbers.json` |
-| `ft800_brpm_200` | 0.121 | `results/numbers.json` |
-| `ft800_brpm_50` | 0.244 | `results/numbers.json` |
-| `gate_settled` | 7% | `results/numbers.json` |
 | `hid_100` | 1.5% | `results/numbers.json` |
 | `hid_25` | 22% | `results/numbers.json` |
 | `hid_50` | 9.6% | `results/numbers.json` |
@@ -174,21 +171,11 @@
 | `robb_shift_season_B_RPM` | -0.502 | `tables/T8_robustness.csv` |
 | `robb_shift_season_FLAT` | -0.255 | `tables/T8_robustness.csv` |
 | `robb_shift_season_IPL3` | -1.040 | `tables/T8_robustness.csv` |
-| `sd400_one_shot_B_RPM` | 68% | `results/numbers.json` |
-| `sd400_one_shot_FLAT` | 74% | `results/numbers.json` |
-| `sd400_one_shot_IPL3` | 63% | `results/numbers.json` |
-| `sd400_staged_B_RPM` | 78% | `results/numbers.json` |
-| `sd400_staged_FLAT` | 80% | `results/numbers.json` |
 | `sd800_one_shot_B_RPM` | 76% | `results/numbers.json` |
 | `sd800_one_shot_FLAT` | 76% | `results/numbers.json` |
-| `sd800_one_shot_IPL3` | 67% | `results/numbers.json` |
 | `sd800_staged_B_RPM` | 84% | `results/numbers.json` |
 | `sd800_staged_FLAT` | 86% | `results/numbers.json` |
-| `sd_brpm_reach` | 80% | `results/numbers.json` |
-| `sd_brpm_unreach` | 64% | `results/numbers.json` |
-| `sd_flat_reach` | 55% | `results/numbers.json` |
 | `sd_gain_range` | 4–10 | `results/numbers.json` |
-| `sd_slope_unreach` | 33% | `results/numbers.json` |
 | `sim_FLAT_05` | 0.408 | `tables/T0b_simulation_by_n0.csv` |
 | `sim_FLAT_2` | 0.095 | `tables/T0b_simulation_by_n0.csv` |
 | `sim_IPL3_05` | 0.251 | `tables/T0b_simulation_by_n0.csv` |
@@ -200,15 +187,9 @@
 | `sim_id_cov_min` | 98% | `tables/T0b_simulation_by_n0.csv` |
 | `sim_prior_r` | 0.55 | `tables/T0b_simulation_by_n0.csv` |
 | `slope_median` | -0.097 | `results/numbers.json` |
-| `slope_ols_r2` | 0.78 | `results/numbers.json` |
-| `slope_p_noise` | = 0.0005 | `results/numbers.json` |
 | `slope_pct_per_doubling` | 9.3% | `results/numbers.json` |
 | `slope_q1` | -0.144 | `results/numbers.json` |
 | `slope_q3` | -0.079 | `results/numbers.json` |
-| `slope_reg_cgl` | -0.516 | `results/numbers.json` |
-| `slope_reg_mir` | -0.107 | `results/numbers.json` |
-| `slope_reg_tecator` | -0.122 | `results/numbers.json` |
-| `slope_reg_vis` | -0.083 | `results/numbers.json` |
 | `slope_rho_noise` | +0.54 | `results/numbers.json` |
 | `soil_eta_ls` | 0.20 | `results/numbers.json` |
 | `sub_r_med` | 0.55 | `results/numbers.json` |

@@ -920,15 +920,19 @@ All tables and figures below are generated automatically by `run_all.py` from th
 | RPM 50 group-bootstrap refits (s per pilot) | 0.952 | 0.881 | 2.717 |
 | Within-pilot sub-sampling curve for IPL/EXP/LOG fits (s per pilot) | 0.277 | 0.168 | 1.481 |
 
-![**Figure S1.** Distribution of task-level forecast errors for all methods of the first design (version-2 data).](/home/user/p_c1_8/Target_Journal_Submission/figures/Fig4_main_accuracy.png){width=15cm}
+![**Figure S1.** Alignment exponent r estimated from the full calibration pool of each task, grouped by spectral region and sample type; dashed line: isotropic prior r = 1.](/home/user/p_c1_8/Target_Journal_Submission/figures/Fig12_alignment_exponents.png){width=15cm}
 
-![**Figure S2.** Robustness scenarios: mean absolute log error by method.](/home/user/p_c1_8/Target_Journal_Submission/figures/Fig8_robustness.png){width=15cm}
+![**Figure S2.** Slope of the ground-truth learning curve (log RMSE per doubling of n) against the irreducible-noise fraction of the large-sample fit (post hoc).](/home/user/p_c1_8/Target_Journal_Submission/figures/Fig13_slope_vs_noise.png){width=15cm}
 
-![**Figure S3.** Pre-registered sample-size decision metric by method.](/home/user/p_c1_8/Target_Journal_Submission/figures/Fig10_sample_size_decisions.png){width=15cm}
+![**Figure S3.** Distribution of task-level forecast errors for all methods of the first design (version-2 data).](/home/user/p_c1_8/Target_Journal_Submission/figures/Fig4_main_accuracy.png){width=15cm}
 
-![**Figure S4.** Per-task RPM error against theory misfit, fitted noise fraction and eigen-decay exponent.](/home/user/p_c1_8/Target_Journal_Submission/figures/Fig9_error_analysis.png){width=15cm}
+![**Figure S4.** Robustness scenarios: mean absolute log error by method.](/home/user/p_c1_8/Target_Journal_Submission/figures/Fig8_robustness.png){width=15cm}
 
-![**Figure S5.** Data-set overview: number of samples and eigen-decay exponent by family.](/home/user/p_c1_8/Target_Journal_Submission/figures/Fig11_dataset_overview.png){width=15cm}
+![**Figure S5.** Pre-registered sample-size decision metric by method.](/home/user/p_c1_8/Target_Journal_Submission/figures/Fig10_sample_size_decisions.png){width=15cm}
+
+![**Figure S6.** Per-task RPM error against theory misfit, fitted noise fraction and eigen-decay exponent.](/home/user/p_c1_8/Target_Journal_Submission/figures/Fig9_error_analysis.png){width=15cm}
+
+![**Figure S7.** Data-set overview: number of samples and eigen-decay exponent by family.](/home/user/p_c1_8/Target_Journal_Submission/figures/Fig11_dataset_overview.png){width=15cm}
 
 # Supplementary Note 1: Pre-specified protocol of the first design (time-stamped)
 

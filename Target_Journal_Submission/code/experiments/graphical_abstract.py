@@ -42,7 +42,7 @@ def main(root):
     ax2.text(0.02, 0.84, "Observability limit", fontsize=18, weight="bold", color=INK)
     ax2.text(0.02, 0.70, "signal below $\\kappa_0$ looks like noise:\nthe gain is not identifiable\nfrom the pilot alone", fontsize=13.5, color=INK2, va="top")
     ax2.text(0.02, 0.42, "B-RPM", fontsize=18, weight="bold", color=BLUE)
-    ax2.text(0.02, 0.32, "explicit, transferable prior;\nbetter gain forecasts; generalises\nacross materials.  Stage the decision.", fontsize=13.5, color=INK2, va="top")
+    ax2.text(0.02, 0.32, "explicit, transferable prior;\nbetter gain forecasts;\nplanning at a stated risk", fontsize=13.5, color=INK2, va="top")
     fig.savefig(os.path.join(root, "manuscript", "Graphical_Abstract.png"), dpi=100, facecolor="white")
     fig.savefig(os.path.join(root, "manuscript", "Graphical_Abstract.pdf"), facecolor="white")
 

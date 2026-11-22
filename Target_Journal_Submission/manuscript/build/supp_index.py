@@ -39,6 +39,8 @@ TABLES = [
     ("T10_runtime", "Measured run time per pilot."),
 ]
 FIGS = [
+    ("Fig12_alignment_exponents", "Alignment exponent r estimated from the full calibration pool of each task, grouped by spectral region and sample type; dashed line: isotropic prior r = 1."),
+    ("Fig13_slope_vs_noise", "Slope of the ground-truth learning curve (log RMSE per doubling of n) against the irreducible-noise fraction of the large-sample fit (post hoc)."),
     ("Fig4_main_accuracy", "Distribution of task-level forecast errors for all methods of the first design (version-2 data)."),
     ("Fig8_robustness", "Robustness scenarios: mean absolute log error by method."),
     ("Fig10_sample_size_decisions", "Pre-registered sample-size decision metric by method."),
